@@ -361,11 +361,49 @@ html[data-saath-mute-sounds="true"] audio, html[data-saath-mute-sounds="true"] v
 .font-editorial { font-family: "DM Serif Display", "Fraunces", Georgia, serif; }
 .font-sans-ui { font-family: "Inter", "DM Sans", ui-sans-serif, system-ui, sans-serif; }
 
-/* Editorial typography utilities */
+/* Editorial typography utilities & scale */
+.display-xl {
+  font-family: "Fraunces", "DM Serif Display", Georgia, serif;
+  font-size: clamp(2.75rem, 6vw, 5.25rem);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  font-weight: 500;
+}
+
+.display-l {
+  font-family: "Fraunces", "DM Serif Display", Georgia, serif;
+  font-size: clamp(2.25rem, 4.5vw, 3.75rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  font-weight: 500;
+}
+
+.heading-xl {
+  font-family: "Fraunces", "DM Serif Display", Georgia, serif;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.heading-lg {
+  font-family: "DM Sans", "Inter", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+}
+
+.eyebrow {
+  font-size: 0.725rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
 .editorial-italic {
   font-style: italic;
   color: var(--deep-teal);
-  font-weight: normal;
+  font-weight: 400;
 }
 
 .text-accent-teal {
@@ -374,7 +412,9 @@ html[data-saath-mute-sounds="true"] audio, html[data-saath-mute-sounds="true"] v
 
 .link-editorial {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   color: var(--text-primary);
   text-decoration: none;
   background-image: linear-gradient(var(--deep-teal), var(--deep-teal));
@@ -389,7 +429,7 @@ html[data-saath-mute-sounds="true"] audio, html[data-saath-mute-sounds="true"] v
   background-size: 100% 1.5px;
 }
 
-::selection { background: #bfe3d6; color: #103e3a; }
+::selection { background: #dcebdd; color: #0f766e; }
 
 @media (prefers-reduced-motion: no-preference) {
   .saath-fade { animation: saathFade .55s cubic-bezier(.23,1,.32,1) both; }
