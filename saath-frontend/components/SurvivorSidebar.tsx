@@ -5,14 +5,15 @@ import { FileText, HeartHandshake, Home, LogOut, MessageSquareText, Settings, Sp
 import { usePathname, useRouter } from "next/navigation";
 import { SaathLogo } from "@/components/SaathLogo";
 import { useAppStore } from "@/store/useAppStore";
+import { t } from "@/lib/i18n";
 
 const NAV_ITEMS = [
-  ["/survivor", "Home", "होम", Home],
-  ["/survivor/check-in", "Check-in", "चेक-इन", HeartHandshake],
-  ["/survivor/feel-better", "Feel better", "बेहतर महसूस करें", Wind],
-  ["/survivor/sahayak", "Sahayak", "सहायक", MessageSquareText],
-  ["/survivor/my-space", "My space", "मेरी जगह", FileText],
-  ["/survivor/support", "Support", "सहायता", Sparkles],
+  { href: "/survivor", key: "nav.home", defaultLabel: "Home", icon: Home },
+  { href: "/survivor/check-in", key: "nav.checkIn", defaultLabel: "Check-in", icon: HeartHandshake },
+  { href: "/survivor/feel-better", key: "nav.feelBetter", defaultLabel: "Feel better", icon: Wind },
+  { href: "/survivor/sahayak", key: "nav.sahayak", defaultLabel: "Sahayak", icon: MessageSquareText },
+  { href: "/survivor/my-space", key: "nav.mySpace", defaultLabel: "My space", icon: FileText },
+  { href: "/survivor/support", key: "nav.support", defaultLabel: "Support", icon: Sparkles },
 ] as const;
 
 const ITEM_BASE = "group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition-colors";
@@ -23,8 +24,7 @@ export function SurvivorSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { language, survivorName, logout } = useAppStore();
-  const hindi = language === "Hindi";
-  const name = survivorName || (hindi ? "आपकी जगह" : "Your space");
+  const name = survivorName || t("nav.mySpace", language);
 
   const isActive = (href: string) => (href === "/survivor" ? pathname === href : pathname.startsWith(href));
 
@@ -35,7 +35,7 @@ export function SurvivorSidebar() {
         <div>
           <div className="font-editorial text-[27px] font-bold leading-none tracking-tight text-deep-teal">SAATH</div>
           <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-text-secondary">
-            {hindi ? "साथ, हर समय" : "with you, over time"}
+            {t("common.notAlone", language).slice(0, 24)}
           </div>
         </div>
       </Link>
@@ -43,15 +43,15 @@ export function SurvivorSidebar() {
       <div className="my-9 h-px bg-border/55" />
 
       <p className="px-3 text-[10px] font-bold uppercase tracking-[.2em] text-text-secondary">
-        {hindi ? "आपकी जगह" : "Your space"}
+        {t("nav.mySpace", language)}
       </p>
       <nav className="mt-3 space-y-1">
-        {NAV_ITEMS.map(([href, english, hindiLabel, Icon]) => {
+        {NAV_ITEMS.map(({ href, key, defaultLabel, icon: Icon }) => {
           const active = isActive(href);
           return (
             <Link key={href} href={href} className={`${ITEM_BASE} ${active ? ITEM_ACTIVE : ITEM_INACTIVE}`}>
               <Icon size={18} strokeWidth={active ? 2.3 : 1.8} />
-              <span>{hindi ? hindiLabel : english}</span>
+              <span>{t(key, language) || defaultLabel}</span>
             </Link>
           );
         })}
@@ -64,7 +64,7 @@ export function SurvivorSidebar() {
         </Link>
         <Link href="/survivor/privacy" className={`${ITEM_BASE} ${isActive("/survivor/privacy") ? ITEM_ACTIVE : ITEM_INACTIVE}`}>
           <Settings size={18} strokeWidth={isActive("/survivor/privacy") ? 2.3 : 1.8} />
-          <span>{hindi ? "गोपनीयता और नियंत्रण" : "Privacy & control"}</span>
+          <span>{t("nav.privacy", language)}</span>
         </Link>
       </div>
     </aside>

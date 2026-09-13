@@ -1,13 +1,15 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { Accessibility, Bell, LogOut, Settings, Shield, User, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { SaathLogo } from "@/components/SaathLogo";
-import { useEffect, useRef, useState } from "react";
 import { BackButton } from "@/components/BackButton";
 import { defaultAccessibilitySettings, useAppStore } from "@/store/useAppStore";
 import { notificationService } from "@/services/notifications";
+import { LanguageDropdown } from "@/components/LanguageDropdown";
+import { getLanguageOption, t } from "@/lib/i18n";
 
 type ToggleRowProps = {
   label: string;
@@ -125,16 +127,13 @@ export function SurvivorHeader() {
       </div>
       <div className="hidden md:block">
         <p className="text-xs font-bold uppercase tracking-[.18em] text-text-secondary">
-          {new Date().toLocaleDateString(language === "Hindi" ? "hi-IN" : "en-IN", { weekday: "long", day: "2-digit", month: "long", year: "numeric" })}
+          {new Date().toLocaleDateString(getLanguageOption(language).locale, { weekday: "long", day: "2-digit", month: "long", year: "numeric" })}
         </p>
       </div>
 
       <div className="relative flex items-center gap-2">
         {!hideLanguageSelector && (
-          <div className="flex rounded-full border border-border-color/70 bg-white/70 p-0.5 text-[11px]">
-            <button type="button" onClick={() => setLanguage("English")} className={hindi ? "px-2 py-1 text-text-secondary" : "rounded-full bg-deep-teal px-2 py-1 text-white"}>EN</button>
-            <button type="button" onClick={() => setLanguage("Hindi")} className={hindi ? "rounded-full bg-deep-teal px-2 py-1 text-white" : "px-2 py-1 text-text-secondary"}>हिं</button>
-          </div>
+          <LanguageDropdown variant="pill" />
         )}
 
         <button
@@ -152,13 +151,13 @@ export function SurvivorHeader() {
         </button>
 
         <BackButton />
-        <Link href="/survivor/safety" aria-label={hindi ? "सुरक्षा संसाधन" : "Safety resources"} title={hindi ? "सुरक्षा संसाधन" : "Safety resources"} className="rounded-full border border-[#e4b7a8]/70 bg-[#fbe6e0]/70 p-2.5 text-[#a15f4e] hover:bg-[#fbe6e0]">
+        <Link href="/survivor/safety" aria-label={t("header.safety", language)} title={t("header.safety", language)} className="rounded-full border border-[#e4b7a8]/70 bg-[#fbe6e0]/70 p-2.5 text-[#a15f4e] hover:bg-[#fbe6e0]">
           <Shield size={17} />
         </Link>
         <Link
           href="/survivor/notifications"
-          aria-label={hindi ? `सूचनाएँ (${unreadCount} अपठित)` : `Notifications (${unreadCount} unread)`}
-          title={hindi ? "सूचनाएँ" : "Notifications"}
+          aria-label={`${t("header.notifications", language)} (${unreadCount})`}
+          title={t("header.notifications", language)}
           className="relative rounded-full border border-border-color/70 bg-white/70 p-2.5 text-text-secondary hover:text-deep-teal transition-colors"
         >
           <Bell size={17} />
@@ -178,10 +177,10 @@ export function SurvivorHeader() {
             type="button"
             aria-haspopup="true"
             aria-expanded={isProfileMenuOpen}
-            aria-label={hindi ? "प्रोफ़ाइल मेनू" : "Profile menu"}
+            aria-label={t("nav.profile", language)}
             onClick={() => setIsProfileMenuOpen((prev) => !prev)}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-border-color/70 bg-white/80 text-xs font-bold text-deep-teal shadow-xs transition-all hover:border-primary-teal hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0f766e] focus-visible:ring-offset-2"
-            title={displayName || (hindi ? "प्रोफ़ाइल" : "Profile")}
+            title={displayName || t("nav.profile", language)}
           >
             {userInitials}
           </button>
@@ -193,7 +192,7 @@ export function SurvivorHeader() {
             >
               <div className="border-b border-border-color/60 px-3 py-2.5">
                 <p className="truncate text-xs font-bold text-text-primary">{displayName}</p>
-                <p className="truncate text-[11px] text-text-secondary">{hindi ? "सक्रिय सर्वाइवर सत्र" : "Active survivor session"}</p>
+                <p className="truncate text-[11px] text-text-secondary">{t("header.activeSession", language)}</p>
               </div>
 
               <div className="py-1">
@@ -204,7 +203,7 @@ export function SurvivorHeader() {
                   role="menuitem"
                 >
                   <User size={15} />
-                  <span>{hindi ? "मेरी प्रोफ़ाइल" : "My profile"}</span>
+                  <span>{t("nav.profile", language)}</span>
                 </Link>
 
                 <Link
@@ -214,7 +213,7 @@ export function SurvivorHeader() {
                   role="menuitem"
                 >
                   <Settings size={15} />
-                  <span>{hindi ? "गोपनीयता और नियंत्रण" : "Privacy & settings"}</span>
+                  <span>{t("nav.privacy", language)}</span>
                 </Link>
               </div>
 
@@ -230,7 +229,7 @@ export function SurvivorHeader() {
                   role="menuitem"
                 >
                   <LogOut size={15} />
-                  <span>{hindi ? "साइन आउट" : "Sign out"}</span>
+                  <span>{t("nav.signOut", language)}</span>
                 </button>
               </div>
             </div>

@@ -291,6 +291,7 @@ export const useAppStore = create<AppState>()(
         })),
 
       setSurvivorSession: ({ victimToken, docket, survivorName, accessToken, caseRecord }) => {
+        const detectedLanguage = caseRecord?.preferredLanguage?.trim() || get().language || "English";
         set({
           role: "survivor",
           victimToken,
@@ -298,6 +299,7 @@ export const useAppStore = create<AppState>()(
           survivorName,
           accessToken: accessToken ?? get().accessToken,
           currentCase: caseRecord ?? get().currentCase,
+          language: detectedLanguage,
         });
         void get().fetchNotifications();
       },

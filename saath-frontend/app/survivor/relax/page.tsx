@@ -8,16 +8,17 @@ import { getRelaxContentForCaseType, RelaxLanguage } from "@/lib/RelaxContent";
 import { useSpeech } from "@/lib/useSpeech";
 
 import { useAppStore } from "@/store/useAppStore";
+import { LanguageDropdown } from "@/components/LanguageDropdown";
 
 const PROMPT_INTERVAL_SECONDS = 40;
 
 export default function RelaxPage() {
 	const globalLang = useAppStore((state) => state.language);
-	const setGlobalLang = useAppStore((state) => state.setLanguage);
+	const currentCase = useAppStore((state) => state.currentCase);
 	const [started, setStarted] = useState(false);
 	const [done, setDone] = useState(false);
 	const [timeLeft, setTimeLeft] = useState(300);
-	const [caseType, setCaseType] = useState<string | null>(null);
+	const [caseType, setCaseType] = useState<string | null>(currentCase?.caseCategory ?? null);
 	const [promptIndex, setPromptIndex] = useState(0);
 	const [language, setLanguage] = useState<RelaxLanguage>(globalLang === "Hindi" ? "hi" : "en");
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -28,66 +29,52 @@ export default function RelaxPage() {
 
 	const content = getRelaxContentForCaseType(caseType);
 	const prompts = content.prompts[language];
-	const currentPrompt = prompts[promptIndex % prompts.length];
-	const { speak, stop, speaking, enabled, toggleEnabled, gender, setGender } = useSpeech();
+	const currentPrompt = prompts[promptIndex] || prompts[0];
 
-	useEffect(() => {
-		let cancelled = false;
-		(async () => {
-			try {
-				const stored = typeof window !== "undefined" ? window.localStorage.getItem("saath_case_id") : null;
-				if (!stored) return;
-				const result = await aiService.getCaseProfile(stored);
-				if (!cancelled && result && typeof result === "object" && "case_type" in (result as any)) {
-					setCaseType((result as any).case_type ?? null);
-				}
-			} catch {
-				// fall back to default content
-			}
-		})();
-		return () => {
-			cancelled = true;
-		};
-	}, []);
-
-	useEffect(() => {
-		if (started && !done && timeLeft > 0) {
-			timerRef.current = setInterval(() => {
-				setTimeLeft((prev) => {
-					if (prev <= 1) {
-						setDone(true);
-						return 0;
-					}
-					return prev - 1;
-				});
-			}, 1000);
-		} else if (timerRef.current) {
-			clearInterval(timerRef.current);
-		}
-		return () => { if (timerRef.current) clearInterval(timerRef.current); };
-	}, [started, done, timeLeft]);
+	const { speak, stop, speaking, enabled, toggleEnabled, setGender, gender } = useSpeech();
 
 	useEffect(() => {
 		if (!started || done) return;
 		speak(currentPrompt, language);
-
-		const promptTimer = setInterval(() => {
-			setPromptIndex((prev) => prev + 1);
-		}, PROMPT_INTERVAL_SECONDS * 1000);
-
-		return () => clearInterval(promptTimer);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [started, done, promptIndex, language]);
+	}, [promptIndex, started, done, language]);
 
 	useEffect(() => {
-		if (done) stop();
-		return () => stop();
-	}, [done, stop]);
+		if (!started || done) return;
+		timerRef.current = setInterval(() => {
+			setTimeLeft((t) => {
+				if (t <= 1) {
+					clearInterval(timerRef.current!);
+					setDone(true);
+					stop();
+					return 0;
+				}
+				return t - 1;
+			});
+		}, 1000);
+		return () => {
+			if (timerRef.current) clearInterval(timerRef.current);
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [started, done]);
 
-	const formatTime = (seconds: number) => {
-		const mins = Math.floor(seconds / 60);
-		const secs = seconds % 60;
-		return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+	useEffect(() => {
+		if (!started || done) return;
+		const pInterval = setInterval(() => {
+			setPromptIndex((i) => (i + 1) % prompts.length);
+		}, PROMPT_INTERVAL_SECONDS * 1000);
+		return () => clearInterval(pInterval);
+	}, [started, done, prompts.length]);
+
+	useEffect(() => {
+		return () => stop();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	const formatTime = (s: number) => {
+		const m = Math.floor(s / 60);
+		const sec = s % 60;
+		return `${m}:${sec.toString().padStart(2, "0")}`;
 	};
 
 	const startRelaxation = () => {
@@ -101,7 +88,9 @@ export default function RelaxPage() {
 			</Link>
 
 			<div className="mx-auto mt-10 max-w-2xl text-center">
-				<span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eee8f5] text-[#8064a2]"><Moon size={24} /></span>
+				<span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#efeaf5] text-[#8064a2]">
+					<Moon size={27} />
+				</span>
 				<p className="mt-6 text-xs font-bold uppercase tracking-[.2em] text-[#7e918b]">{content.title[language]} · {language === "hi" ? "5 मिनट" : "5 min"}</p>
 				<h1 className="mt-3 font-display text-5xl text-[#172326]">
 					{language === "hi" ? "दिन के तनाव को हल्का होने दें।" : "Let the day soften."}
@@ -114,20 +103,7 @@ export default function RelaxPage() {
 
 				{!started && (
 					<div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-						<div className="inline-flex rounded-full border border-[#d8cfe8] p-1">
-							<button
-								onClick={() => { setLanguage("hi"); setGlobalLang("Hindi"); }}
-								className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${language === "hi" ? "bg-[#8064a2] text-white" : "text-[#8064a2]"}`}
-							>
-								हिन्दी
-							</button>
-							<button
-								onClick={() => { setLanguage("en"); setGlobalLang("English"); }}
-								className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${language === "en" ? "bg-[#8064a2] text-white" : "text-[#8064a2]"}`}
-							>
-								English
-							</button>
-						</div>
+						<LanguageDropdown variant="pill" />
 
 						<div className="inline-flex rounded-full border border-[#d8cfe8] p-1">
 							<button

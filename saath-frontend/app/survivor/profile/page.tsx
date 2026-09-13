@@ -35,6 +35,7 @@ import { useAppStore } from "@/store/useAppStore";
 import { aiService } from "@/services/ai";
 import { caseService } from "@/services/case";
 import { generateHealthSummaryPdf } from "@/lib/exportPdf";
+import { LanguageDropdown } from "@/components/LanguageDropdown";
 import type { CaseRecord } from "@/types";
 
 export default function SurvivorProfilePage() {
@@ -248,26 +249,7 @@ export default function SurvivorProfilePage() {
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-center">
-            <div className="flex rounded-2xl border border-border-color/80 bg-surface-subtle p-1 text-xs font-semibold">
-              <button
-                type="button"
-                onClick={() => setLanguage("English")}
-                className={`rounded-xl px-3 py-1.5 transition-all ${
-                  !hindi ? "bg-deep-teal text-white shadow-sm" : "text-text-secondary hover:text-text-primary"
-                }`}
-              >
-                English
-              </button>
-              <button
-                type="button"
-                onClick={() => setLanguage("Hindi")}
-                className={`rounded-xl px-3 py-1.5 transition-all ${
-                  hindi ? "bg-deep-teal text-white shadow-sm" : "text-text-secondary hover:text-text-primary"
-                }`}
-              >
-                हिंदी
-              </button>
-            </div>
+            <LanguageDropdown variant="pill" />
           </div>
         </div>
       </div>

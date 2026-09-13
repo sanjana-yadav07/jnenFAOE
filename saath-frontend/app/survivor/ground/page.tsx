@@ -57,10 +57,10 @@ const STEPS = [
 ];
 
 import { useAppStore } from "@/store/useAppStore";
+import { LanguageDropdown } from "@/components/LanguageDropdown";
 
 export default function GroundPage() {
 	const globalLang = useAppStore((state) => state.language);
-	const setGlobalLang = useAppStore((state) => state.setLanguage);
 	const [step, setStep] = useState(0);
 	const [language, setLanguage] = useState<Language>(globalLang === "Hindi" ? "hi" : "en");
 	const { speak, stop, enabled, toggleEnabled } = useSpeech();
@@ -99,24 +99,14 @@ export default function GroundPage() {
 					<span className="font-display text-5xl text-[#d69e2e]">{current.n}</span>
 				</div>
 
-				<div className="mt-4 inline-flex rounded-full border border-[#d8cfe8] p-1">
-					<button
-						onClick={() => { setLanguage("hi"); setGlobalLang("Hindi"); }}
-						className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${language === "hi" ? "bg-[#0f766e] text-white" : "text-[#0f766e]"}`}
-					>
-						हिन्दी
-					</button>
-					<button
-						onClick={() => { setLanguage("en"); setGlobalLang("English"); }}
-						className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${language === "en" ? "bg-[#0f766e] text-white" : "text-[#0f766e]"}`}
-					>
-						English
-					</button>
+				<div className="mt-4 flex items-center gap-3">
+					<LanguageDropdown variant="pill" />
 					<button
 						onClick={toggleEnabled}
-						className="ml-1 rounded-full px-4 py-1.5 text-sm font-semibold text-[#0f766e]"
+						className="rounded-full border border-[#d8cfe8] bg-white/80 px-3 py-1 text-sm font-semibold text-[#0f766e] shadow-2xs hover:bg-[#dcebdd]/40 transition"
+						title={enabled ? "Mute voice guidance" : "Enable voice guidance"}
 					>
-						{enabled ? "🔊" : "🔇"}
+						{enabled ? "🔊 Voice on" : "🔇 Voice off"}
 					</button>
 				</div>
 
