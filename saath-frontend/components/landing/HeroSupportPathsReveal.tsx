@@ -10,12 +10,12 @@ interface Point {
   seed: number;
 }
 
-const TRAIL_MAX_POINTS = 45;
-const TRAIL_HEAD_R = 115;
-const TRAIL_NOISE_AMP = 26;
+const TRAIL_MAX_POINTS = 55;
+const TRAIL_HEAD_R = 135;
+const TRAIL_NOISE_AMP = 28;
 const TRAIL_BLOB_PTS = 20;
-const TRAIL_FADE_SPEED = 0.90;
-const TRAIL_SAMPLE_DIST = 8;
+const TRAIL_FADE_SPEED = 0.93;
+const TRAIL_SAMPLE_DIST = 6;
 
 export function HeroSupportPathsReveal() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -62,12 +62,15 @@ export function HeroSupportPathsReveal() {
 
       if (prefersReducedMotion) {
         drawStatic();
+      } else {
+        render();
       }
     }
 
     const ro = new ResizeObserver(() => resize());
     ro.observe(container);
     resize();
+    render();
 
     // Draw the two flowing journeys artwork
     function drawArtwork(targetCtx: CanvasRenderingContext2D, alphaMultiplier = 1) {
@@ -254,8 +257,8 @@ export function HeroSupportPathsReveal() {
       const targetRadius = isHovering ? TRAIL_HEAD_R : 0;
       headRadius += (targetRadius - headRadius) * (isHovering ? 0.12 : 0.035);
 
-      currentX += (targetX - currentX) * 0.14;
-      currentY += (targetY - currentY) * 0.14;
+      currentX += (targetX - currentX) * 0.18;
+      currentY += (targetY - currentY) * 0.18;
 
       // Sample cursor path if moved enough
       if (isHovering && headRadius > 15) {
@@ -358,31 +361,36 @@ export function HeroSupportPathsReveal() {
       }
     }
 
-    // Pointer Event Listeners on parent container (so buttons remain clickable while tracking works everywhere)
-    const targetElement = container.parentElement || container;
-
-    function handlePointerEnter(e: PointerEvent) {
-      if (e.pointerType === "touch") return;
-      isHovering = true;
-      const rect = container?.getBoundingClientRect();
-      if (!rect) return;
-      targetX = e.clientX - rect.left;
-      targetY = e.clientY - rect.top;
-      currentX = targetX;
-      currentY = targetY;
-      lastSampleX = targetX;
-      lastSampleY = targetY;
-      startAnimationIfNeeded();
-    }
-
     function handlePointerMove(e: PointerEvent) {
       if (e.pointerType === "touch") return;
-      isHovering = true;
       const rect = container?.getBoundingClientRect();
       if (!rect) return;
-      targetX = e.clientX - rect.left;
-      targetY = e.clientY - rect.top;
-      startAnimationIfNeeded();
+
+      // Check if within vertical bounds of the hero section (with 40px buffer)
+      const inHeroY = e.clientY >= rect.top - 40 && e.clientY <= rect.bottom + 40;
+      const inHeroX = e.clientX >= -20 && e.clientX <= window.innerWidth + 20;
+
+      if (inHeroY && inHeroX) {
+        const clampedX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+        const clampedY = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
+
+        if (!isHovering) {
+          isHovering = true;
+          currentX = clampedX;
+          currentY = clampedY;
+          lastSampleX = clampedX;
+          lastSampleY = clampedY;
+        }
+
+        targetX = clampedX;
+        targetY = clampedY;
+        startAnimationIfNeeded();
+      } else {
+        if (isHovering) {
+          isHovering = false;
+          startAnimationIfNeeded();
+        }
+      }
     }
 
     function handlePointerLeave() {
@@ -390,16 +398,16 @@ export function HeroSupportPathsReveal() {
       startAnimationIfNeeded();
     }
 
-    targetElement.addEventListener("pointerenter", handlePointerEnter as EventListener, { passive: true });
-    targetElement.addEventListener("pointermove", handlePointerMove as EventListener, { passive: true });
-    targetElement.addEventListener("pointerleave", handlePointerLeave as EventListener, { passive: true });
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    window.addEventListener("pointerdown", handlePointerMove, { passive: true });
+    document.addEventListener("mouseleave", handlePointerLeave);
 
     return () => {
       ro.disconnect();
       if (animId) cancelAnimationFrame(animId);
-      targetElement.removeEventListener("pointerenter", handlePointerEnter as EventListener);
-      targetElement.removeEventListener("pointermove", handlePointerMove as EventListener);
-      targetElement.removeEventListener("pointerleave", handlePointerLeave as EventListener);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerdown", handlePointerMove);
+      document.removeEventListener("mouseleave", handlePointerLeave);
     };
   }, []);
 

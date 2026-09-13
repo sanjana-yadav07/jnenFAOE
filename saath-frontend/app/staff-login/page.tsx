@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
@@ -30,6 +30,15 @@ export default function StaffLoginPage() {
   const router = useRouter();
   const setStaffRole = useAppStore((s) => s.setStaffRole);
   const [tab, setTab] = useState<"counsellor" | "admin">("counsellor");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("tab") === "admin" || params.get("role") === "admin") {
+        setTab("admin");
+      }
+    }
+  }, []);
 
   // Counsellor real login
   const [email, setEmail] = useState("");
