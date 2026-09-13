@@ -149,6 +149,9 @@ export interface AdminTrends {
 export interface AdminReport {
   generatedAt: string;
   scope: string;
+  scopeTitle?: string;
+  scopeDistrict?: string;
+  scopeState?: string;
   privacyBoundary: string;
   caseStats: {
     caseCount: number;
@@ -179,6 +182,14 @@ export interface AdminReport {
     proposed: number;
     rescheduleRequested: number;
   };
+}
+
+export interface AdminProfile {
+  id: string;
+  role: "DISTRICT_ADMIN" | "STATE_ADMIN" | "NATIONAL_ADMIN";
+  state?: string;
+  district?: string;
+  scopeTitle: string;
 }
 
 export interface CounsellorSummary {

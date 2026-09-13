@@ -216,11 +216,11 @@ export function generateAdminReportPdf(report: AdminReport) {
   <div class="header">
     <div class="title-block">
       <h1>SAATH</h1>
-      <p>District Operational Intelligence & Caseload Report</p>
+      <p>${report.scopeTitle ? `${report.scopeTitle} Operational Intelligence & Caseload Report` : "Operational Intelligence & Caseload Report"}</p>
     </div>
     <div class="meta-block">
       <div><strong>Report Date:</strong> ${generatedDate}</div>
-      <div><strong>Jurisdiction:</strong> ${report.scope.toUpperCase()} ADMINISTRATION</div>
+      <div><strong>Jurisdiction:</strong> ${report.scopeTitle ? report.scopeTitle.toUpperCase() : `${report.scope.toUpperCase()} ADMINISTRATION`}</div>
       <div class="badge">AGGREGATED DATA ONLY · ROLE RESTRICTED</div>
     </div>
   </div>

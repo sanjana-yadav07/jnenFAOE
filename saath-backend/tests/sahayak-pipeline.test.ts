@@ -256,7 +256,7 @@ describe('Sahayak Pipeline & Dashboard Integration', () => {
 
     // Question 6: Who is my assigned counsellor?
     const q6Reply = await askSahayak('Who is my assigned counsellor?');
-    expect(q6Reply).toContain('Anjali Sharma');
+    expect(q6Reply).toContain('Ravi Kumar');
 
     // Question 7: What support or services are currently active for me?
     const q7Reply = await askSahayak('What support or services are currently active for me?');
@@ -277,10 +277,10 @@ describe('Sahayak Pipeline & Dashboard Integration', () => {
   }, 30000);
 
   it('updates lastActive dynamically on meaningful survivor activity and does NOT update on counsellor case view', async () => {
-    // 1. Log in as Counsellor Anjali Sharma (C001)
+    // 1. Log in as Counsellor Ravi Kumar (counsellor-002)
     const counsellorLoginRes = await request(app)
       .post('/api/v1/auth/counsellor-login')
-      .send({ email: 'anjali@saath.com', password: 'saath123' });
+      .send({ email: 'ravi@saath.com', password: 'saath123' });
     expect(counsellorLoginRes.status).toBe(200);
     const counsellorToken = counsellorLoginRes.body.data.accessToken;
 

@@ -6,23 +6,22 @@ import { Card, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useAppStore } from "@/store/useAppStore";
 import { staffService } from "@/services/case";
-import { CounsellorSummary } from "@/types";
-
-const SCOPE_LABEL: Record<string, string> = {
-  district: "District Admin",
-  state: "State Admin",
-  national: "National Admin",
-};
+import { AdminProfile, CounsellorSummary } from "@/types";
 
 export default function AdminSettingsPage() {
   const router = useRouter();
   const role = useAppStore((s) => s.role);
   const logout = useAppStore((s) => s.logout);
+  const [profile, setProfile] = useState<AdminProfile | null>(null);
   const [counsellors, setCounsellors] = useState<CounsellorSummary[]>([]);
   const [counsellorsLoading, setCounsellorsLoading] = useState(true);
   const [counsellorsError, setCounsellorsError] = useState(false);
 
   useEffect(() => {
+    staffService.getMe()
+      .then((p) => setProfile(p))
+      .catch(() => {});
+
     staffService.getCounsellors()
       .then(setCounsellors)
       .catch(() => setCounsellorsError(true))
@@ -42,10 +41,32 @@ export default function AdminSettingsPage() {
       </div>
 
       <Card>
-        <CardTitle>Account</CardTitle>
+        <CardTitle>Account &amp; Jurisdiction</CardTitle>
         <dl className="mt-4 grid gap-3 text-sm">
-          <div className="flex justify-between"><dt className="text-text-secondary">Role</dt><dd className="font-medium">{role ? SCOPE_LABEL[role] ?? role : "—"}</dd></div>
-          <div className="flex justify-between"><dt className="text-text-secondary">Access level</dt><dd className="font-medium">Aggregated data only</dd></div>
+          <div className="flex justify-between">
+            <dt className="text-text-secondary">Role</dt>
+            <dd className="font-medium">{profile?.role ?? (role ? role.toUpperCase() : "—")}</dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="text-text-secondary">Assigned Jurisdiction</dt>
+            <dd className="font-semibold text-deep-teal">{profile?.scopeTitle ?? "Aggregated Scope"}</dd>
+          </div>
+          {profile?.state && (
+            <div className="flex justify-between">
+              <dt className="text-text-secondary">State</dt>
+              <dd className="font-medium">{profile.state}</dd>
+            </div>
+          )}
+          {profile?.district && (
+            <div className="flex justify-between">
+              <dt className="text-text-secondary">District</dt>
+              <dd className="font-medium">{profile.district}</dd>
+            </div>
+          )}
+          <div className="flex justify-between">
+            <dt className="text-text-secondary">Access Level</dt>
+            <dd className="font-medium text-emerald-700">Aggregated Intelligence (Zero PII)</dd>
+          </div>
         </dl>
       </Card>
 

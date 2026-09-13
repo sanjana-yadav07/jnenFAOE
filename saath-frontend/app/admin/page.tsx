@@ -142,7 +142,7 @@ export default function AdminOverviewPage() {
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-deep-teal">
-              {scope} Administration Portal
+              {report?.scopeTitle ? `${report.scopeTitle} Administration` : `${scope} Administration Portal`}
             </span>
             <span className="rounded-full bg-pale-sage/80 px-2.5 py-0.5 text-[10px] font-bold text-deep-teal">
               Live Aggregate Intelligence

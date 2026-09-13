@@ -94,14 +94,14 @@ export default function AdminReportsPage() {
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-deep-teal">
-              District Reporting Engine
+              {report?.scopeTitle ? `${report.scopeTitle} Reporting Engine` : "Administrative Reporting Engine"}
             </span>
             <span className="rounded-full bg-pale-sage/80 px-2.5 py-0.5 text-[10px] font-bold text-deep-teal">
               Official Records
             </span>
           </div>
           <h1 className="mt-1 font-editorial text-3xl font-bold tracking-tight text-text-primary md:text-4xl">
-            District Operational Reports
+            {report?.scopeTitle ? `${report.scopeTitle} Operational Reports` : "Operational & Audit Reports"}
           </h1>
           <p className="mt-1.5 text-sm text-text-secondary">
             Generate and export verified aggregate administrative reports with official SAATH styling and privacy compliance.

@@ -90,7 +90,7 @@ export default function AdminCasesPage() {
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-deep-teal">
-              District Caseload Pipeline
+              {report?.scopeTitle ? `${report.scopeTitle} Caseload Pipeline` : "Administrative Caseload Pipeline"}
             </span>
             <span className="rounded-full bg-pale-sage/80 px-2.5 py-0.5 text-[10px] font-bold text-deep-teal">
               Aggregate Monitor

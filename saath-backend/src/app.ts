@@ -10,6 +10,7 @@ import { recomputeBaseline, generateDistressScore, generateRecoveryScore } from 
 import { logCrisisEvent, updateCrisisEventOutcome, computeCrisisResponseMetrics, buildConversationLogEntry, minimize, MINIMIZATION_SCHEMA, type CrisisAuditEntry } from './services/audit-policy.js';
 import { moderatePost } from './services/moderation.js';
 import { computeDistressStatistics, computeRecoveryStatistics, computeOperationalMetrics, generateAdminReport, buildAdminAggregatePayload } from './services/admin-stats.js';
+import { getScopedAdminDataset, resolveAdminScope } from './services/admin-scope.js';
 import { rankInterventions, shouldEscalateToCounsellor, type InterventionOutcomeRecord } from './services/interventions.js';
 import { generateSahayakReply } from './services/sahayak.js';
 
@@ -107,7 +108,30 @@ app.get('/health/dependencies',asyncRoute(async(_req,res)=>ok(res,{supabase:env.
 // Dev-only backdoor — kept for admin roles (district/state/national demo access),
 // but COUNSELLOR is no longer issuable here: counsellors must authenticate via
 // /api/v1/auth/counsellor-login against the real synthetic-counsellors roster.
-app.post('/api/v1/auth/staff-token',body(z.object({role:z.enum(['DISTRICT_ADMIN','STATE_ADMIN','NATIONAL_ADMIN']),staffId:z.string().min(2)})),asyncRoute(async(req,res)=>{if(env.NODE_ENV!=='test'&&!env.ALLOW_DEV_STAFF_TOKEN) throw new AppError(403,'STAFF_TOKEN_DISABLED','Development staff tokens are disabled.'); return ok(res,{accessToken:signUser({id:req.body.staffId,role:req.body.role}),tokenType:'Bearer',user:{id:req.body.staffId,role:req.body.role}})}));
+app.post('/api/v1/auth/staff-token',body(z.object({
+  role: z.enum(['DISTRICT_ADMIN','STATE_ADMIN','NATIONAL_ADMIN']),
+  staffId: z.string().min(2),
+  district: z.string().optional(),
+  state: z.string().optional(),
+})),asyncRoute(async(req,res)=>{
+  if(env.NODE_ENV!=='test'&&!env.ALLOW_DEV_STAFF_TOKEN) throw new AppError(403,'STAFF_TOKEN_DISABLED','Development staff tokens are disabled.');
+  const userPayload: AuthUser = {
+    id: req.body.staffId,
+    role: req.body.role,
+    ...(req.body.district ? { district: req.body.district } : req.body.role === 'DISTRICT_ADMIN' ? { district: 'South Delhi' } : {}),
+    ...(req.body.state ? { state: req.body.state } : req.body.role !== 'NATIONAL_ADMIN' ? { state: 'Delhi' } : {}),
+  };
+  const accessToken = signUser(userPayload);
+  return ok(res, { accessToken, tokenType: 'Bearer', user: userPayload });
+}));
+
+app.get('/api/v1/admin/me', requireAuth, requireRoles('DISTRICT_ADMIN','STATE_ADMIN','NATIONAL_ADMIN'), asyncRoute(async(req: AuthedRequest, res) => {
+  const scopeInfo = resolveAdminScope(req.user!);
+  return ok(res, {
+    id: req.user!.id,
+    ...scopeInfo,
+  });
+}));
 
 // Real counsellor login — verifies email + password against the
 // synthetic-counsellors roster loaded into the store. The signed token's
@@ -935,15 +959,14 @@ app.get('/api/v1/interventions/recommendations', requireAuth, asyncRoute(async (
   return ok(res, getInterventionRecommendations(caseRecord));
 }));
 // ...existing code...
-app.get('/api/v1/admin/trends', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req, res) => {
-  const cases = store.cases;
+app.get('/api/v1/admin/trends', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
+  const { cases, alerts } = getScopedAdminDataset(req.user!);
   const distressDistribution = cases.reduce((acc: any, c: any) => {
     const level = c.riskLevel || 'LOW';
     acc[level] = (acc[level] || 0) + 1;
     return acc;
   }, {});
 
-  const alerts = store.records.get('alerts:all') || [];
   const resolvedAlerts = alerts.filter((a: any) => a.status === 'RESOLVED' && a.resolvedAt && a.createdAt);
   
   const responseTimes = resolvedAlerts.map((a: any) => 
@@ -958,30 +981,40 @@ app.get('/api/v1/admin/trends', requireAuth, requireRoles('DISTRICT_ADMIN', 'STA
   });
 }));
 
-// P06 — Distress statistics widget: aggregated distribution + trend, no individual data.
-app.get('/api/v1/admin/distress-stats', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (_req, res) => ok(res, computeDistressStatistics(store.cases))));
+// P06 — Distress statistics widget: aggregated distribution + trend, strictly scoped, no individual data.
+app.get('/api/v1/admin/distress-stats', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
+  const { cases } = getScopedAdminDataset(req.user!);
+  return ok(res, computeDistressStatistics(cases));
+}));
 
-// P07 — Recovery statistics widget: aggregated recovery-direction breakdown, no individual data.
-app.get('/api/v1/admin/recovery-stats', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (_req, res) => ok(res, computeRecoveryStatistics(store.cases))));
+// P07 — Recovery statistics widget: aggregated recovery-direction breakdown, strictly scoped, no individual data.
+app.get('/api/v1/admin/recovery-stats', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
+  const { cases } = getScopedAdminDataset(req.user!);
+  return ok(res, computeRecoveryStatistics(cases));
+}));
 
-// P11 — Operational response metrics: alert acknowledge/resolution time, aggregated only.
-app.get('/api/v1/admin/operational-metrics', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (_req, res) => ok(res, computeOperationalMetrics(store.records.get('alerts:all') || []))));
+// P11 — Operational response metrics: alert acknowledge/resolution time, aggregated only, strictly scoped.
+app.get('/api/v1/admin/operational-metrics', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
+  const { alerts } = getScopedAdminDataset(req.user!);
+  return ok(res, computeOperationalMetrics(alerts));
+}));
 
 // N09 — Crisis response tracking: dedicated crisis-only response-time metric.
 app.get('/api/v1/admin/crisis-metrics', requireAuth, requireRoles('COUNSELLOR', 'DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (_req, res) => ok(res, computeCrisisResponseMetrics(store.records.get('audit:crisis') || []))));
 
 // P15 — Report generation: bundles case-stage, distress, recovery and operational stats
-// into a single aggregated-only downloadable report.
-app.get('/api/v1/admin/reports', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req, res) => {
+// strictly filtered by the authenticated administrator's server-enforced scope.
+app.get('/api/v1/admin/reports', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
+  const { scope, cases, alerts, followUps } = getScopedAdminDataset(req.user!);
   const report = generateAdminReport({
-    cases: store.cases,
-    alerts: store.records.get('alerts:all') || [],
-    followUps: store.records.get('follow_ups') || [],
-    scope: String(req.query.scope ?? 'all'),
+    cases,
+    alerts,
+    followUps,
+    scope: scope.scopeName,
   });
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Content-Disposition', 'attachment; filename="saath-admin-report.json"');
-  return res.send(JSON.stringify(report, null, 2));
+  return res.send(JSON.stringify({ ...report, scopeTitle: scope.scopeTitle, scopeLevel: scope.scopeLevel, jurisdiction: { state: scope.state, district: scope.district } }, null, 2));
 }));
 
 app.post('/api/v1/ai/recommend',requireAuth,body(z.object({context:z.string().optional()})),asyncRoute(async(req:AuthedRequest,res)=>{
@@ -1222,23 +1255,47 @@ app.patch('/api/v1/notifications/read-all', requireAuth, asyncRoute(async (req: 
 const collectInterventions = () => [...store.records.entries()].flatMap(([key, values]) => key.startsWith('interventions:') ? values : []);
 
 // ADM-01 — GET /admin/district: aggregated stats scoped to one district.
-// A DISTRICT_ADMIN can only ever see their own assigned district (from their auth
-// token, never from a client-supplied query param) — STATE_ADMIN/NATIONAL_ADMIN may
-// pass ?district= to look at any specific district.
+// A DISTRICT_ADMIN can only ever see their own assigned district from JWT session.
+// STATE_ADMIN/NATIONAL_ADMIN may pass ?district= only if within their authorized scope.
 app.get('/api/v1/admin/district', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
-  const targetDistrict = req.user!.role === 'DISTRICT_ADMIN' ? req.user!.district : String(req.query.district ?? req.user!.district ?? '');
+  const scopeInfo = resolveAdminScope(req.user!);
+  let targetDistrict = scopeInfo.district;
+  if (req.user!.role === 'STATE_ADMIN') {
+    const requestedDistrict = req.query.district ? String(req.query.district) : undefined;
+    targetDistrict = requestedDistrict ?? scopeInfo.district ?? 'South Delhi';
+  } else if (req.user!.role === 'NATIONAL_ADMIN') {
+    targetDistrict = String(req.query.district ?? 'South Delhi');
+  }
+  
   if (!targetDistrict) throw new AppError(400, 'DISTRICT_REQUIRED', 'A district is required for this scope.');
-  const cases = store.cases.filter((c: any) => c.district === targetDistrict);
-  const payload = buildAdminAggregatePayload({ scope: `district:${targetDistrict}`, cases, alerts: store.records.get('alerts:all') || [], interventions: collectInterventions() });
+  
+  let cases = store.cases.filter((c: any) => (c.district || '').toLowerCase() === targetDistrict.toLowerCase());
+  if (req.user!.role === 'STATE_ADMIN' && scopeInfo.state) {
+    cases = cases.filter((c: any) => (c.state || '').toLowerCase() === scopeInfo.state!.toLowerCase());
+  }
+  
+  const allowedTokens = new Set(cases.map(c => c.victimToken));
+  const allAlerts = store.records.get('alerts:all') || [];
+  const scopedAlerts = allAlerts.filter((a: any) => allowedTokens.has(a.victimToken));
+  
+  const payload = buildAdminAggregatePayload({ scope: `district:${targetDistrict}`, cases, alerts: scopedAlerts, interventions: collectInterventions() });
   return ok(res, minimize(payload, MINIMIZATION_SCHEMA.adminAggregateOutput));
 }));
 
 // ADM-02 — GET /admin/state: aggregated stats scoped to one state.
+// A STATE_ADMIN can only ever see their own assigned state from JWT session.
+// NATIONAL_ADMIN may pass ?state= to inspect any state.
 app.get('/api/v1/admin/state', requireAuth, requireRoles('STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
-  const targetState = req.user!.role === 'STATE_ADMIN' ? req.user!.state : String(req.query.state ?? req.user!.state ?? '');
+  const scopeInfo = resolveAdminScope(req.user!);
+  const targetState = req.user!.role === 'STATE_ADMIN' ? scopeInfo.state : String(req.query.state ?? scopeInfo.state ?? 'Delhi');
   if (!targetState) throw new AppError(400, 'STATE_REQUIRED', 'A state is required for this scope.');
-  const cases = store.cases.filter((c: any) => c.state === targetState);
-  const payload = buildAdminAggregatePayload({ scope: `state:${targetState}`, cases, alerts: store.records.get('alerts:all') || [], interventions: collectInterventions() });
+  
+  const cases = store.cases.filter((c: any) => (c.state || '').toLowerCase() === targetState.toLowerCase());
+  const allowedTokens = new Set(cases.map(c => c.victimToken));
+  const allAlerts = store.records.get('alerts:all') || [];
+  const scopedAlerts = allAlerts.filter((a: any) => allowedTokens.has(a.victimToken));
+  
+  const payload = buildAdminAggregatePayload({ scope: `state:${targetState}`, cases, alerts: scopedAlerts, interventions: collectInterventions() });
   return ok(res, minimize(payload, MINIMIZATION_SCHEMA.adminAggregateOutput));
 }));
 
@@ -1248,14 +1305,25 @@ app.get('/api/v1/admin/national', requireAuth, requireRoles('NATIONAL_ADMIN'), a
   return ok(res, minimize(payload, MINIMIZATION_SCHEMA.adminAggregateOutput));
 }));
 
-// Generic fallback — kept for any scope string not covered by the three dedicated
-// routes above (e.g. a future custom scope), now built from the same shared helper.
-app.get('/api/v1/admin/:scope',requireAuth,requireRoles('DISTRICT_ADMIN','STATE_ADMIN','NATIONAL_ADMIN'),asyncRoute(async(req,res)=>{
-  const payload = buildAdminAggregatePayload({ scope: String(req.params.scope), cases: store.cases, alerts: store.records.get('alerts:all') || [], interventions: collectInterventions() });
-  // B17 — Data minimization pass: runtime-enforced allowlist projection, not just a
-  // documented convention. Anything not in MINIMIZATION_SCHEMA.adminAggregateOutput
-  // (e.g. a stray victimToken or survivorName) is dropped here even if a future code
-  // change accidentally adds it above.
+// ADM-04 — GET /admin/counsellors: roster of counsellors scoped strictly to admin jurisdiction.
+app.get('/api/v1/admin/counsellors', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
+  const { counsellors } = getScopedAdminDataset(req.user!);
+  const summaries = counsellors.map((c) => ({
+    id: c.id,
+    name: c.name,
+    email: c.email,
+    specialisation: c.specialisation,
+    state: c.state,
+    status: c.status,
+    casesAssigned: c.casesAssigned ?? 0,
+  }));
+  return ok(res, summaries);
+}));
+
+// Generic fallback — strictly scoped according to user role and prevents tampering
+app.get('/api/v1/admin/:scope',requireAuth,requireRoles('DISTRICT_ADMIN','STATE_ADMIN','NATIONAL_ADMIN'),asyncRoute(async(req: AuthedRequest,res)=>{
+  const { scope, cases, alerts } = getScopedAdminDataset(req.user!);
+  const payload = buildAdminAggregatePayload({ scope: scope.scopeName, cases, alerts, interventions: collectInterventions() });
   return ok(res, { ...minimize(payload, MINIMIZATION_SCHEMA.adminAggregateOutput), alertStats: payload.alertStats, interventionResponseStats: payload.interventionResponseStats, caseStageStats: payload.caseStageStats }); }));
 app.post('/api/v1/notifications/reminder',requireAuth,body(z.object({type:z.enum(['checkin','followup','support']).default('checkin'),daysSinceLastCheckin:z.number().int().min(0).default(0),scheduledFor:z.string().datetime().optional()})),asyncRoute(async(req:AuthedRequest,res)=>{
   // D16 — Gentle reminder escalation: step forward through the tone ladder based on the

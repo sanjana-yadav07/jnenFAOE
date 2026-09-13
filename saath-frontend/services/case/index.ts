@@ -1,4 +1,4 @@
-import { CaseRecord, CounsellorProfile, TimelineEvent, AdminReport, AdminTrends, CounsellorSummary } from "@/types";
+import { CaseRecord, CounsellorProfile, TimelineEvent, AdminReport, AdminTrends, CounsellorSummary, AdminProfile } from "@/types";
 import { apiRequest, setSession, getSessionToken } from "@/lib/api";
 import { useAppStore } from "@/store/useAppStore";
 
@@ -150,6 +150,10 @@ export const counsellorService = {
 };
 
 export const staffService = {
+  async getMe(): Promise<AdminProfile> {
+    return apiRequest<AdminProfile>("/api/v1/admin/me");
+  },
+
   async getTrends(): Promise<AdminTrends> {
     return apiRequest<AdminTrends>("/api/v1/admin/trends");
   },

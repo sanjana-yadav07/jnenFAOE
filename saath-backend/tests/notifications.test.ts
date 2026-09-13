@@ -40,10 +40,10 @@ describe('SAATH Case-Specific Notifications', () => {
     expect(hearing).toBeDefined();
     expect(hearing.message).toContain('2026-09-18');
 
-    // 4. Counsellor assigned (resolved from counsellors DB: C001 -> Anjali Sharma)
+    // 4. Counsellor assigned (resolved from counsellors DB: counsellor-002 -> Ravi Kumar)
     const counsellor = notifs.find((n: any) => n.type === 'counsellor_assigned');
     expect(counsellor).toBeDefined();
-    expect(counsellor.message).toContain('Anjali Sharma');
+    expect(counsellor.message).toContain('Ravi Kumar');
 
     // 5. Counselling appointment / schedule
     const counselling = notifs.find((n: any) => n.type === 'counselling_appointment');
