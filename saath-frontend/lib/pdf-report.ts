@@ -333,11 +333,11 @@ export function generateAdminReportPdf(report: AdminReport) {
   <div class="section-title">Wellbeing & Recovery Dynamics</div>
   <div class="grid-2">
     <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; background: #fafafa;">
-      <div style="font-weight: 600; font-size: 10pt; color: #0f766e; margin-bottom: 6px;">Distress Trend Delta (vs Baseline)</div>
+      <div style="font-weight: 600; font-size: 10pt; color: #0f766e; margin-bottom: 6px;">Stress Vulnerability Index (SVI) Trend Delta (vs Baseline)</div>
       <div style="font-size: 9pt; color: #475569;">
-        <div><strong>Improving (Delta &le; -8):</strong> ${report.distressStats.trend.improving} cases</div>
-        <div><strong>Stable (&plusmn;7 pts):</strong> ${report.distressStats.trend.stable} cases</div>
-        <div><strong>Worsening (Delta &ge; +8):</strong> ${report.distressStats.trend.worsening} cases</div>
+        <div><strong>Improving SVI (Delta &le; -8):</strong> ${report.distressStats.trend.improving} cases</div>
+        <div><strong>Stable SVI (&plusmn;7 pts):</strong> ${report.distressStats.trend.stable} cases</div>
+        <div><strong>Rising SVI (Delta &ge; +8):</strong> ${report.distressStats.trend.worsening} cases</div>
         <div><strong>Sample Size:</strong> ${report.distressStats.trend.sampleSize} scored cases</div>
       </div>
     </div>
@@ -353,8 +353,9 @@ export function generateAdminReportPdf(report: AdminReport) {
   </div>
 
   <div class="notice-box">
-    <strong>Privacy & Compliance Boundary Notice:</strong><br/>
-    This document was generated automatically by the SAATH Operational Intelligence Platform for official district monitoring. In strict adherence to victim data protection standards, this report contains aggregated statistical counts only. No survivor names, contact records, victim identification tokens, private counsellor notes, or raw conversation signals are included or accessible at this administrative scope.
+    <strong>Privacy, Clinical Advisory & Compliance Boundary Notice:</strong><br/>
+    This document was generated automatically by the SAATH Operational Intelligence Platform for official district monitoring. In strict adherence to victim data protection standards, this report contains aggregated statistical counts only. No survivor names, contact records, victim identification tokens, private counsellor notes, or raw conversation signals are included or accessible at this administrative scope.<br/>
+    The Stress Vulnerability Index (SVI) and Risk Tiers are operational monitoring signals derived from longitudinal check-ins and case events; they do not constitute medical, psychiatric, or clinical diagnoses.
     <br/><br/>
     <strong>Synthetic Demonstration Data:</strong><br/>
     All metrics and figures presented reflect synthetic test records created exclusively for Smart India Hackathon (SIH) prototype demonstration.

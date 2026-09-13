@@ -97,6 +97,15 @@ export const MY_SPACE_ITEMS = [
     icon: "FileText",
   },
   {
+    href: "/survivor/rights",
+    titleEn: "Know Your Rights",
+    titleHi: "अपने कानूनी अधिकार",
+    descEn: "Verified legal rights, free legal aid, and official protections.",
+    descHi: "सत्यापित कानूनी अधिकार, निःशुल्क विधिक सहायता और सुरक्षा प्रावधान।",
+    tone: "bg-[#e5eef5] text-[#2c6e91]",
+    icon: "Scale",
+  },
+  {
     href: "/survivor/hope-vault",
     titleEn: "Hope Vault",
     titleHi: "उम्मीद की तिजोरी (Hope Vault)",

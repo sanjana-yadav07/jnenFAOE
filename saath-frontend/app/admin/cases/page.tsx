@@ -145,7 +145,7 @@ export default function AdminCasesPage() {
                 <TrendingUp size={16} className="text-[#16a34a]" />
               </div>
               <p className="mt-2 text-3xl font-bold tracking-tight text-[#16a34a]">{recoveringCount}</p>
-              <p className="mt-1 text-[11px] text-text-secondary">Sustained distress drop</p>
+              <p className="mt-1 text-[11px] text-text-secondary">Sustained SVI improvement</p>
             </div>
 
             <div className="rounded-2xl border border-border-color bg-[color:var(--surface)] p-4 shadow-sm">

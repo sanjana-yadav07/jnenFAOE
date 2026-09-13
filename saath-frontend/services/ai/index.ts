@@ -322,4 +322,17 @@ export const aiService = {
       return null;
     }
   },
+
+  async getLegalContent(caseId?: string, language = "en") {
+    const params = new URLSearchParams({ language });
+    if (caseId) params.set("caseId", caseId);
+    return apiRequest<any>(`/api/v1/legal/content?${params.toString()}`);
+  },
+
+  async queryLegal(query: string, caseId?: string) {
+    return apiRequest<any>("/api/v1/legal/query", {
+      method: "POST",
+      body: JSON.stringify({ query, caseId }),
+    });
+  },
 };

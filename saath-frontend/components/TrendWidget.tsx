@@ -16,7 +16,7 @@ interface TrendPoint {
 }
 
 const METRIC_CONFIG: Record<Metric, { label: string; color: string; scoreKey: "distressScore" | "recoveryScore" }> = {
-  distress: { label: "Distress trend", color: "#E89A78", scoreKey: "distressScore" },
+  distress: { label: "Stress Vulnerability Index (SVI) trend", color: "#E89A78", scoreKey: "distressScore" },
   recovery: { label: "Recovery trend", color: "#0F766E", scoreKey: "recoveryScore" },
 };
 

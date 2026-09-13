@@ -167,9 +167,9 @@ export default function ReportsPage() {
     });
 
     return [
-      { name: "Rising Distress", count: rising, fill: "#E89A78" },
-      { name: "Improving Recovery", count: improving, fill: "#7FAF86" },
-      { name: "Stable / Insufficient Data", count: stable, fill: "#2FA6A0" },
+      { name: "Rising SVI", count: rising, fill: "#E89A78" },
+      { name: "Improving SVI / Recovery", count: improving, fill: "#7FAF86" },
+      { name: "Stable SVI / Equilibrium", count: stable, fill: "#2FA6A0" },
     ].filter((d) => d.count > 0);
   }, [cases]);
 
@@ -248,7 +248,7 @@ export default function ReportsPage() {
         <div className="rounded-2xl border border-warm-peach/40 bg-warm-peach/5 p-4 shadow-sm">
           <p className="text-[11px] font-semibold text-warm-peach uppercase tracking-wider">Needs Attention</p>
           <p className="mt-2 text-2xl font-bold tracking-tight text-warm-peach">{highDistressCases.length}</p>
-          <p className="mt-1 text-[11px] text-text-secondary">Distress &ge; 70 or High Risk</p>
+          <p className="mt-1 text-[11px] text-text-secondary">SVI &ge; 70 or High Risk</p>
         </div>
         <div className="rounded-2xl border border-amber/40 bg-amber/5 p-4 shadow-sm">
           <p className="text-[11px] font-semibold text-[#b67926] uppercase tracking-wider">Active Alerts</p>
@@ -429,7 +429,7 @@ export default function ReportsPage() {
                 <th className="p-3">District</th>
                 <th className="p-3">Legal Stage</th>
                 <th className="p-3">Risk Tier</th>
-                <th className="p-3">Distress</th>
+                <th className="p-3">SVI (0-100)</th>
                 <th className="p-3">Next Hearing</th>
                 <th className="p-3">Financial Relief</th>
                 <th className="p-3 text-right">Action</th>

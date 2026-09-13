@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, BookHeart, FileText, History, LockKeyhole, Settings2, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookHeart, FileText, History, LockKeyhole, Scale, Settings2, SlidersHorizontal } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { MY_SPACE_ITEMS } from "@/data/translations";
 
 const iconMap: Record<string, any> = {
   FileText,
+  Scale,
   BookHeart,
   History,
   LockKeyhole,

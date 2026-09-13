@@ -228,16 +228,16 @@ app.post('/api/v1/consents',requireAuth,body(consentSchema),asyncRoute(async(req
 app.get('/api/v1/consents',requireAuth,asyncRoute(async(req:AuthedRequest,res)=>ok(res,store.records.get(`consent:${req.user!.id}`)||[])));
 app.post('/api/v1/monitoring/:action',requireAuth,body(z.object({reason:z.string().max(500).optional()})),asyncRoute(async(req:AuthedRequest,res)=>{const action=String(req.params.action); if(!['pause','resume','stop'].includes(action)) throw new AppError(404,'NOT_FOUND','Monitoring action not found.'); return ok(res,record(`monitoring:${req.user!.id}`,{state:action==='pause'?'paused':action==='stop'?'stopped':'active',reason:req.body.reason,createdAt:new Date().toISOString()}));}));
 const checkinSchema=z.object({victimToken:z.string().optional(),mood:z.number().int().min(1).max(5).optional(),sleep:z.number().int().min(1).max(5).optional(),fear:z.number().int().min(1).max(5).optional(),intrusion:z.number().int().min(1).max(5).optional(),avoidance:z.number().int().min(1).max(5).optional(),perceivedSafety:z.number().int().min(1).max(5).optional(),dailyFunctioning:z.number().int().min(1).max(5).optional(),socialConnectedness:z.number().int().min(1).max(5).optional(),text:z.string().max(10000).optional(),language:z.string().default('en')});
-app.post('/api/v1/check-ins/mood',requireAuth,requireMonitoringConsent,body(checkinSchema.extend({mood:z.number().int().min(1).max(5),sleep:z.number().int().min(1).max(5),perceivedSafety:z.number().int().min(1).max(5),socialConnectedness:z.number().int().min(1).max(5)})),asyncRoute(async(req:AuthedRequest,res)=>{const summary=`Structured check-in: mood ${req.body.mood}/5, sleep ${req.body.sleep}/5, fear ${req.body.fear??'not answered'}/5, unwanted memories ${req.body.intrusion??'not answered'}/5, safety ${req.body.perceivedSafety}/5, social connection ${req.body.socialConnectedness}/5.`; const ml=await analyzeText({victimToken:req.user!.victimToken||'unknown',text:summary}); const result=record(`checkins:${req.user!.id}`,{id:id(),type:'mood',...req.body,ml,createdAt:new Date().toISOString(),analyticalState:ml.confidence<.5?'insufficient_evidence':'scored'}); if(ml.crisis) recordAlert({victimToken:req.user!.victimToken,caseReference:req.user!.victimToken,reason:'Structured check-in requires human review.',source:'checkin',crisis:true,confidence:ml.confidence}); 
-  trackCheckinCompletion(record, id, { userId: req.user!.id, victimToken: req.user!.victimToken, channel: 'mood' });
+app.post('/api/v1/check-ins/mood',requireAuth,requireMonitoringConsent,body(checkinSchema.extend({mood:z.number().int().min(1).max(5),sleep:z.number().int().min(1).max(5),perceivedSafety:z.number().int().min(1).max(5),socialConnectedness:z.number().int().min(1).max(5)})),asyncRoute(async(req:AuthedRequest,res)=>{const now=new Date().toISOString(); const summary=`Structured check-in: mood ${req.body.mood}/5, sleep ${req.body.sleep}/5, fear ${req.body.fear??'not answered'}/5, unwanted memories ${req.body.intrusion??'not answered'}/5, safety ${req.body.perceivedSafety}/5, social connection ${req.body.socialConnectedness}/5.`; const ml=await analyzeText({victimToken:req.user!.victimToken||'unknown',text:summary}); const result=record(`checkins:${req.user!.id}`,{id:id(),type:'mood',...req.body,ml,createdAt:now,analyticalState:ml.confidence<.5?'insufficient_evidence':'scored'}); if(ml.crisis) recordAlert({victimToken:req.user!.victimToken,caseReference:req.user!.victimToken,reason:'Structured check-in requires human review.',source:'checkin',crisis:true,confidence:ml.confidence}); 
+  trackCheckinCompletion(record, id, { userId: req.user!.id, victimToken: req.user!.victimToken, channel: 'mood', createdAt: now });
   await updateBaseline(req.user!.id);
   return ok(res,result,201)}));
-app.post('/api/v1/check-ins/quick-mood',requireAuth,requireMonitoringConsent,body(z.object({mood:z.number().int().min(1).max(5),label:z.string().min(1).max(80)})),asyncRoute(async(req:AuthedRequest,res)=>{const ml=await analyzeText({victimToken:req.user!.victimToken||'unknown',text:`Quick wellbeing check-in: the survivor selected mood "${req.body.label}" (${req.body.mood}/5).`}); const result=record(`checkins:${req.user!.id}`,{id:id(),type:'quick_mood',mood:req.body.mood,label:req.body.label,ml,createdAt:new Date().toISOString(),analyticalState:ml.confidence<.5?'insufficient_evidence':'scored'}); 
-  trackCheckinCompletion(record, id, { userId: req.user!.id, victimToken: req.user!.victimToken, channel: 'quick_mood' });
+app.post('/api/v1/check-ins/quick-mood',requireAuth,requireMonitoringConsent,body(z.object({mood:z.number().int().min(1).max(5),label:z.string().min(1).max(80)})),asyncRoute(async(req:AuthedRequest,res)=>{const now=new Date().toISOString(); const ml=await analyzeText({victimToken:req.user!.victimToken||'unknown',text:`Quick wellbeing check-in: the survivor selected mood "${req.body.label}" (${req.body.mood}/5).`}); const result=record(`checkins:${req.user!.id}`,{id:id(),type:'quick_mood',mood:req.body.mood,label:req.body.label,ml,createdAt:now,analyticalState:ml.confidence<.5?'insufficient_evidence':'scored'}); 
+  trackCheckinCompletion(record, id, { userId: req.user!.id, victimToken: req.user!.victimToken, channel: 'quick_mood', createdAt: now });
   await updateBaseline(req.user!.id);
   return ok(res,result,201)}));
-app.post('/api/v1/check-ins/text',requireAuth,requireConsent('text_analysis'),body(checkinSchema.extend({text:z.string().trim().min(1).max(10000)})),asyncRoute(async(req:AuthedRequest,res)=>{const ml=await analyzeText({victimToken:req.user!.victimToken||'unknown',text:req.body.text,language:req.body.language}); const result=record(`checkins:${req.user!.id}`,{id:id(),type:'text',victimToken:req.user!.victimToken,textSubmitted:true,ml,createdAt:new Date().toISOString(),analyticalState:ml.status==='unavailable'||ml.insufficientEvidence?'insufficient_evidence':'scored'}); if(ml.crisis) recordAlert({victimToken:req.user!.victimToken,caseReference:req.user!.victimToken,reason:'Crisis safety screening requires human review.',source:'text',crisis:true,confidence:ml.confidence}); 
-  trackCheckinCompletion(record, id, { userId: req.user!.id, victimToken: req.user!.victimToken, channel: 'text' });
+app.post('/api/v1/check-ins/text',requireAuth,requireConsent('text_analysis'),body(checkinSchema.extend({text:z.string().trim().min(1).max(10000)})),asyncRoute(async(req:AuthedRequest,res)=>{const now=new Date().toISOString(); const ml=await analyzeText({victimToken:req.user!.victimToken||'unknown',text:req.body.text,language:req.body.language}); const result=record(`checkins:${req.user!.id}`,{id:id(),type:'text',victimToken:req.user!.victimToken,textSubmitted:true,ml,createdAt:now,analyticalState:ml.status==='unavailable'||ml.insufficientEvidence?'insufficient_evidence':'scored'}); if(ml.crisis) recordAlert({victimToken:req.user!.victimToken,caseReference:req.user!.victimToken,reason:'Crisis safety screening requires human review.',source:'text',crisis:true,confidence:ml.confidence}); 
+  trackCheckinCompletion(record, id, { userId: req.user!.id, victimToken: req.user!.victimToken, channel: 'text', createdAt: now });
   await updateBaseline(req.user!.id);
   return ok(res,result,201); }));
 app.get('/api/v1/monitoring/baseline',requireAuth,asyncRoute(async(req:AuthedRequest,res)=>{
@@ -1292,6 +1292,33 @@ app.post('/api/v1/notifications/taara-reengagement', requireAuth, asyncRoute(asy
   }
   return ok(res, { status: 'not_needed' });
 }));
+import { getCaseAwareLegalContent, searchLegalKnowledgeBase } from './services/legal/index.js';
+
+// LEG-01 — GET /legal/content: Case-contextualised, verified legal & rights framework.
+app.get('/api/v1/legal/content', requireAuth, asyncRoute(async (req: AuthedRequest, res) => {
+  const caseId = req.query.caseId ? String(req.query.caseId) : undefined;
+  const matchedCase = caseId
+    ? store.cases.find(c => c.id === caseId || c.docket === caseId || c.victimToken === caseId)
+    : store.cases.find(c => c.victimToken === req.user!.victimToken);
+
+  const payload = getCaseAwareLegalContent({
+    caseRecord: matchedCase ?? null,
+    language: String(req.query.language ?? 'en'),
+  });
+
+  return ok(res, payload);
+}));
+
+// LEG-02 — POST /legal/query: Verified retrieval first, safe plain-language guidance with official citations.
+app.post('/api/v1/legal/query', requireAuth, body(z.object({ query: z.string().min(1).max(1000), caseId: z.string().optional() })), asyncRoute(async (req: AuthedRequest, res) => {
+  const matchedCase = req.body.caseId
+    ? store.cases.find(c => c.id === req.body.caseId || c.docket === req.body.caseId || c.victimToken === req.body.caseId)
+    : store.cases.find(c => c.victimToken === req.user!.victimToken);
+
+  const result = searchLegalKnowledgeBase(req.body.query, matchedCase ?? null);
+  return ok(res, result);
+}));
+
 app.post('/api/v1/demo/reset',requireAuth,requireRoles('NATIONAL_ADMIN'),asyncRoute(async(_req,res)=>{if(env.NODE_ENV==='production') throw new AppError(404,'NOT_FOUND','Not found.'); store.records.clear(); store.users.clear(); store.blocklist.clear(); return ok(res,{reset:true,mode:'demo_only'});}));
 function optionalCommunity(req:express.Request,_res:express.Response,next:express.NextFunction){next();}
 app.use((err:unknown,_req:express.Request,res:express.Response,_next:express.NextFunction)=>{if(err instanceof multer.MulterError&&err.code==='LIMIT_FILE_SIZE') return fail(res,new AppError(413,'AUDIO_TOO_LARGE',`Audio must be no larger than ${env.UPLOAD_MAX_BYTES} bytes.`)); return fail(res,err instanceof Error?err:new Error('Unknown error'));}); export { app };

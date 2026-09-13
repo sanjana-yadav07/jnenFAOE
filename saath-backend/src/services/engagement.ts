@@ -39,7 +39,7 @@ type RecordFn = (key: string, value: unknown) => unknown;
 export function trackCheckinCompletion(
   record: RecordFn,
   idFn: () => string,
-  params: { userId: string; victimToken?: string; channel: EngagementSignal['channel'] }
+  params: { userId: string; victimToken?: string; channel: EngagementSignal['channel']; createdAt?: string }
 ): EngagementSignal {
   const signal: EngagementSignal = {
     id: idFn(),
@@ -47,7 +47,7 @@ export function trackCheckinCompletion(
     victimToken: params.victimToken,
     eventType: 'checkin_completed',
     channel: params.channel,
-    createdAt: new Date().toISOString(),
+    createdAt: params.createdAt || new Date().toISOString(),
   };
   record(`engagement:${params.userId}`, signal);
   record('engagement:all', signal);
