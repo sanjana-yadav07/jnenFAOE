@@ -144,6 +144,14 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
   },
 
   // Common
+  "sidebar.tagline": {
+    English: "You don't have to walk alone",
+    Hindi: "आप अकेले नहीं हैं",
+    Bengali: "আপনি একা নন",
+    Marathi: "तुम्ही एकटे नाही",
+    Tamil: "நீங்கள் தனியாக இல்லை",
+    Telugu: "మీరు ఒంటరిగా లేరు",
+  },
   "common.notAlone": {
     English: "You don't have to walk alone.",
     Hindi: "आपको अकेले चलने की ज़रूरत नहीं है।",
