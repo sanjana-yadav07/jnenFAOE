@@ -2,10 +2,8 @@ import Link from "next/link";
 import { SaathLogo } from "@/components/SaathLogo";
 import {
   ArrowRight,
-  Sparkles,
   Lock,
   Smile,
-  Globe2,
   Users,
   LineChart,
   CheckCircle2,
@@ -14,297 +12,213 @@ import {
   ShieldCheck,
   Scale,
   ShieldAlert,
-  ArrowUpRight,
   EyeOff,
   UserCheck,
-  FileCheck2,
   Activity,
   HeartHandshake,
 } from "lucide-react";
+
+/* â”€â”€â”€ DATA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const PORTALS = [
   {
     label: "Survivor Space",
     badge: "bg-[#0f766e]",
-    badgeText: "text-white",
-    cardBorder: "hover:border-[#0f766e]/70",
     iconBg: "bg-[#dcebdd]/80 text-[#0f766e]",
+    cardAccent: "hover:border-[#0f766e]/60",
     title: "For survivors",
-    description:
-      "A calm, private space to check in, feel supported, and move at your own pace — with or without a registered case.",
+    description: "A calm, private space to check in, feel heard, and move at your own pace â€” with or without a registered case.",
     cta: "Continue as a survivor",
     href: "/welcome",
     icon: HeartHandshake,
   },
   {
     label: "Counsellor Portal",
-    badge: "bg-[#5b8db8]",
-    badgeText: "text-white",
-    cardBorder: "hover:border-[#5b8db8]/70",
+    badge: "bg-[#4d7ea1]",
     iconBg: "bg-[#dfeaf4] text-[#4d7ea1]",
+    cardAccent: "hover:border-[#4d7ea1]/60",
     title: "For counsellors",
-    description:
-      "Actionable, prioritised insight into individuals under care — flagged emotional alerts, recovery trends, and check-in cadence.",
+    description: "Prioritised insight into the people under your care â€” emotional alerts, recovery trends, and check-in cadence.",
     cta: "Counsellor sign in",
     href: "/staff-login",
     icon: Users,
   },
   {
     label: "District / State Admin",
-    badge: "bg-[#8064a2]",
-    badgeText: "text-white",
-    cardBorder: "hover:border-[#8064a2]/70",
-    iconBg: "bg-[#f2ecf9] text-[#8064a2]",
+    badge: "bg-[#7a5fa0]",
+    iconBg: "bg-[#f0ebf8] text-[#7a5fa0]",
+    cardAccent: "hover:border-[#7a5fa0]/60",
     title: "For administrators",
-    description:
-      "Aggregated, anonymised decision intelligence across districts — caseload distribution, response times, and welfare tracking.",
+    description: "Anonymised decision intelligence across districts â€” caseload, response times, and rehabilitation tracking.",
     cta: "Admin sign in",
     href: "/staff-login",
     icon: LineChart,
   },
 ];
 
-const JOURNEY_STAGES = [
-  {
-    num: "01",
-    tag: "CHECK IN",
-    title: "Share how you are feeling",
-    desc: "A private, low-friction moment to note your emotional state or record a voice note in your regional language.",
-    icon: Smile,
-  },
-  {
-    num: "02",
-    tag: "UNDERSTAND",
-    title: "Turn patterns into insight",
-    desc: "Reflect on your wellbeing journey over time with clear, non-stigmatising patterns and grounding exercises.",
-    icon: Activity,
-  },
-  {
-    num: "03",
-    tag: "CONNECT",
-    title: "Stay linked with care",
-    desc: "Direct link to your assigned district welfare counsellor who receives compassionate context at your pace.",
-    icon: Users,
-  },
-  {
-    num: "04",
-    tag: "SUPPORT",
-    title: "Access statutory rights",
-    desc: "Verify PoA relief disbursements, legal aid, and social welfare provisions transparently without bureaucracy.",
-    icon: Scale,
-  },
-  {
-    num: "05",
-    tag: "KEEP MOVING",
-    title: "Healing on your own terms",
-    desc: "No forced deadlines, no surveillance. A safe sanctuary that stays with you for as long as you need.",
-    icon: HeartHandshake,
-  },
+const STEPS = [
+  { num: "01", title: "Check in", desc: "A private moment to note how you are feeling â€” text, scale, or voice note." },
+  { num: "02", title: "Understand", desc: "Notice patterns in your emotional state over time with clear, gentle insight." },
+  { num: "03", title: "Connect", desc: "Stay linked to your assigned counsellor who receives context at your pace." },
+  { num: "04", title: "Access rights", desc: "Verify PoA relief, legal aid, and welfare provisions without bureaucracy." },
+  { num: "05", title: "Keep moving", desc: "No forced timelines. A space that stays with you as long as you need." },
 ];
 
-const PRIVACY_PRINCIPLES = [
-  {
-    tag: "CONSENT FIRST",
-    title: "You are always in control",
-    desc: "Your participation, emotional check-ins, and data sharing remain strictly under your voluntary direction. Zero mandatory logs.",
-    icon: UserCheck,
-  },
-  {
-    tag: "PRIVATE BY DESIGN",
-    title: "End-to-end data isolation",
-    desc: "Grievance identity and health logs are stored in secure, encrypted silos. No commercial tracking or third-party profiling.",
-    icon: Lock,
-  },
-  {
-    tag: "HUMAN REVIEW",
-    title: "AI assists, humans care",
-    desc: "High-impact safety and wellbeing decisions are never delegated to algorithms alone. Qualified human counsellors provide genuine care.",
-    icon: HeartHandshake,
-  },
-  {
-    tag: "NO FORCED REPORTING",
-    title: "A safe space to reflect",
-    desc: "Using wellbeing tools, emotional grounding, or self-help exercises never triggers automatic police escalation or unwanted intervention.",
-    icon: EyeOff,
-  },
-];
-
-const PROCESS_FLOW = [
-  {
-    step: "01",
-    title: "Case Connection",
-    desc: "Optionally link your grievance identifier or continue anonymously.",
-  },
-  {
-    step: "02",
-    title: "Informed Consent",
-    desc: "Set granular sharing boundaries that you can pause or revoke at any time.",
-  },
-  {
-    step: "03",
-    title: "Gentle Check-In",
-    desc: "Express emotions via simple scales, text reflections, or regional voice notes.",
-  },
-  {
-    step: "04",
-    title: "Wellbeing Insights",
-    desc: "Receive grounding exercises and notice emotional recovery rhythms.",
-  },
-  {
-    step: "05",
-    title: "Human Support",
-    desc: "Request counsellor calls and statutory relief guidance when you are ready.",
-  },
-  {
-    step: "06",
-    title: "Continuous Healing",
-    desc: "Longitudinal care that stays with you beyond legal case timelines.",
-  },
+const PRIVACY = [
+  { tag: "Consent first", title: "You stay in control", desc: "Every interaction is voluntary. Zero mandatory logs, zero hidden tracking.", icon: UserCheck },
+  { tag: "Private by design", title: "Data isolation", desc: "Your identity and health logs live in encrypted silos. No commercial profiling.", icon: Lock },
+  { tag: "Human review", title: "AI assists, people care", desc: "Critical wellbeing decisions are always reviewed by qualified human counsellors.", icon: HeartHandshake },
+  { tag: "No forced disclosure", title: "Reflect without fear", desc: "Using grounding tools never triggers automatic police escalation or intervention.", icon: EyeOff },
 ];
 
 const METRICS = [
-  { value: "100%", label: "Consent-Led & Encrypted", detail: "Zero mandatory reporting" },
-  { value: "24/7", label: "Crisis Support Active", detail: "Direct connection via 112 & 14566" },
-  { value: "3-Tier", label: "Support Architecture", detail: "Survivor • Counsellor • State" },
-  { value: "10+", label: "Regional Languages", detail: "Voice & text check-in enabled" },
+  { value: "100%", label: "Consent-led", detail: "Zero mandatory reporting" },
+  { value: "24/7", label: "Crisis support", detail: "Via national helplines" },
+  { value: "3-tier", label: "Support architecture", detail: "Survivor Â· Counsellor Â· State" },
+  { value: "10+", label: "Regional languages", detail: "Voice & text check-in" },
 ];
+
+/* â”€â”€â”€ COMPONENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 export default function LandingPage() {
   return (
-    <div className="relative min-h-screen bg-[#faf8f5] text-[#172326] selection:bg-[#dcebdd] selection:text-[#0f766e]">
-      {/* Editorial Decorative Atmosphere */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        {/* Soft Warm Radiant Glows */}
-        <div className="absolute -top-[12%] left-1/2 -translate-x-1/2 h-[680px] w-[900px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(220,235,221,0.5),transparent_70%)] blur-3xl" />
-        <div className="absolute top-[28%] right-[-6%] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle_at_center,rgba(232,154,120,0.07),transparent_70%)] blur-3xl" />
-        <div className="absolute bottom-[14%] left-[-6%] h-[550px] w-[550px] rounded-full bg-[radial-gradient(circle_at_center,rgba(214,158,46,0.06),transparent_70%)] blur-3xl" />
+    <div className="relative min-h-screen bg-[#faf8f5] text-[#172326]" style={{ fontFamily: '"Inter", "DM Sans", ui-sans-serif, system-ui, sans-serif' }}>
+
+      {/* Atmosphere: very restrained warm glows */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
+        <div className="absolute -top-[16%] left-1/2 -translate-x-1/2 h-[700px] w-[1000px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(220,235,221,0.42),transparent_68%)] blur-3xl" />
+        <div className="absolute top-[55%] right-[-8%] h-[460px] w-[460px] rounded-full bg-[radial-gradient(circle_at_center,rgba(91,141,184,0.06),transparent_70%)] blur-3xl" />
       </div>
 
-      {/* Main Top Navigation */}
-      <header className="relative z-30 mx-auto max-w-7xl px-5 pt-7 sm:px-10">
-        <nav className="flex items-center justify-between border-b border-[#c8d3d0]/60 pb-5" aria-label="Main Navigation">
+      {/* â”€â”€ NAVIGATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <header className="relative z-30 mx-auto max-w-7xl px-6 pt-6 sm:px-10">
+        <nav className="flex items-center justify-between border-b border-[#c8d3d0]/50 pb-5" aria-label="Main">
           <Link href="/landing" className="flex items-center gap-3 group">
-            <SaathLogo className="h-9 w-auto transition-transform duration-200 group-hover:scale-105" size={38} />
-            <span className="font-display text-3xl font-bold tracking-tight text-[#0f766e]">
-              SAATH
-            </span>
-            <span className="hidden h-4 w-px bg-[#c8d3d0] sm:inline" />
-            <span className="hidden text-[11px] font-semibold tracking-wide text-[#61706d] sm:inline">
-              You Don&apos;t Have to Walk Alone
+            <SaathLogo className="h-8 w-auto transition-transform duration-200 group-hover:scale-[1.04]" size={34} />
+            <span className="font-display text-[1.6rem] font-normal tracking-tight text-[#0f766e]">SAATH</span>
+            <span className="hidden h-3.5 w-px bg-[#c8d3d0]/80 sm:inline" />
+            <span className="hidden text-[11px] font-medium tracking-[0.14em] text-[#61706d]/80 sm:inline" style={{ fontFamily: '"Inter", sans-serif' }}>
+              You don't have to walk alone
             </span>
           </Link>
 
-          <div className="flex items-center gap-6 sm:gap-8">
+          <div className="flex items-center gap-7 sm:gap-8">
             <a
               href="#how-it-works"
-              className="hidden text-xs font-semibold uppercase tracking-wider text-[#46565a] hover:text-[#0f766e] transition-colors sm:inline-block"
+              className="saath-nav-link hidden text-[13px] font-medium tracking-[0.01em] text-[#46565a] transition-colors duration-200 sm:inline-block"
             >
-              How It Works
+              How it works
             </a>
             <Link
               href="/about"
-              className="text-xs font-semibold uppercase tracking-wider text-[#46565a] hover:text-[#0f766e] transition-colors"
+              className="saath-nav-link text-[13px] font-medium tracking-[0.01em] text-[#46565a] transition-colors duration-200"
             >
-              How SAATH Protects You
+              How SAATH protects you
             </Link>
             <Link
               href="/staff-login"
-              className="group inline-flex items-center gap-2 rounded-full border border-[#c8d3d0] bg-white px-4 py-2 text-xs font-bold text-[#172326] shadow-xs transition-all hover:border-[#0f766e] hover:bg-[#0f766e]/5 hover:text-[#0f766e]"
+              className="group inline-flex items-center gap-1.5 rounded-full border border-[#c8d3d0] bg-white/80 px-4 py-2 text-[13px] font-medium text-[#172326] shadow-xs transition-all duration-200 hover:border-[#0f766e]/60 hover:text-[#0f766e]"
             >
-              <KeyRound size={13} className="text-[#0f766e] transition-transform group-hover:rotate-12" />
-              <span>Official Sign In</span>
+              <KeyRound size={12} className="text-[#0f766e] transition-transform duration-200 group-hover:rotate-12" />
+              Official sign in
             </Link>
           </div>
         </nav>
       </header>
 
-      {/* Hero Section — Centered Editorial Composition */}
-      <section className="relative z-20 mx-auto max-w-4xl px-5 pt-14 pb-14 sm:px-8 sm:pt-20 sm:pb-16 text-center">
-        {/* Reassuring Eyebrow Badge */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-[#0f766e]/25 bg-[#dcebdd]/60 px-4 py-1.5 shadow-2xs backdrop-blur-xs">
-          <span className="h-2 w-2 rounded-full bg-[#0f766e] animate-pulse" />
-          <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0f766e]">
-            SAATH — YOU DON’T HAVE TO WALK ALONE
+      {/* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section className="relative z-20 mx-auto max-w-4xl px-6 pb-12 pt-14 text-center sm:px-10 sm:pb-14 sm:pt-20">
+
+        {/* Eyebrow */}
+        <div className="inline-flex items-center gap-2 rounded-full border border-[#0f766e]/20 bg-[#dcebdd]/50 px-4 py-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#0f766e] animate-pulse" />
+          <span className="text-[11px] font-semibold uppercase tracking-[0.17em] text-[#0f766e]" style={{ fontFamily: '"Inter", sans-serif' }}>
+            SAATH â€” You don't have to walk alone
           </span>
         </div>
 
-        {/* Hero Headline — Charcoal First Line, Deep Teal Italic Second Line, Balanced Scale */}
-        <h1 className="mt-7 font-display text-3xl sm:text-5xl md:text-5xl lg:text-[3.5rem] font-medium tracking-tight leading-[1.12] max-w-3xl mx-auto">
-          <span className="block text-[#172326]">You do not have to</span>
-          <span className="block font-editorial italic font-normal text-[#0f766e] mt-1">
-            walk through it alone.
-          </span>
+        {/* Headline â€” Instrument Serif, mixed weight treatment */}
+        <h1
+          className="mx-auto mt-7 max-w-3xl leading-[1.06] tracking-tight"
+          style={{
+            fontFamily: '"Instrument Serif", "DM Serif Display", Georgia, serif',
+            fontSize: "clamp(2.4rem, 5.5vw, 3.75rem)",
+          }}
+        >
+          <span className="block font-normal text-[#1c2b2e]">You do not have to</span>
+          <span className="block italic text-[#0f766e] mt-0.5">carry it alone.</span>
         </h1>
 
-        {/* Hero Narrative Copy */}
-        <p className="mx-auto mt-5 max-w-2xl text-base sm:text-lg leading-relaxed text-[#46565a]">
-          SAATH gives survivors a private space to check in, understand their wellbeing, stay connected to support, and move forward at their own pace.
+        {/* Sub-copy */}
+        <p className="mx-auto mt-5 max-w-xl text-[15px] leading-[1.65] text-[#46565a] sm:text-[16px]">
+          SAATH gives survivors a private space to check in, understand how they are doing, stay connected to support, and{" "}
+          <strong className="font-semibold text-[#1c2b2e]">move forward at their own pace.</strong>
         </p>
 
-        {/* Centered Primary & Secondary CTAs */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+        {/* CTAs */}
+        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
             href="/welcome"
-            className="group inline-flex w-full sm:w-auto items-center justify-center gap-2.5 rounded-full bg-[#0f766e] px-8 py-3.5 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:bg-[#0c625c] hover:shadow-lg hover:-translate-y-0.5"
+            className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#0f766e] px-7 py-3 text-[14px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#0c6460] hover:shadow-md sm:w-auto"
           >
-            <span>Enter Survivor Space</span>
-            <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" />
+            Enter survivor space
+            <ArrowRight size={15} className="transition-transform duration-200 group-hover:translate-x-[3px]" />
           </Link>
-
           <Link
             href="/about"
-            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-[#0f766e]/40 bg-[#faf8f5] px-7 py-3.5 text-sm font-semibold text-[#0f766e] transition-all duration-200 hover:bg-[#dcebdd]/40 hover:border-[#0f766e]"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#0f766e]/35 bg-transparent px-7 py-3 text-[14px] font-medium text-[#0f766e] transition-all duration-200 hover:border-[#0f766e]/70 hover:bg-[#dcebdd]/30 sm:w-auto"
           >
-            <span>How SAATH Protects You</span>
+            How SAATH protects you
           </Link>
         </div>
 
-        {/* Trust Badges Strip */}
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-xs text-[#61706d]">
-          <span className="inline-flex items-center gap-1.5 font-medium">
-            <CheckCircle2 size={15} className="text-[#0f766e]" /> 100% Consent-Led
-          </span>
-          <span className="inline-flex items-center gap-1.5 font-medium">
-            <CheckCircle2 size={15} className="text-[#0f766e]" /> Zero Forced Reporting
-          </span>
-          <span className="inline-flex items-center gap-1.5 font-medium">
-            <CheckCircle2 size={15} className="text-[#0f766e]" /> Trauma-Informed Care
-          </span>
-          <span className="inline-flex items-center gap-1.5 font-medium">
-            <CheckCircle2 size={15} className="text-[#0f766e]" /> End-to-End Privacy
-          </span>
+        {/* Micro-trust strip */}
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-5 text-[12px] text-[#61706d] sm:gap-7">
+          {[
+            "100% consent-led",
+            "Zero forced reporting",
+            "Trauma-informed care",
+            "End-to-end private",
+          ].map((t) => (
+            <span key={t} className="inline-flex items-center gap-1.5 font-medium">
+              <CheckCircle2 size={13} className="text-[#0f766e]" /> {t}
+            </span>
+          ))}
         </div>
       </section>
 
-      {/* 3 Portal Entrance Cards: Survivor (Teal), Counsellor (Blue), Admin (Purple) */}
-      <section className="relative z-20 mx-auto max-w-7xl px-5 pb-16 sm:px-10">
-        <div className="grid gap-6 md:grid-cols-3">
-          {PORTALS.map(({ label, badge, badgeText, cardBorder, iconBg, title, description, cta, href, icon: Icon }) => (
+      {/* â”€â”€ PORTAL CARDS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section className="relative z-20 mx-auto max-w-7xl px-6 pb-14 sm:px-10">
+        <div className="grid gap-5 md:grid-cols-3">
+          {PORTALS.map(({ label, badge, iconBg, cardAccent, title, description, cta, href, icon: Icon }) => (
             <div
               key={label}
-              className={`flex flex-col justify-between rounded-3xl border border-[#c8d3d0]/80 bg-white/95 p-7 shadow-xs transition-all duration-200 ${cardBorder} hover:shadow-md hover:-translate-y-0.5`}
+              className={`group flex flex-col justify-between rounded-2xl border border-[#c8d3d0]/70 bg-white/95 p-6 shadow-xs transition-all duration-200 hover:-translate-y-[2px] hover:shadow-md ${cardAccent}`}
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span
-                    className={`inline-flex items-center rounded-full ${badge} px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider ${badgeText}`}
-                  >
+                  <span className={`inline-flex items-center rounded-full ${badge} px-3 py-[5px] text-[11px] font-semibold uppercase tracking-[0.1em] text-white`}>
                     {label}
                   </span>
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${iconBg}`}>
-                    <Icon size={20} />
+                  <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${iconBg} transition-transform duration-200 group-hover:scale-[1.06]`}>
+                    <Icon size={18} />
                   </div>
                 </div>
-                <h3 className="mt-5 font-display text-2xl font-bold text-[#172326]">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-[#46565a]">{description}</p>
+                <h3
+                  className="mt-5 text-[1.2rem] font-normal text-[#1c2b2e] leading-snug"
+                  style={{ fontFamily: '"Instrument Serif", "DM Serif Display", Georgia, serif' }}
+                >
+                  {title}
+                </h3>
+                <p className="mt-2 text-[13.5px] leading-[1.6] text-[#46565a]">{description}</p>
               </div>
-              <div className="mt-7 pt-5 border-t border-[#c8d3d0]/40">
+              <div className="mt-6 border-t border-[#c8d3d0]/35 pt-5">
                 <Link
                   href={href}
-                  className="group inline-flex items-center gap-2 text-sm font-bold text-[#0f766e] transition-all"
+                  className="group/cta inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-[#0f766e] transition-colors duration-200"
                 >
-                  <span>{cta}</span>
-                  <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
+                  {cta}
+                  <ArrowRight size={14} className="transition-transform duration-200 group-hover/cta:translate-x-[3px]" />
                 </Link>
               </div>
             </div>
@@ -312,265 +226,234 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Trust & Value Transition Strip — 5-Stage Journey */}
-      <section className="relative z-20 mx-auto max-w-7xl px-5 py-16 sm:px-10 sm:py-20 border-t border-[#c8d3d0]/60">
-        <div className="max-w-2xl">
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#0f766e]">
-            THE HEALING CONTINUUM
-          </span>
-          <h2 className="mt-2 font-display text-3xl sm:text-4xl font-medium text-[#172326]">
-            Built around your journey — <br />
-            <span className="font-editorial italic font-normal text-[#0f766e]">
-              not your diagnosis.
-            </span>
+      {/* â”€â”€ HOW IT WORKS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section id="how-it-works" className="relative z-20 mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-20 border-t border-[#c8d3d0]/50">
+        <div className="mb-12 max-w-xl">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0f766e]">How SAATH works</p>
+          <h2
+            className="mt-3 leading-[1.1] tracking-tight text-[#1c2b2e]"
+            style={{
+              fontFamily: '"Instrument Serif", "DM Serif Display", Georgia, serif',
+              fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)",
+            }}
+          >
+            Support doesn't happen<br />
+            <em className="not-italic text-[#0f766e]">all at once.</em>
           </h2>
-          <p className="mt-3 text-sm sm:text-base leading-relaxed text-[#46565a]">
-            SAATH brings together private check-ins, wellbeing insights, human support and trusted resources in one consent-led space.
+          <p className="mt-3 text-[14px] leading-[1.65] text-[#46565a]">
+            SAATH is a consent-first continuum â€” it meets you wherever you are, and stays with you as you move forward.
           </p>
         </div>
 
-        {/* 5 Journey Stages: Horizontal flow on desktop, stacked on mobile */}
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {JOURNEY_STAGES.map(({ num, tag, title, desc, icon: Icon }) => (
-            <div
-              key={tag}
-              className="flex flex-col justify-between rounded-2xl border border-[#c8d3d0]/80 bg-white/90 p-5 shadow-xs transition-all duration-200 hover:border-[#0f766e]/50 hover:shadow-md"
-            >
-              <div>
-                <div className="flex items-center justify-between">
-                  <span className="font-editorial text-lg italic text-[#0f766e]">{num}</span>
-                  <span className="rounded-full bg-[#f4f6ec] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#0f766e]">
-                    {tag}
-                  </span>
-                </div>
-                <div className="mt-4 flex h-9 w-9 items-center justify-center rounded-xl bg-[#dcebdd]/70 text-[#0f766e]">
-                  <Icon size={18} />
-                </div>
-                <h3 className="mt-4 text-sm font-bold text-[#172326] leading-snug">{title}</h3>
-                <p className="mt-2 text-xs leading-relaxed text-[#61706d]">{desc}</p>
-              </div>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+          {STEPS.map(({ num, title, desc }) => (
+            <div key={num} className="rounded-xl border border-[#c8d3d0]/60 bg-white/80 p-5 hover:border-[#0f766e]/40 hover:shadow-sm transition-all duration-200">
+              <span
+                className="block text-[2rem] italic text-[#0f766e] leading-none"
+                style={{ fontFamily: '"Instrument Serif", "DM Serif Display", Georgia, serif' }}
+              >
+                {num}
+              </span>
+              <h3 className="mt-3 text-[14px] font-semibold text-[#1c2b2e] leading-snug">{title}</h3>
+              <p className="mt-1.5 text-[12.5px] leading-[1.6] text-[#61706d]">{desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Trust & Privacy Section */}
-      <section className="relative z-20 mx-auto max-w-7xl px-5 py-16 sm:px-10 sm:py-20 border-t border-[#c8d3d0]/60">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      {/* â”€â”€ PRIVACY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section className="relative z-20 mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-20 border-t border-[#c8d3d0]/50">
+        <div className="mb-10 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#0f766e]">
-              PRIVACY & INTEGRITY
-            </span>
-            <h2 className="mt-2 font-display text-3xl sm:text-4xl font-medium text-[#172326]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0f766e]">Privacy & integrity</p>
+            <h2
+              className="mt-3 text-[#1c2b2e] leading-tight"
+              style={{
+                fontFamily: '"Instrument Serif", "DM Serif Display", Georgia, serif',
+                fontSize: "clamp(1.7rem, 3vw, 2.4rem)",
+              }}
+            >
               Your data is yours.
             </h2>
           </div>
-          <p className="max-w-md text-xs sm:text-sm leading-relaxed text-[#61706d]">
-            SAATH is designed around consent, privacy and human oversight. No corporate tracking, no forced disclosure.
+          <p className="max-w-sm text-[13.5px] leading-[1.6] text-[#61706d]">
+            Designed around consent and human oversight. No tracking, no forced disclosure, no commercial use.
           </p>
         </div>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {PRIVACY_PRINCIPLES.map(({ tag, title, desc, icon: Icon }) => (
-            <div
-              key={tag}
-              className="rounded-2xl border border-[#c8d3d0]/70 bg-white p-6 shadow-xs"
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {PRIVACY.map(({ tag, title, desc, icon: Icon }) => (
+            <div key={tag} className="rounded-2xl border border-[#c8d3d0]/60 bg-white p-6">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#f4f6ec] text-[#0f766e]">
+                <Icon size={18} />
+              </div>
+              <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0f766e]">{tag}</p>
+              <h3 className="mt-1.5 text-[15px] font-semibold text-[#1c2b2e] leading-snug">{title}</h3>
+              <p className="mt-2 text-[12.5px] leading-[1.65] text-[#46565a]">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* â”€â”€ HUMAN SUPPORT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section className="relative z-20 mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-20 border-t border-[#c8d3d0]/50">
+        <div className="grid items-center gap-10 lg:grid-cols-2">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0f766e]">Human connection</p>
+            <h2
+              className="mt-3 leading-[1.08] text-[#1c2b2e]"
+              style={{
+                fontFamily: '"Instrument Serif", "DM Serif Display", Georgia, serif',
+                fontSize: "clamp(1.7rem, 3vw, 2.5rem)",
+              }}
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f4f6ec] text-[#0f766e]">
-                <Icon size={20} />
-              </div>
-              <span className="mt-4 block text-[10px] font-bold uppercase tracking-wider text-[#0f766e]">
-                {tag}
-              </span>
-              <h3 className="mt-1 text-base font-bold text-[#172326]">{title}</h3>
-              <p className="mt-2 text-xs leading-relaxed text-[#46565a]">{desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Process Section — How SAATH Works */}
-      <section id="how-it-works" className="relative z-20 mx-auto max-w-7xl px-5 py-16 sm:px-10 sm:py-20 border-t border-[#c8d3d0]/60">
-        <div className="text-center max-w-2xl mx-auto">
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#0f766e]">
-            STEP-BY-STEP PROCESS
-          </span>
-          <h2 className="mt-2 font-display text-3xl sm:text-4xl font-medium text-[#172326]">
-            How SAATH Works
-          </h2>
-          <p className="mt-3 text-xs sm:text-sm leading-relaxed text-[#61706d]">
-            A seamless, consent-first continuum designed to support recovery over time.
-          </p>
-        </div>
-
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {PROCESS_FLOW.map(({ step, title, desc }) => (
-            <div key={step} className="relative rounded-2xl border border-[#c8d3d0]/70 bg-white/80 p-6 shadow-xs">
-              <span className="font-editorial text-2xl italic text-[#0f766e]">{step}</span>
-              <h3 className="mt-3 text-base font-bold text-[#172326]">{title}</h3>
-              <p className="mt-2 text-xs leading-relaxed text-[#46565a]">{desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Human Support Section */}
-      <section className="relative z-20 mx-auto max-w-7xl px-5 py-16 sm:px-10 sm:py-20 border-t border-[#c8d3d0]/60">
-        <div className="grid items-center gap-10 lg:grid-cols-12">
-          <div className="lg:col-span-6">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#0f766e]">
-              HUMAN CONNECTION
-            </span>
-            <h2 className="mt-3 font-display text-3xl sm:text-4xl font-medium text-[#172326] leading-snug">
-              Technology can listen. <br />
-              <span className="font-editorial italic font-normal text-[#0f766e]">
-                People still matter.
-              </span>
+              Technology can listen.{" "}
+              <em style={{ fontStyle: "italic", color: "#0f766e" }}>People still matter.</em>
             </h2>
-            <p className="mt-4 text-sm leading-relaxed text-[#46565a]">
-              SAATH assists support systems rather than replacing human care. It enables district welfare counsellors and support networks to understand how you are doing, notice when you might need a helping hand, and connect when you are ready.
+            <p className="mt-4 text-[14px] leading-[1.7] text-[#46565a]">
+              SAATH supports care networks rather than replacing them. District welfare counsellors get the context they need to reach you â€” when you are ready.
             </p>
-            <div className="mt-6 space-y-2.5">
-              <div className="flex items-center gap-2.5 text-xs font-semibold text-[#172326]">
-                <CheckCircle2 size={15} className="text-[#0f766e]" />
-                <span>Dedicated district counsellor allocation</span>
-              </div>
-              <div className="flex items-center gap-2.5 text-xs font-semibold text-[#172326]">
-                <CheckCircle2 size={15} className="text-[#0f766e]" />
-                <span>Trauma-informed follow-up protocols</span>
-              </div>
-              <div className="flex items-center gap-2.5 text-xs font-semibold text-[#172326]">
-                <CheckCircle2 size={15} className="text-[#0f766e]" />
-                <span>Seamless linkage to statutory PoA rehabilitation schemes</span>
-              </div>
-            </div>
+            <ul className="mt-5 space-y-2.5">
+              {[
+                "Dedicated district counsellor allocation",
+                "Trauma-informed follow-up protocols",
+                "Linkage to statutory PoA rehabilitation schemes",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-[13px] font-medium text-[#1c2b2e]">
+                  <CheckCircle2 size={14} className="mt-0.5 shrink-0 text-[#0f766e]" />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <div className="lg:col-span-6">
-            <div className="rounded-3xl border border-[#c8d3d0]/80 bg-[#172e29] p-8 text-white shadow-xl sm:p-10">
-              <div className="flex items-center gap-3 text-[#7faf86]">
-                <HeartHandshake size={24} />
-                <span className="text-xs font-bold uppercase tracking-wider">Compassionate Cadence</span>
-              </div>
-              <h3 className="mt-4 font-display text-2xl font-bold text-white">
-                Support that stays with you beyond legal timelines.
-              </h3>
-              <p className="mt-3 text-xs sm:text-sm leading-relaxed text-white/80">
-                Grievance cases move through institutional calendars. Personal recovery happens on human time. SAATH ensures you are never lost in bureaucratic transitions.
-              </p>
-              <div className="mt-8 pt-6 border-t border-white/10 flex items-center justify-between">
-                <span className="text-xs text-white/60">Ready to enter your sanctuary?</span>
-                <Link
-                  href="/welcome"
-                  className="inline-flex items-center gap-2 text-xs font-bold text-[#7faf86] hover:underline"
-                >
-                  <span>Enter Survivor Space</span>
-                  <ArrowRight size={13} />
-                </Link>
-              </div>
+          <div className="rounded-2xl border border-[#c8d3d0]/60 bg-[#162924] p-8 text-white sm:p-10">
+            <div className="flex items-center gap-2.5 text-[#7faf86]">
+              <HeartHandshake size={20} />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.15em]">Compassionate cadence</span>
+            </div>
+            <h3
+              className="mt-4 font-normal text-white leading-snug"
+              style={{
+                fontFamily: '"Instrument Serif", "DM Serif Display", Georgia, serif',
+                fontSize: "clamp(1.3rem, 2.5vw, 1.7rem)",
+              }}
+            >
+              Support that stays beyond legal timelines.
+            </h3>
+            <p className="mt-3 text-[13px] leading-[1.7] text-white/75">
+              Cases move through institutional calendars. Personal recovery moves on human time. SAATH ensures you are never lost in bureaucratic transitions.
+            </p>
+            <div className="mt-7 border-t border-white/10 pt-5 flex items-center justify-between">
+              <span className="text-[12px] text-white/50">Ready to enter your space?</span>
+              <Link
+                href="/welcome"
+                className="group inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#7faf86] hover:text-white transition-colors duration-200"
+              >
+                Enter SAATH
+                <ArrowRight size={13} className="transition-transform duration-200 group-hover:translate-x-[3px]" />
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Editorial Proof & Metrics Section */}
-      <section className="relative z-20 mx-auto max-w-7xl px-5 py-14 sm:px-10 border-t border-[#c8d3d0]/60">
-        <div className="grid grid-cols-2 gap-6 divide-y sm:divide-y-0 sm:divide-x divide-[#c8d3d0]/60 lg:grid-cols-4">
+      {/* â”€â”€ METRICS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section className="relative z-20 mx-auto max-w-7xl px-6 py-12 sm:px-10 border-t border-[#c8d3d0]/50">
+        <div className="grid grid-cols-2 gap-y-8 lg:grid-cols-4 divide-[#c8d3d0]/40 sm:divide-x">
           {METRICS.map(({ value, label, detail }) => (
-            <div key={label} className="pt-4 sm:pt-0 sm:px-6 text-center sm:text-left">
-              <p className="font-display text-3xl sm:text-4xl font-bold text-[#0f766e]">{value}</p>
-              <p className="mt-1 text-sm font-bold text-[#172326]">{label}</p>
-              <p className="mt-0.5 text-xs text-[#61706d]">{detail}</p>
+            <div key={label} className="px-6 text-center sm:text-left first:pl-0">
+              <p
+                className="italic text-[#0f766e] leading-none"
+                style={{
+                  fontFamily: '"Instrument Serif", "DM Serif Display", Georgia, serif',
+                  fontSize: "clamp(2rem, 4vw, 3rem)",
+                }}
+              >
+                {value}
+              </p>
+              <p className="mt-1.5 text-[14px] font-semibold text-[#1c2b2e]">{label}</p>
+              <p className="mt-0.5 text-[12px] text-[#61706d]">{detail}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Emergency Reassurance Band */}
-      <section className="relative z-20 mx-auto max-w-7xl px-5 py-8 sm:px-10">
-        <div className="flex flex-col items-center justify-between gap-6 rounded-2xl border border-[#c8d3d0] bg-white p-6 shadow-xs md:flex-row md:p-8">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#f7e2dd] text-[#b86a59]">
-              <ShieldAlert size={24} />
+      {/* â”€â”€ EMERGENCY BAND â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section className="relative z-20 mx-auto max-w-7xl px-6 py-6 sm:px-10">
+        <div className="flex flex-col items-start justify-between gap-5 rounded-xl border border-[#e8cdc9] bg-[#fdf6f5] p-6 md:flex-row md:items-center md:p-7">
+          <div className="flex items-start gap-4">
+            <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#f7e2dd] text-[#b86a59]">
+              <ShieldAlert size={20} />
             </div>
             <div>
-              <p className="font-display text-base sm:text-lg font-bold text-[#172326]">
-                Need immediate emergency response or in danger?
-              </p>
-              <p className="text-xs text-[#61706d] mt-0.5">
-                Official national toll-free helplines are available 24 hours a day with confidential first responders.
+              <p className="text-[14px] font-semibold text-[#1c2b2e]">In immediate danger?</p>
+              <p className="mt-0.5 text-[12.5px] leading-[1.6] text-[#61706d]">
+                Toll-free national helplines available 24 hours with confidential first responders.
               </p>
             </div>
           </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-3">
+          <div className="flex flex-wrap gap-3">
             <a
               href="tel:112"
-              className="inline-flex items-center gap-2 rounded-full bg-[#b86a59] px-5 py-2.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-[#a2594a]"
+              className="inline-flex items-center gap-2 rounded-full bg-[#b86a59] px-5 py-2.5 text-[12.5px] font-semibold text-white transition-colors hover:bg-[#a05449]"
             >
-              <PhoneCall size={13} />
-              <span>National Emergency: 112</span>
+              <PhoneCall size={12} /> National emergency: 112
             </a>
             <a
               href="tel:14566"
-              className="inline-flex items-center gap-2 rounded-full border border-[#c8d3d0] bg-[#faf8f5] px-5 py-2.5 text-xs font-bold text-[#172326] shadow-xs transition-colors hover:bg-[#dcebdd]"
+              className="inline-flex items-center gap-2 rounded-full border border-[#c8d3d0] bg-white px-5 py-2.5 text-[12.5px] font-semibold text-[#172326] transition-all hover:border-[#b86a59]/40 hover:bg-[#fdf6f5]"
             >
-              <span>NHAA Atrocity Helpline: 14566</span>
+              NHAA Atrocity Helpline: 14566
             </a>
           </div>
         </div>
       </section>
 
-      {/* Final Reassuring CTA */}
-      <section className="relative z-20 mx-auto max-w-7xl px-5 py-16 sm:px-10 sm:py-24 border-t border-[#c8d3d0]/60">
-        <div className="rounded-3xl border border-[#c8d3d0]/80 bg-[#0f766e] p-8 text-center text-white shadow-xl sm:p-14">
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#dcebdd]">
-            BEGIN YOUR SPACE
-          </span>
-          <h2 className="mt-3 font-display text-3xl sm:text-5xl font-medium text-white">
-            Support that stays with you.
+      {/* â”€â”€ FINAL CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <section className="relative z-20 mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-20 border-t border-[#c8d3d0]/50">
+        <div className="rounded-2xl bg-[#0f766e] p-10 text-center sm:p-14">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#dcebdd]/70">When you're ready</p>
+          <h2
+            className="mx-auto mt-3 max-w-lg font-normal text-white leading-[1.1]"
+            style={{
+              fontFamily: '"Instrument Serif", "DM Serif Display", Georgia, serif',
+              fontSize: "clamp(1.9rem, 4vw, 3rem)",
+            }}
+          >
+            Support that <em style={{ fontStyle: "italic", color: "#dcebdd" }}>stays</em> with you.
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-sm sm:text-base leading-relaxed text-[#dcebdd]/90">
-            Move forward at your own pace, with a space built around dignity, privacy and human support.
+          <p className="mx-auto mt-4 max-w-md text-[14px] leading-[1.65] text-white/75">
+            Move forward at your own pace, with a space built around dignity, privacy and genuine human care.
           </p>
           <div className="mt-8 flex justify-center">
             <Link
               href="/welcome"
-              className="inline-flex items-center gap-2.5 rounded-full bg-white px-8 py-3.5 text-sm font-bold text-[#0f766e] shadow-md transition-all hover:bg-[#faf8f5] hover:shadow-lg hover:scale-[1.02]"
+              className="group inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 text-[14px] font-semibold text-[#0f766e] shadow-sm transition-all duration-200 hover:bg-[#f4faf9] hover:shadow-md"
             >
-              <span>Enter SAATH</span>
-              <ArrowRight size={16} />
+              Enter SAATH
+              <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-[3px]" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Clean Premium Footer */}
-      <footer className="relative z-20 mx-auto max-w-7xl border-t border-[#c8d3d0]/80 px-5 pt-8 pb-14 sm:px-10 text-xs text-[#61706d]">
+      {/* â”€â”€ FOOTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <footer className="relative z-20 mx-auto max-w-7xl border-t border-[#c8d3d0]/60 px-6 pb-12 pt-7 sm:px-10">
         <div className="flex flex-col items-center justify-between gap-5 md:flex-row">
-          <div className="flex items-center gap-2.5">
-            <ShieldCheck size={18} className="text-[#0f766e]" />
-            <span className="font-medium text-[#172326]">
-              SAATH • Support After Trauma & Healing
-            </span>
+          <div className="flex items-center gap-2">
+            <ShieldCheck size={15} className="text-[#0f766e]" />
+            <span className="text-[12.5px] font-medium text-[#1c2b2e]">SAATH Â· Support After Trauma & Healing</span>
           </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-6 font-semibold">
-            <a href="#how-it-works" className="hover:text-[#0f766e] transition-colors">
-              How It Works
-            </a>
-            <Link href="/about" className="hover:text-[#0f766e] transition-colors">
-              How SAATH Protects You
-            </Link>
-            <Link href="/about" className="hover:text-[#0f766e] transition-colors">
-              Legal & Rights
-            </Link>
-            <Link href="/staff-login" className="hover:text-[#0f766e] transition-colors">
-              Official Sign In
-            </Link>
+          <div className="flex flex-wrap items-center justify-center gap-6 text-[12.5px] text-[#61706d]">
+            <a href="#how-it-works" className="saath-nav-link transition-colors duration-200">How it works</a>
+            <Link href="/about" className="saath-nav-link transition-colors duration-200">How SAATH protects you</Link>
+            <Link href="/about" className="saath-nav-link transition-colors duration-200">Legal & rights</Link>
+            <Link href="/staff-login" className="saath-nav-link transition-colors duration-200">Official sign in</Link>
           </div>
         </div>
       </footer>
+
     </div>
   );
 }
