@@ -360,6 +360,10 @@ app.post('/api/v1/alerts/:id/resolve',requireAuth,asyncRoute(async(req:AuthedReq
   return ok(res, alert);
 }));
 const upload=multer({storage:multer.memoryStorage(),limits:{fileSize:env.UPLOAD_MAX_BYTES},fileFilter:(_req,file,cb)=>{if(!['audio/mpeg','audio/wav','audio/webm','audio/mp4'].includes(file.mimetype)) return cb(new AppError(400,'INVALID_AUDIO_MIME','Only MPEG, WAV, WebM, or MP4 audio is accepted.')); cb(null,true);}});
+// Separate multer instance for image uploads (Hope Vault photos) — the `upload`
+// instance above only accepts audio mimetypes, which was silently rejecting
+// every photo before it ever reached the hope-vault route handler.
+const uploadImage=multer({storage:multer.memoryStorage(),limits:{fileSize:env.UPLOAD_MAX_BYTES},fileFilter:(_req,file,cb)=>{if(!['image/jpeg','image/png','image/webp','image/gif','image/heic','image/heif'].includes(file.mimetype)) return cb(new AppError(400,'INVALID_IMAGE_MIME','Only JPEG, PNG, WebP, GIF, or HEIC images are accepted.')); cb(null,true);}});
 
 app.post('/api/v1/ai/taara',requireAuth,requireMonitoringConsent,body(z.object({message:z.string().min(1).max(4000),caseId:z.string().optional()})),asyncRoute(async(req:AuthedRequest,res)=>{
   const directCrisis = detectCrisisLanguage(req.body.message);
@@ -1009,7 +1013,7 @@ app.get('/api/v1/hope-vault', requireAuth, asyncRoute(async (req: AuthedRequest,
   return ok(res, store.records.get(`hope:${req.user!.id}`) || []);
 }));
 
-app.post('/api/v1/hope-vault', requireAuth, upload.single('photo'), asyncRoute(async (req: AuthedRequest, res) => {
+app.post('/api/v1/hope-vault', requireAuth, uploadImage.single('photo'), asyncRoute(async (req: AuthedRequest, res) => {
   const { type, title, content } = req.body;
   const now = new Date().toISOString();
   const itemData: any = { 
@@ -1028,7 +1032,10 @@ app.post('/api/v1/hope-vault', requireAuth, upload.single('photo'), asyncRoute(a
       const { data: urlData } = supabase.storage.from('hope-vault-photos').getPublicUrl(data.path);
       itemData.image_url = urlData.publicUrl;
     } else {
-      itemData.image_url = `/uploads/${req.file.originalname}`;
+      // In-memory demo mode has no file storage / static file server, so the photo
+      // itself is embedded directly as a base64 data URL — it round-trips through
+      // localStorage and the API response with no extra moving parts.
+      itemData.image_url = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
     }
   }
 
@@ -1039,6 +1046,21 @@ app.post('/api/v1/hope-vault', requireAuth, upload.single('photo'), asyncRoute(a
   
   record(`hope:${req.user!.id}`, itemData);
   return ok(res, itemData, 201);
+}));
+
+app.patch('/api/v1/hope-vault/:id', requireAuth, body(z.object({ title: z.string().min(1).optional(), content: z.string().optional() })), asyncRoute(async (req: AuthedRequest, res) => {
+  if (env.DATA_MODE === 'supabase' && supabase) {
+    const { data, error } = await supabase.from('hope_vault').update(req.body).eq('id', req.params.id).eq('victim_token', req.user!.victimToken).select().single();
+    if (error) throw error;
+    return ok(res, data);
+  }
+  const items = store.records.get(`hope:${req.user!.id}`) || [];
+  const item = items.find((x: any) => x.id === req.params.id);
+  if (!item) throw new AppError(404, 'NOT_FOUND', 'Item not found.');
+  if (req.body.title !== undefined) item.title = req.body.title;
+  if (req.body.content !== undefined) item.content = req.body.content;
+  item.updated_at = new Date().toISOString();
+  return ok(res, item);
 }));
 
 app.delete('/api/v1/hope-vault/:id', requireAuth, asyncRoute(async (req: AuthedRequest, res) => {
@@ -1059,8 +1081,18 @@ app.post('/api/v1/safe-circle', requireAuth, body(safeCircleSchema), asyncRoute(
   const contact = record(`safe:${req.user!.id}`, { id: id(), ...req.body, email: normalizeEmail(req.body.email) });
   const welcomeMessage = `Hi ${contact.name}, you've been added as a trusted ${String(contact.relation).toLowerCase()} on SAATH. You'll only hear from us again if they're going through a difficult moment and the app detects a genuine crisis signal.`;
   const results = await deliverToContact(contact, "You've been added to someone's SAATH Safe Circle", welcomeMessage);
+  console.log(`[safe-circle] welcome email to ${contact.email}:`, JSON.stringify(results));
   record('safe_circle_events', { id: id(), contactId: contact.id, victimToken: req.user!.victimToken, trigger: 'contact_added', channels: results, createdAt: new Date().toISOString() });
   return ok(res, contact, 201);
+}));
+app.delete('/api/v1/safe-circle/:id', requireAuth, asyncRoute(async (req: AuthedRequest, res) => {
+  const key = `safe:${req.user!.id}`;
+  const contacts = store.records.get(key) || [];
+  const index = contacts.findIndex((c: any) => c.id === req.params.id);
+  if (index === -1) throw new AppError(404, 'NOT_FOUND', 'Contact not found.');
+  contacts.splice(index, 1);
+  store.records.set(key, contacts);
+  return ok(res, { deleted: req.params.id });
 }));
 app.get('/api/v1/support/resources', requireAuth, asyncRoute(async (req: AuthedRequest, res) => {
   const category = req.query.category as string;

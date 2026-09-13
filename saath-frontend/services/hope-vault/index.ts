@@ -18,6 +18,13 @@ export const hopeVaultService = {
     });
   },
 
+  async updateItem(id: string, payload: { title?: string; content?: string }) {
+    return apiRequest(`/api/v1/hope-vault/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    });
+  },
+
   async uploadPhoto(file: File, title: string) {
     const formData = new FormData();
     formData.append("type", "photo");
