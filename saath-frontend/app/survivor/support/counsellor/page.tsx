@@ -381,7 +381,7 @@ export default function CounsellorPage() {
                                   setRescheduleTargetItem(item);
                                   setRescheduleDate(item.date.slice(0, 10));
                                 }}
-                                className="inline-flex items-center gap-1 rounded-xl border border-border-color bg-white px-3 py-1.5 text-xs font-semibold text-text-primary hover:bg-(--surface-subtle) transition-all"
+                                className="inline-flex items-center gap-1 rounded-xl border border-border-color bg-white px-3 py-1.5 text-xs font-semibold text-text-primary hover:bg-surface-subtle transition-all"
                               >
                                 {hindi ? "समय बदलें" : "Schedule Later"}
                               </button>
@@ -462,7 +462,7 @@ export default function CounsellorPage() {
           aria-modal="true"
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs animate-in fade-in duration-150"
         >
-          <div className="relative w-full max-w-lg rounded-3xl border border-border-color bg-(--surface) p-6 sm:p-7 shadow-2xl">
+          <div className="relative w-full max-w-lg rounded-3xl border border-border-color bg-surface p-6 sm:p-7 shadow-2xl">
             <button
               type="button"
               onClick={() => setModalMode("none")}
@@ -594,7 +594,7 @@ export default function CounsellorPage() {
           aria-modal="true"
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs animate-in fade-in duration-150"
         >
-          <div className="relative w-full max-w-lg rounded-3xl border border-border-color bg-(--surface) p-6 sm:p-7 shadow-2xl">
+          <div className="relative w-full max-w-lg rounded-3xl border border-border-color bg-surface p-6 sm:p-7 shadow-2xl">
             <button
               type="button"
               onClick={() => setModalMode("none")}

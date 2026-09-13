@@ -22,7 +22,7 @@ export function SurvivorNav() {
   const hindi = language === "Hindi";
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border-color/70 bg-(--surface)/90 px-2 pb-[env(safe-area-inset-bottom)] pt-2 shadow-[0_-12px_35px_rgba(29,71,64,.08)] backdrop-blur-xl md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border-color/70 bg-surface/90 px-2 pb-[env(safe-area-inset-bottom)] pt-2 shadow-[0_-12px_35px_rgba(29,71,64,.08)] backdrop-blur-xl md:hidden">
       <ul className="mx-auto flex max-w-lg justify-between">
         <li className="contents">
           {items.map(({ href, labelEn, labelHi, icon: Icon }) => {
@@ -33,10 +33,10 @@ export function SurvivorNav() {
                 href={href}
                 className={cn(
                   "flex min-w-0 flex-1 flex-col items-center gap-1 rounded-2xl py-2 text-[10px] font-semibold",
-                  active ? "text-(--primary-teal)" : "text-(--text-secondary)"
+                  active ? "text-primary-teal" : "text-text-secondary"
                 )}
               >
-                <span className={cn("rounded-xl px-3 py-1", active && "bg-(--primary-teal-dark)")}>
+                <span className={cn("rounded-xl px-3 py-1", active && "bg-primary-teal-dark")}>
                   <Icon size={18} strokeWidth={active ? 2.5 : 1.8} />
                 </span>
                 <span className="truncate">{hindi ? labelHi : labelEn}</span>

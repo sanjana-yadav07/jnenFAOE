@@ -29,7 +29,7 @@ function getCategoryMeta(type: NotificationType) {
         label: "Case Connected",
         labelHi: "मामला जुड़ा",
         icon: ShieldCheck,
-        containerStyle: "bg-(--success-bg) text-(--success)",
+        containerStyle: "bg-success-bg text-success",
         href: "/survivor/case",
         actionText: "View case",
         actionTextHi: "केस देखें",
@@ -39,7 +39,7 @@ function getCategoryMeta(type: NotificationType) {
         label: "Case Stage",
         labelHi: "केस चरण",
         icon: Scale,
-        containerStyle: "bg-(--primary-teal-dark) text-(--primary-teal)",
+        containerStyle: "bg-primary-teal-dark text-primary-teal",
         href: "/survivor/case",
         actionText: "Track progress",
         actionTextHi: "प्रगति देखें",
@@ -49,7 +49,7 @@ function getCategoryMeta(type: NotificationType) {
         label: "Hearing",
         labelHi: "सुनवाई",
         icon: Gavel,
-        containerStyle: "bg-(--warning-bg) text-(--warning)",
+        containerStyle: "bg-warning-bg text-warning",
         href: "/survivor/case",
         actionText: "Court details",
         actionTextHi: "अदालत विवरण",
@@ -59,7 +59,7 @@ function getCategoryMeta(type: NotificationType) {
         label: "Counsellor",
         labelHi: "परामर्शदाता",
         icon: HeartHandshake,
-        containerStyle: "bg-(--info-bg) text-(--info)",
+        containerStyle: "bg-info-bg text-info",
         href: "/survivor/my-space",
         actionText: "Support team",
         actionTextHi: "सहायता टीम",
@@ -69,7 +69,7 @@ function getCategoryMeta(type: NotificationType) {
         label: "Counselling",
         labelHi: "परामर्श",
         icon: CalendarClock,
-        containerStyle: "bg-(--info-bg) text-(--info)",
+        containerStyle: "bg-info-bg text-info",
         href: "/survivor/my-space",
         actionText: "Session schedule",
         actionTextHi: "सत्र अनुसूची",
@@ -89,7 +89,7 @@ function getCategoryMeta(type: NotificationType) {
         label: "Financial Relief",
         labelHi: "वित्तीय सहायता",
         icon: HandCoins,
-        containerStyle: "bg-(--warning-bg) text-(--warning)",
+        containerStyle: "bg-warning-bg text-warning",
         href: "/survivor/case",
         actionText: "Relief details",
         actionTextHi: "राहत विवरण",
@@ -186,7 +186,7 @@ export default function NotificationsPage() {
       <div className="surface rounded-3xl p-6 md:p-8">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-border-color/70 bg-(--surface-subtle) px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-text-secondary">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border-color/70 bg-surface-subtle px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-text-secondary">
               <Bell size={13} className="text-deep-teal" />
               {hindi ? "सूचना केंद्र" : "Notification Centre"}
             </div>
@@ -213,7 +213,7 @@ export default function NotificationsPage() {
                 {unreadCount} {hindi ? "अपठित सूचनाएँ" : "unread notifications"}
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-(--success-bg) px-3 py-1.5 text-xs font-bold text-(--success)">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-success-bg px-3 py-1.5 text-xs font-bold text-success">
                 <Check size={14} />
                 {hindi ? "सभी सूचनाएँ पढ़ी जा चुकी हैं" : "All caught up"}
               </span>
@@ -224,7 +224,7 @@ export default function NotificationsPage() {
                 type="button"
                 onClick={handleMarkAllAsRead}
                 disabled={markingAll}
-                className="inline-flex items-center gap-2 rounded-xl border border-border-color bg-(--surface) px-4 py-2 text-xs font-bold text-text-primary shadow-sm hover:border-(--primary-teal) hover:text-deep-teal transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl border border-border-color bg-surface px-4 py-2 text-xs font-bold text-text-primary shadow-sm hover:border-primary-teal hover:text-deep-teal transition-all disabled:opacity-50"
               >
                 <CheckCheck size={16} />
                 {markingAll
@@ -247,7 +247,7 @@ export default function NotificationsPage() {
             className={`rounded-lg px-3 py-1.5 transition-colors ${
               filter === "all"
                 ? "bg-deep-teal text-white shadow-sm"
-                : "text-text-secondary hover:bg-(--surface-subtle) hover:text-text-primary"
+                : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
             }`}
           >
             {hindi ? "सभी" : "All"} ({notifications.length})
@@ -258,7 +258,7 @@ export default function NotificationsPage() {
             className={`rounded-lg px-3 py-1.5 transition-colors ${
               filter === "unread"
                 ? "bg-deep-teal text-white shadow-sm"
-                : "text-text-secondary hover:bg-(--surface-subtle) hover:text-text-primary"
+                : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
             }`}
           >
             {hindi ? "अपठित" : "Unread"} ({unreadCount})
@@ -276,7 +276,7 @@ export default function NotificationsPage() {
           </div>
         ) : displayedNotifications.length === 0 ? (
           <div className="surface rounded-3xl p-12 text-center max-w-xl mx-auto my-6">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-(--surface-subtle) text-text-secondary">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-surface-subtle text-text-secondary">
               <BellOff size={24} />
             </div>
             <h2 className="mt-4 font-display text-2xl text-text-primary">
@@ -335,7 +335,7 @@ export default function NotificationsPage() {
                     {/* Notification Body */}
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full border border-border-color/60 bg-(--surface-subtle) px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary">
+                        <span className="rounded-full border border-border-color/60 bg-surface-subtle px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary">
                           {hindi ? meta.labelHi : meta.label}
                         </span>
 

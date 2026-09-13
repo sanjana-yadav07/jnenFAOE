@@ -95,6 +95,7 @@
   --color-info-bg: var(--info-bg);
   --color-sidebar-background: var(--sidebar-background);
   --color-input-background: var(--input-background);
+  --color-focus-ring: var(--focus-ring);
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
 }
 

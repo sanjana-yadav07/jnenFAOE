@@ -186,7 +186,7 @@ export default function AdminCasesPage() {
                 const row = report.caseStats.stageStats.find((s) => s.stage === stageName) || { stage: stageName, count: 0 };
                 const pct = total ? Math.round((row.count / total) * 100) : 0;
                 return (
-                  <div key={stageName} className="rounded-xl border border-border-color/60 bg-(--surface-subtle) p-4">
+                  <div key={stageName} className="rounded-xl border border-border-color/60 bg-surface-subtle p-4">
                     <div className="flex flex-col justify-between gap-1 sm:flex-row sm:items-center">
                       <div>
                         <div className="flex items-center gap-2">
@@ -284,7 +284,7 @@ export default function AdminCasesPage() {
                 ]).map((d) => {
                   const pct = total ? Math.round((d.count / total) * 100) : 0;
                   return (
-                    <div key={d.district} className="rounded-xl border border-border-color/60 bg-(--surface-subtle) p-3.5">
+                    <div key={d.district} className="rounded-xl border border-border-color/60 bg-surface-subtle p-3.5">
                       <div className="flex justify-between text-xs font-medium">
                         <span className="font-semibold text-text-primary text-sm">{d.district}</span>
                         <span className="text-deep-teal font-bold">{d.count} cases ({pct}%)</span>

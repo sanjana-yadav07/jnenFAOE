@@ -436,7 +436,7 @@ export default function CounsellorOverviewPage() {
           </Link>
           <Link
             href="/counsellor/alerts"
-            className="inline-flex items-center gap-2 rounded-xl border border-border-color bg-(--surface) px-4 py-2.5 text-xs font-bold text-text-primary hover:border-deep-teal transition-all"
+            className="inline-flex items-center gap-2 rounded-xl border border-border-color bg-surface px-4 py-2.5 text-xs font-bold text-text-primary hover:border-deep-teal transition-all"
           >
             <Bell size={14} className="text-deep-teal" /> Alerts
           </Link>
@@ -445,37 +445,37 @@ export default function CounsellorOverviewPage() {
 
       {/* ── Top Summary Operational Metrics ── */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        <Card className="p-4 bg-(--surface) border-border-color">
+        <Card className="p-4 bg-surface border-border-color">
           <CardTitle className="text-[11px] font-bold text-text-secondary">Assigned Cases</CardTitle>
           <p className="mt-2 text-2xl font-bold text-text-primary">{summary.totalAssigned}</p>
           <p className="mt-1 text-[11px] text-text-secondary">Active caseload</p>
         </Card>
 
-        <Card className="p-4 bg-(--surface) border-amber/40">
+        <Card className="p-4 bg-surface border-amber/40">
           <CardTitle className="text-[11px] font-bold text-[#b67926]">Needs Attention</CardTitle>
           <p className="mt-2 text-2xl font-bold text-[#b67926]">{summary.casesNeedingAttention}</p>
           <p className="mt-1 text-[11px] text-text-secondary">Urgent / high risk</p>
         </Card>
 
-        <Card className="p-4 bg-(--surface) border-warm-peach/40">
+        <Card className="p-4 bg-surface border-warm-peach/40">
           <CardTitle className="text-[11px] font-bold text-warm-peach">Open Alerts</CardTitle>
           <p className="mt-2 text-2xl font-bold text-warm-peach">{summary.openAlerts}</p>
           <p className="mt-1 text-[11px] text-text-secondary">Unresolved</p>
         </Card>
 
-        <Card className="p-4 bg-(--surface) border-border-color">
+        <Card className="p-4 bg-surface border-border-color">
           <CardTitle className="text-[11px] font-bold text-text-secondary">Upcoming Follow-ups</CardTitle>
           <p className="mt-2 text-2xl font-bold text-deep-teal">{summary.upcomingFollowUpsCount}</p>
           <p className="mt-1 text-[11px] text-text-secondary">Scheduled</p>
         </Card>
 
-        <Card className="p-4 bg-(--surface) border-border-color">
+        <Card className="p-4 bg-surface border-border-color">
           <CardTitle className="text-[11px] font-bold text-text-secondary">Pending Reviews</CardTitle>
           <p className="mt-2 text-2xl font-bold text-text-primary">{summary.pendingReviewsCount}</p>
           <p className="mt-1 text-[11px] text-text-secondary">Voice, alert, msgs</p>
         </Card>
 
-        <Card className="p-4 bg-(--surface) border-border-color">
+        <Card className="p-4 bg-surface border-border-color">
           <CardTitle className="text-[11px] font-bold text-text-secondary">Avg. Response</CardTitle>
           <p className="mt-2 text-2xl font-bold text-text-primary">{summary.avgResponseTimeText}</p>
           <p className="mt-1 text-[11px] text-text-secondary">Alert resolution</p>
@@ -504,7 +504,7 @@ export default function CounsellorOverviewPage() {
         {loading && <p className="text-sm text-text-secondary">Loading priority cases…</p>}
 
         {!loading && priorityAttentionCases.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-border-color p-8 text-center bg-(--surface-subtle)">
+          <div className="rounded-2xl border border-dashed border-border-color p-8 text-center bg-surface-subtle">
             <CheckCircle2 size={24} className="mx-auto text-deep-teal mb-2" />
             <p className="text-sm font-semibold text-text-primary">No urgent priority cases</p>
             <p className="text-xs text-text-secondary mt-1">All assigned cases are within stable monitoring parameters.</p>
@@ -516,7 +516,7 @@ export default function CounsellorOverviewPage() {
             <Link
               key={caseRecord.victimToken}
               href={`/counsellor/cases/${caseRecord.victimToken}`}
-              className="group block rounded-2xl border border-border-color/80 bg-(--surface) p-4 shadow-sm hover:border-deep-teal hover:shadow-md transition-all"
+              className="group block rounded-2xl border border-border-color/80 bg-surface p-4 shadow-sm hover:border-deep-teal hover:shadow-md transition-all"
             >
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 {/* Left: Survivor info & operational reason */}
@@ -525,7 +525,7 @@ export default function CounsellorOverviewPage() {
                     <span className="font-editorial text-base font-bold text-text-primary group-hover:text-deep-teal transition-colors">
                       {caseRecord.survivorName}
                     </span>
-                    <span className="font-mono text-xs text-text-secondary bg-(--surface-subtle) px-2 py-0.5 rounded-md border border-border-color/60">
+                    <span className="font-mono text-xs text-text-secondary bg-surface-subtle px-2 py-0.5 rounded-md border border-border-color/60">
                       {caseRecord.docket}
                     </span>
                     <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-pale-sage text-deep-teal border border-deep-teal/20">
@@ -619,7 +619,7 @@ export default function CounsellorOverviewPage() {
                     {count} {count === 1 ? "case" : "cases"} ({pct}%)
                   </span>
                 </div>
-                <div className="h-2 w-full rounded-full bg-(--surface-subtle) overflow-hidden border border-border-color/50">
+                <div className="h-2 w-full rounded-full bg-surface-subtle overflow-hidden border border-border-color/50">
                   <div
                     className="h-full rounded-full bg-deep-teal transition-all"
                     style={{ width: `${pct}%` }}
@@ -640,7 +640,7 @@ export default function CounsellorOverviewPage() {
           </p>
 
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <div className="rounded-xl bg-(--surface-subtle) border border-border-color/60 p-3">
+            <div className="rounded-xl bg-surface-subtle border border-border-color/60 p-3">
               <p className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">Alert Urgency</p>
               <div className="mt-2 space-y-1.5 text-xs">
                 <div className="flex justify-between">
@@ -662,7 +662,7 @@ export default function CounsellorOverviewPage() {
               </div>
             </div>
 
-            <div className="rounded-xl bg-(--surface-subtle) border border-border-color/60 p-3">
+            <div className="rounded-xl bg-surface-subtle border border-border-color/60 p-3">
               <p className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">Caseload Trajectory</p>
               <div className="mt-2 space-y-1.5 text-xs">
                 <div className="flex justify-between">
@@ -705,7 +705,7 @@ export default function CounsellorOverviewPage() {
               <Link
                 key={v.id}
                 href={v.victimToken ? `/counsellor/cases/${v.victimToken}` : "#"}
-                className="block rounded-xl bg-(--surface) border border-border-color p-3 text-sm hover:border-deep-teal transition-all shadow-xs"
+                className="block rounded-xl bg-surface border border-border-color p-3 text-sm hover:border-deep-teal transition-all shadow-xs"
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-semibold text-text-primary">{v.survivorName}</span>
@@ -714,7 +714,7 @@ export default function CounsellorOverviewPage() {
                     <span className="text-[11px] text-text-secondary">{formatDate(v.createdAt)}</span>
                   </div>
                 </div>
-                <p className="mt-1 text-xs italic text-text-primary bg-(--surface-subtle) p-2 rounded-lg line-clamp-2">
+                <p className="mt-1 text-xs italic text-text-primary bg-surface-subtle p-2 rounded-lg line-clamp-2">
                   &ldquo;{v.transcript ?? "Voice recording captured"}&rdquo;
                 </p>
                 {v.signals && (
@@ -759,7 +759,7 @@ export default function CounsellorOverviewPage() {
               <div
                 key={m.id}
                 className={`rounded-xl border p-3 text-sm transition-all ${
-                  !m.read ? "border-deep-teal/40 bg-(--surface)" : "border-border-color bg-(--surface-subtle) opacity-90"
+                  !m.read ? "border-deep-teal/40 bg-surface" : "border-border-color bg-surface-subtle opacity-90"
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -805,7 +805,7 @@ export default function CounsellorOverviewPage() {
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {/* Overdue */}
-          <div className="rounded-2xl border border-warm-peach/40 bg-(--surface) p-4">
+          <div className="rounded-2xl border border-warm-peach/40 bg-surface p-4">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-warm-peach">Overdue</span>
               <span className="rounded-full bg-warm-peach/20 px-2 py-0.5 text-xs font-bold text-warm-peach">
@@ -817,7 +817,7 @@ export default function CounsellorOverviewPage() {
                 <p className="text-xs text-text-secondary italic">No overdue follow-ups.</p>
               )}
               {categorizedFollowUps.overdue.map((f) => (
-                <div key={f.id} className="rounded-lg bg-(--surface-subtle) p-2 text-xs">
+                <div key={f.id} className="rounded-lg bg-surface-subtle p-2 text-xs">
                   <p className="font-semibold text-text-primary">{f.survivorName}</p>
                   <p className="text-[11px] text-warm-peach">Due {formatDate(f.date)}</p>
                 </div>
@@ -826,7 +826,7 @@ export default function CounsellorOverviewPage() {
           </div>
 
           {/* Due Today */}
-          <div className="rounded-2xl border border-[#b67926]/40 bg-(--surface) p-4">
+          <div className="rounded-2xl border border-[#b67926]/40 bg-surface p-4">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-[#b67926]">Due Today</span>
               <span className="rounded-full bg-[#b67926]/20 px-2 py-0.5 text-xs font-bold text-[#b67926]">
@@ -838,7 +838,7 @@ export default function CounsellorOverviewPage() {
                 <p className="text-xs text-text-secondary italic">No follow-ups due today.</p>
               )}
               {categorizedFollowUps.dueToday.map((f) => (
-                <div key={f.id} className="rounded-lg bg-(--surface-subtle) p-2 text-xs">
+                <div key={f.id} className="rounded-lg bg-surface-subtle p-2 text-xs">
                   <p className="font-semibold text-text-primary">{f.survivorName}</p>
                   {f.requestedBy === "survivor" && <Badge tone="peach">Survivor request</Badge>}
                   {f.preferredTime && <p className="text-[11px] text-text-secondary">Time: {f.preferredTime}</p>}
@@ -848,7 +848,7 @@ export default function CounsellorOverviewPage() {
           </div>
 
           {/* Upcoming */}
-          <div className="rounded-2xl border border-deep-teal/40 bg-(--surface) p-4">
+          <div className="rounded-2xl border border-deep-teal/40 bg-surface p-4">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-deep-teal">Upcoming</span>
               <span className="rounded-full bg-deep-teal/20 px-2 py-0.5 text-xs font-bold text-deep-teal">
@@ -860,7 +860,7 @@ export default function CounsellorOverviewPage() {
                 <p className="text-xs text-text-secondary italic">No upcoming follow-ups.</p>
               )}
               {categorizedFollowUps.upcoming.slice(0, 3).map((f) => (
-                <div key={f.id} className="rounded-lg bg-(--surface-subtle) p-2 text-xs">
+                <div key={f.id} className="rounded-lg bg-surface-subtle p-2 text-xs">
                   <p className="font-semibold text-text-primary">{f.survivorName}</p>
                   <p className="text-[11px] text-text-secondary">Date: {formatDate(f.date)}</p>
                 </div>
@@ -869,10 +869,10 @@ export default function CounsellorOverviewPage() {
           </div>
 
           {/* Recently Completed */}
-          <div className="rounded-2xl border border-border-color bg-(--surface) p-4">
+          <div className="rounded-2xl border border-border-color bg-surface p-4">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-text-secondary">Completed</span>
-              <span className="rounded-full bg-(--surface-subtle) px-2 py-0.5 text-xs font-bold text-text-secondary">
+              <span className="rounded-full bg-surface-subtle px-2 py-0.5 text-xs font-bold text-text-secondary">
                 {categorizedFollowUps.completed.length}
               </span>
             </div>
@@ -881,7 +881,7 @@ export default function CounsellorOverviewPage() {
                 <p className="text-xs text-text-secondary italic">No completed records yet.</p>
               )}
               {categorizedFollowUps.completed.slice(0, 3).map((f) => (
-                <div key={f.id} className="rounded-lg bg-(--surface-subtle) p-2 text-xs opacity-80">
+                <div key={f.id} className="rounded-lg bg-surface-subtle p-2 text-xs opacity-80">
                   <p className="font-semibold text-text-primary">{f.survivorName}</p>
                   <p className="text-[11px] text-text-secondary">Done {formatDate(f.date)}</p>
                 </div>
@@ -908,7 +908,7 @@ export default function CounsellorOverviewPage() {
             {recentActivity.map((act) => (
               <div key={act.id} className="py-3 flex items-start justify-between gap-4 first:pt-0 last:pb-0">
                 <div className="flex items-start gap-3">
-                  <span className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-lg bg-(--surface-subtle) border border-border-color text-deep-teal shrink-0">
+                  <span className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-lg bg-surface-subtle border border-border-color text-deep-teal shrink-0">
                     {act.type === "voice" && <Mic size={14} />}
                     {act.type === "message" && <MessageSquare size={14} />}
                     {act.type === "alert" && <ShieldAlert size={14} className="text-warm-peach" />}

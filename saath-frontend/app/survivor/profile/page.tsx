@@ -170,7 +170,7 @@ export default function SurvivorProfilePage() {
       <div className="mt-8 rounded-[32px] border border-border-color/60 bg-white/75 p-6 shadow-sm backdrop-blur-md md:p-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-5">
-            <div className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-(--primary-teal-dark) text-deep-teal shadow-inner">
+            <div className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-primary-teal-dark text-deep-teal shadow-inner">
               <User size={38} strokeWidth={1.8} />
               <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-white shadow-sm ring-2 ring-white">
                 <Check size={13} strokeWidth={3} />
@@ -196,7 +196,7 @@ export default function SurvivorProfilePage() {
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-center">
-            <div className="flex rounded-2xl border border-border-color/80 bg-(--surface-subtle) p-1 text-xs font-semibold">
+            <div className="flex rounded-2xl border border-border-color/80 bg-surface-subtle p-1 text-xs font-semibold">
               <button
                 type="button"
                 onClick={() => setLanguage("English")}
@@ -260,8 +260,8 @@ export default function SurvivorProfilePage() {
                       onClick={() => setCommChannel(id as any)}
                       className={`flex items-center justify-center gap-2 rounded-xl border p-2.5 text-xs font-semibold transition-all ${
                         commChannel === id
-                          ? "border-deep-teal bg-(--primary-teal-dark) text-deep-teal shadow-xs"
-                          : "border-border-color bg-(--surface-subtle) text-text-secondary hover:bg-white"
+                          ? "border-deep-teal bg-primary-teal-dark text-deep-teal shadow-xs"
+                          : "border-border-color bg-surface-subtle text-text-secondary hover:bg-white"
                       }`}
                     >
                       <Icon size={14} />
@@ -272,7 +272,7 @@ export default function SurvivorProfilePage() {
               </div>
 
               {/* Voice Guidance Toggle */}
-              <div className="flex items-center justify-between rounded-2xl border border-border-color/70 bg-(--surface-subtle) p-3.5">
+              <div className="flex items-center justify-between rounded-2xl border border-border-color/70 bg-surface-subtle p-3.5">
                 <div className="flex items-center gap-3">
                   <Volume2 size={18} className="text-deep-teal" />
                   <div>
@@ -317,7 +317,7 @@ export default function SurvivorProfilePage() {
                       className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
                         voiceGender === id
                           ? "border-deep-teal bg-deep-teal text-white"
-                          : "border-border-color bg-(--surface-subtle) text-text-secondary hover:border-deep-teal/40"
+                          : "border-border-color bg-surface-subtle text-text-secondary hover:border-deep-teal/40"
                       }`}
                     >
                       {label}
@@ -327,7 +327,7 @@ export default function SurvivorProfilePage() {
               </div>
 
               {/* SMS Reminders */}
-              <div className="flex items-center justify-between rounded-2xl border border-border-color/70 bg-(--surface-subtle) p-3.5">
+              <div className="flex items-center justify-between rounded-2xl border border-border-color/70 bg-surface-subtle p-3.5">
                 <div>
                   <p className="text-sm font-semibold text-text-primary">
                     {hindi ? "SMS रिमाइंडर" : "SMS reminders"}
@@ -549,7 +549,7 @@ export default function SurvivorProfilePage() {
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3">
-              <div className="rounded-2xl border border-border-color/70 bg-(--surface-subtle) p-4">
+              <div className="rounded-2xl border border-border-color/70 bg-surface-subtle p-4">
                 <p className="text-2xl font-bold text-text-primary">
                   {checkInCount !== null ? checkInCount : "—"}
                 </p>
@@ -558,21 +558,21 @@ export default function SurvivorProfilePage() {
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-border-color/70 bg-(--surface-subtle) p-4">
+              <div className="rounded-2xl border border-border-color/70 bg-surface-subtle p-4">
                 <p className="text-2xl font-bold text-text-primary">6</p>
                 <p className="mt-1 text-xs font-medium text-text-secondary">
                   {hindi ? "शांत व्यायाम" : "Supportive exercises"}
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-border-color/70 bg-(--surface-subtle) p-4">
+              <div className="rounded-2xl border border-border-color/70 bg-surface-subtle p-4">
                 <p className="text-2xl font-bold text-text-primary">4</p>
                 <p className="mt-1 text-xs font-medium text-text-secondary">
                   {hindi ? "हस्तक्षेप पूरे हुए" : "Interventions received"}
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-border-color/70 bg-(--surface-subtle) p-4">
+              <div className="rounded-2xl border border-border-color/70 bg-surface-subtle p-4">
                 <p className="text-sm font-bold text-text-primary mt-1">
                   {lastActiveText}
                 </p>
@@ -641,7 +641,7 @@ export default function SurvivorProfilePage() {
                       className={`flex-1 rounded-xl border py-2 text-xs font-bold transition-all ${
                         accessibility.textSize === id
                           ? "border-deep-teal bg-deep-teal text-white"
-                          : "border-border-color bg-(--surface-subtle) text-text-secondary hover:bg-white"
+                          : "border-border-color bg-surface-subtle text-text-secondary hover:bg-white"
                       }`}
                     >
                       {label}
@@ -651,7 +651,7 @@ export default function SurvivorProfilePage() {
               </div>
 
               {/* High Contrast */}
-              <div className="flex items-center justify-between rounded-2xl border border-border-color/70 bg-(--surface-subtle) p-3.5">
+              <div className="flex items-center justify-between rounded-2xl border border-border-color/70 bg-surface-subtle p-3.5">
                 <div className="flex items-center gap-3">
                   <Contrast size={18} className="text-deep-teal" />
                   <div>
@@ -679,7 +679,7 @@ export default function SurvivorProfilePage() {
               </div>
 
               {/* Reduce Motion */}
-              <div className="flex items-center justify-between rounded-2xl border border-border-color/70 bg-(--surface-subtle) p-3.5">
+              <div className="flex items-center justify-between rounded-2xl border border-border-color/70 bg-surface-subtle p-3.5">
                 <div className="flex items-center gap-3">
                   <MousePointer2 size={18} className="text-deep-teal" />
                   <div>
@@ -826,7 +826,7 @@ export default function SurvivorProfilePage() {
                 <span className="text-xs font-semibold text-text-secondary">
                   {hindi ? "अपठित सूचनाएँ" : "Unread alerts"}
                 </span>
-                <span className="rounded-full bg-(--primary-teal-dark) px-2.5 py-0.5 text-xs font-bold text-deep-teal">
+                <span className="rounded-full bg-primary-teal-dark px-2.5 py-0.5 text-xs font-bold text-deep-teal">
                   {unreadNotificationCount}
                 </span>
               </div>
@@ -869,7 +869,7 @@ export default function SurvivorProfilePage() {
           <div className="flex flex-wrap items-center gap-3">
             <Link
               href="/survivor/case"
-              className="inline-flex items-center gap-2 rounded-2xl border border-border-color bg-(--surface-subtle) px-5 py-3 text-xs font-bold text-text-primary hover:border-deep-teal hover:bg-white transition-all shadow-xs"
+              className="inline-flex items-center gap-2 rounded-2xl border border-border-color bg-surface-subtle px-5 py-3 text-xs font-bold text-text-primary hover:border-deep-teal hover:bg-white transition-all shadow-xs"
             >
               <FileText size={16} className="text-deep-teal" />
               {hindi ? "केस विवरण देखें" : "View My Case"}

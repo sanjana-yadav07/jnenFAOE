@@ -154,7 +154,7 @@ export default function AdminReportsPage() {
 
             {/* KPI Overview Grid inside Report */}
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <div className="rounded-xl border border-border-color/60 bg-(--surface-subtle) p-3.5">
+              <div className="rounded-xl border border-border-color/60 bg-surface-subtle p-3.5">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">Total Caseload</p>
                 <p className="mt-1 text-2xl font-bold text-text-primary">{totalCases}</p>
                 <p className="text-[10px] text-text-secondary">Active survivor cases</p>
@@ -174,7 +174,7 @@ export default function AdminReportsPage() {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-border-color/60 bg-(--surface-subtle) p-3.5">
+              <div className="rounded-xl border border-border-color/60 bg-surface-subtle p-3.5">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">Resolved Alerts</p>
                 <p className="mt-1 text-2xl font-bold text-deep-teal">{report.operationalMetrics.resolvedAlerts}</p>
                 <p className="text-[10px] text-text-secondary">Successfully addressed</p>
@@ -184,7 +184,7 @@ export default function AdminReportsPage() {
             {/* Section Breakdown Tables inside Report */}
             <div className="mt-6 grid gap-6 md:grid-cols-2">
               {/* Stage Progression Table */}
-              <div className="rounded-xl border border-border-color/60 bg-(--surface-subtle) p-4">
+              <div className="rounded-xl border border-border-color/60 bg-surface-subtle p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <Scale size={16} className="text-deep-teal" />
                   <h3 className="font-semibold text-sm text-text-primary">Legal Stage Progression</h3>
@@ -203,7 +203,7 @@ export default function AdminReportsPage() {
               </div>
 
               {/* Clinical Risk Tier Table */}
-              <div className="rounded-xl border border-border-color/60 bg-(--surface-subtle) p-4">
+              <div className="rounded-xl border border-border-color/60 bg-surface-subtle p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <ShieldAlert size={16} className="text-warm-peach" />
                   <h3 className="font-semibold text-sm text-text-primary">Clinical Risk Distribution</h3>
@@ -223,7 +223,7 @@ export default function AdminReportsPage() {
             </div>
 
             {/* Geographic Coverage Table */}
-            <div className="mt-6 rounded-xl border border-border-color/60 bg-(--surface-subtle) p-4">
+            <div className="mt-6 rounded-xl border border-border-color/60 bg-surface-subtle p-4">
               <div className="flex items-center gap-2 mb-3">
                 <MapPin size={16} className="text-deep-teal" />
                 <h3 className="font-semibold text-sm text-text-primary">

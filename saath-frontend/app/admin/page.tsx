@@ -172,7 +172,7 @@ export default function AdminOverviewPage() {
       </div>
 
       {loading && (
-        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-border-color bg-surface p-8 text-center shadow-sm">
+        <div className="flex min-h-75 flex-col items-center justify-center rounded-2xl border border-border-color bg-surface p-8 text-center shadow-sm">
           <RefreshCw size={24} className="animate-spin text-deep-teal" />
           <p className="mt-3 text-sm font-medium text-text-secondary">Synthesizing aggregate telemetry and operational stats...</p>
         </div>

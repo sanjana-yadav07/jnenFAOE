@@ -79,7 +79,7 @@ export default function ConsentPage() {
       <div className="flex-1 flex flex-col justify-center px-6 py-12 md:px-14 xl:px-20">
         {/* Mobile logo */}
         <div className="flex items-center gap-2 mb-8 md:hidden">
-          <span className="text-xl text-(--accent-gold)">✦</span>
+          <span className="text-xl text-accent-gold">✦</span>
           <span className="font-editorial text-[22px] font-bold text-deep-teal">SAATH</span>
         </div>
 
@@ -96,8 +96,8 @@ export default function ConsentPage() {
           </div>
 
           {/* Consent summary card */}
-          <div className="rounded-2xl border border-border-color bg-(--surface) overflow-hidden shadow-sm">
-            <div className="px-5 py-4 border-b border-border-color/60 bg-(--surface-subtle)">
+          <div className="rounded-2xl border border-border-color bg-surface overflow-hidden shadow-sm">
+            <div className="px-5 py-4 border-b border-border-color/60 bg-surface-subtle">
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-text-secondary">SAATH may use</p>
             </div>
             <div className="px-5 py-4 space-y-2.5">
@@ -108,7 +108,7 @@ export default function ConsentPage() {
                 </div>
               ))}
             </div>
-            <div className="px-5 py-4 border-t border-border-color/60 bg-(--surface-subtle)">
+            <div className="px-5 py-4 border-t border-border-color/60 bg-surface-subtle">
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-text-secondary mb-3">Purpose</p>
               <div className="space-y-2.5">
                 {[
@@ -118,7 +118,7 @@ export default function ConsentPage() {
                   "notify authorised professionals when required, according to your consent and safety policy",
                 ].map((item) => (
                   <div key={item} className="flex items-start gap-2.5">
-                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-(--sage) shrink-0" />
+                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-sage shrink-0" />
                     <span className="text-[13px] text-text-primary">{item}</span>
                   </div>
                 ))}
@@ -128,7 +128,7 @@ export default function ConsentPage() {
 
           {/* Checkboxes */}
           <div className="mt-6 space-y-4">
-            <label className={`flex items-start gap-4 rounded-xl border px-4 py-4 cursor-pointer transition-all ${monitoringConsent ? "border-deep-teal bg-(--success-bg)" : "border-border-color bg-(--surface)"}`}>
+            <label className={`flex items-start gap-4 rounded-xl border px-4 py-4 cursor-pointer transition-all ${monitoringConsent ? "border-deep-teal bg-success-bg" : "border-border-color bg-surface"}`}>
               <input
                 type="checkbox"
                 className="mt-0.5 h-5 w-5 shrink-0 accent-deep-teal"
@@ -141,7 +141,7 @@ export default function ConsentPage() {
               </div>
             </label>
 
-            <label className={`flex items-start gap-4 rounded-xl border px-4 py-4 cursor-pointer transition-all ${voiceConsent ? "border-deep-teal bg-(--success-bg)" : "border-border-color bg-(--surface)"}`}>
+            <label className={`flex items-start gap-4 rounded-xl border px-4 py-4 cursor-pointer transition-all ${voiceConsent ? "border-deep-teal bg-success-bg" : "border-border-color bg-surface"}`}>
               <input
                 type="checkbox"
                 className="mt-0.5 h-5 w-5 shrink-0 accent-deep-teal"
@@ -164,7 +164,7 @@ export default function ConsentPage() {
           </Link>
 
           {error && (
-            <p role="alert" className="mt-4 text-sm text-warm-peach bg-(--error-bg) rounded-xl px-4 py-3">
+            <p role="alert" className="mt-4 text-sm text-warm-peach bg-error-bg rounded-xl px-4 py-3">
               {error}
             </p>
           )}

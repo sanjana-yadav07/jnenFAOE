@@ -64,9 +64,9 @@ export default function PrivacyNoticePage() {
   return (
     <div className="min-h-screen saath-page-bg">
       {/* ── Top bar ── */}
-      <header className="border-b border-border-color/60 bg-(--surface)/80 backdrop-blur-sm px-6 py-4 md:px-10 xl:px-16 flex items-center justify-between">
+      <header className="border-b border-border-color/60 bg-surface/80 backdrop-blur-sm px-6 py-4 md:px-10 xl:px-16 flex items-center justify-between">
         <Link href="/landing" className="flex items-center gap-2.5 group w-fit">
-          <span className="text-lg text-(--accent-gold) transition-transform duration-300 group-hover:rotate-12">✦</span>
+          <span className="text-lg text-accent-gold transition-transform duration-300 group-hover:rotate-12">✦</span>
           <span className="font-editorial text-[20px] font-bold text-deep-teal leading-none">SAATH</span>
         </Link>
         <Link
@@ -79,9 +79,9 @@ export default function PrivacyNoticePage() {
       </header>
 
       {/* ── Hero ── */}
-      <div className="px-6 py-14 md:px-10 xl:px-16 border-b border-border-color/40 bg-(--surface)/50">
+      <div className="px-6 py-14 md:px-10 xl:px-16 border-b border-border-color/40 bg-surface/50">
         <div className="max-w-3xl">
-          <span className="inline-flex items-center rounded-full border border-border-color bg-(--surface-subtle) px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-text-secondary mb-5">
+          <span className="inline-flex items-center rounded-full border border-border-color bg-surface-subtle px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-text-secondary mb-5">
             Legal
           </span>
           <h1 className="font-editorial text-[38px] md:text-[52px] xl:text-[58px] leading-[1.06] tracking-tight text-text-primary">
@@ -92,15 +92,15 @@ export default function PrivacyNoticePage() {
             SAATH is designed with privacy as a foundation — not an afterthought. This notice explains what we collect, why, and how you remain in control at every step.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <span className="inline-flex items-center gap-1.5 rounded-lg bg-(--success-bg) border border-(--success)/30 px-3 py-1.5 text-[12px] font-medium text-(--success)">
+            <span className="inline-flex items-center gap-1.5 rounded-lg bg-success-bg border border-success/30 px-3 py-1.5 text-[12px] font-medium text-success">
               <ShieldCheck size={13} />
               Consent-first design
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-lg bg-(--info-bg) border border-(--info)/30 px-3 py-1.5 text-[12px] font-medium text-(--info)">
+            <span className="inline-flex items-center gap-1.5 rounded-lg bg-info-bg border border-info/30 px-3 py-1.5 text-[12px] font-medium text-info">
               <Lock size={13} />
               End-to-end encrypted
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-lg bg-(--warning-bg) border border-(--amber)/30 px-3 py-1.5 text-[12px] font-medium text-(--amber)">
+            <span className="inline-flex items-center gap-1.5 rounded-lg bg-warning-bg border border-amber/30 px-3 py-1.5 text-[12px] font-medium text-amber">
               Prototype — synthetic data only
             </span>
           </div>
@@ -117,8 +117,8 @@ export default function PrivacyNoticePage() {
             >
               {/* Icon col */}
               <div className="shrink-0 flex items-start md:w-10">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-(--primary-teal-dark) border border-(--primary-teal)/20">
-                  <Icon size={15} className="text-(--primary-teal)" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-teal-dark border border-primary-teal/20">
+                  <Icon size={15} className="text-primary-teal" />
                 </div>
               </div>
               {/* Content col */}
@@ -135,7 +135,7 @@ export default function PrivacyNoticePage() {
         </div>
 
         {/* Footer note */}
-        <div className="mt-12 max-w-3xl rounded-2xl border border-border-color bg-(--surface) px-6 py-5">
+        <div className="mt-12 max-w-3xl rounded-2xl border border-border-color bg-surface px-6 py-5">
           <p className="text-[12px] font-bold uppercase tracking-[0.16em] text-text-secondary mb-2">Last updated</p>
           <p className="text-[13px] text-text-primary font-medium">September 2026 — Version 1.0</p>
           <p className="mt-3 text-[12px] text-text-secondary leading-relaxed">

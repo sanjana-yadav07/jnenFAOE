@@ -235,12 +235,12 @@ export default function ReportsPage() {
 
       {/* Top 6 Summary Stats */}
       <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-6">
-        <div className="rounded-2xl border border-border-color bg-(--surface) p-4 shadow-sm">
+        <div className="rounded-2xl border border-border-color bg-surface p-4 shadow-sm">
           <p className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider">Assigned Cases</p>
           <p className="mt-2 text-2xl font-bold tracking-tight text-text-primary">{totalCases}</p>
           <p className="mt-1 text-[11px] text-text-secondary">Active survivors</p>
         </div>
-        <div className="rounded-2xl border border-border-color bg-(--surface) p-4 shadow-sm">
+        <div className="rounded-2xl border border-border-color bg-surface p-4 shadow-sm">
           <p className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider">Districts</p>
           <p className="mt-2 text-2xl font-bold tracking-tight text-deep-teal">{uniqueDistricts.length}</p>
           <p className="mt-1 text-[11px] text-text-secondary">{uniqueDistricts.slice(0, 2).join(", ")}</p>
@@ -257,14 +257,14 @@ export default function ReportsPage() {
           </p>
           <p className="mt-1 text-[11px] text-text-secondary">Clinical safety flags</p>
         </div>
-        <div className="rounded-2xl border border-border-color bg-(--surface) p-4 shadow-sm">
+        <div className="rounded-2xl border border-border-color bg-surface p-4 shadow-sm">
           <p className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider">Relief Approved</p>
           <p className="mt-2 text-xl font-bold tracking-tight text-text-primary">
             ₹{totalApproved.toLocaleString("en-IN")}
           </p>
           <p className="mt-1 text-[11px] text-text-secondary">Interim &amp; Final</p>
         </div>
-        <div className="rounded-2xl border border-pale-sage/60 bg-(--surface) p-4 shadow-sm">
+        <div className="rounded-2xl border border-pale-sage/60 bg-surface p-4 shadow-sm">
           <p className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider">Relief Disbursed</p>
           <p className="mt-2 text-xl font-bold tracking-tight text-deep-teal">
             ₹{totalReceived.toLocaleString("en-IN")}
@@ -423,7 +423,7 @@ export default function ReportsPage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-text-primary">
-            <thead className="border-b border-border-color bg-(--surface-subtle) text-[11px] font-bold uppercase tracking-wider text-text-secondary">
+            <thead className="border-b border-border-color bg-surface-subtle text-[11px] font-bold uppercase tracking-wider text-text-secondary">
               <tr>
                 <th className="p-3">Survivor / Docket</th>
                 <th className="p-3">District</th>
@@ -437,14 +437,14 @@ export default function ReportsPage() {
             </thead>
             <tbody className="divide-y divide-border-color/60">
               {cases.map((c) => (
-                <tr key={c.id} className="hover:bg-(--surface-subtle) transition-colors">
+                <tr key={c.id} className="hover:bg-surface-subtle transition-colors">
                   <td className="p-3">
                     <p className="font-semibold text-text-primary">{c.survivorName}</p>
                     <p className="font-mono text-[10px] text-text-secondary">{c.docket}</p>
                   </td>
                   <td className="p-3 font-medium">{c.district}, {c.state}</td>
                   <td className="p-3">
-                    <span className="rounded-md bg-(--surface-subtle) px-2 py-0.5 font-semibold text-text-primary border border-border-color/60">
+                    <span className="rounded-md bg-surface-subtle px-2 py-0.5 font-semibold text-text-primary border border-border-color/60">
                       {c.currentStage}
                     </span>
                   </td>
