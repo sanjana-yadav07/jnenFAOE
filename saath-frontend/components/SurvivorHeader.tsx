@@ -67,7 +67,6 @@ export function SurvivorHeader() {
   const setAccessibility = useAppStore((state) => state.setAccessibility);
   const resetAccessibility = useAppStore((state) => state.resetAccessibility);
   const pathname = usePathname();
-  const hideLanguageSelector = pathname?.startsWith("/survivor/check-in/ivrs");
   const unreadCount = useAppStore((state) => state.unreadNotificationCount);
   const fetchNotifications = useAppStore((state) => state.fetchNotifications);
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
@@ -132,9 +131,7 @@ export function SurvivorHeader() {
       </div>
 
       <div className="relative flex shrink-0 items-center gap-1.5 sm:gap-2">
-        {!hideLanguageSelector && (
-          <LanguageDropdown variant="pill" />
-        )}
+        <LanguageDropdown variant="pill" />
 
         <button
           ref={panelButtonRef}
