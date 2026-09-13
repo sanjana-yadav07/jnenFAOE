@@ -266,7 +266,7 @@ export function generateHealthSummaryPdf(data: ExportDataPayload) {
   <div class="score-box">
     <div class="score-item">
       <div class="score-num">${data.distressScore !== undefined ? data.distressScore : "28"}<span style="font-size: 14px; font-weight: normal; color: #7e918b;">/100</span></div>
-      <div class="score-desc">Distress Index (Lower is calmer)</div>
+      <div class="score-desc">Stress Vulnerability Index (SVI)</div>
     </div>
     <div style="width: 1px; height: 38px; background: #c7e3d8;"></div>
     <div class="score-item">
@@ -288,7 +288,7 @@ export function generateHealthSummaryPdf(data: ExportDataPayload) {
         <th>Date</th>
         <th>Modality</th>
         <th>Reported State</th>
-        <th>Distress (0-100)</th>
+        <th>SVI Score (0-100)</th>
         <th>Sleep Index</th>
         <th>Social Connection</th>
       </tr>
@@ -300,7 +300,7 @@ export function generateHealthSummaryPdf(data: ExportDataPayload) {
 
   <div class="notice">
     <strong>Clinical & Advisory Note for Outside Providers:</strong><br>
-    This summary is voluntarily exported by the individual from their SAATH digital companion. It is intended to assist consulting therapists, psychiatrists, or medical social workers by offering continuity of longitudinal wellbeing signals, sleep patterns, and reported engagement. This report is strictly descriptive and does not constitute an unverified medical diagnosis.
+    This summary is voluntarily exported by the individual from their SAATH digital companion. The Stress Vulnerability Index (SVI) is an operational wellbeing signal reflecting self-reported check-ins, sleep continuity, and engagement. It is intended to assist consulting therapists, counsellors, or medical social workers. SVI and triage risk levels are strictly operational signals and do not constitute an official psychiatric or medical diagnosis.
   </div>
 
   <div class="footer">

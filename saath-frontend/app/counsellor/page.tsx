@@ -233,7 +233,7 @@ export default function CounsellorOverviewPage() {
           reason = `High risk level (${c.riskLevel})${c.nextHearingDate ? ` · Next hearing: ${formatDate(c.nextHearingDate)}` : ""}`;
           urgencyScore = 60;
         } else if (c.currentDistressScore && c.currentDistressScore >= 70) {
-          reason = `Elevated distress observation (${c.currentDistressScore}/100)`;
+          reason = `Elevated Stress Vulnerability Index (SVI: ${c.currentDistressScore}/100)`;
           urgencyScore = 50;
         } else {
           reason = `Routine monitoring · Stage: ${c.currentStage || "Registered"}`;
@@ -560,7 +560,7 @@ export default function CounsellorOverviewPage() {
                 {/* Right: Scores & Trends */}
                 <div className="flex flex-wrap items-center gap-4 shrink-0 border-t md:border-t-0 border-border-color/50 pt-2 md:pt-0">
                   <div className="text-right">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">Distress</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">SVI</p>
                     <div className="flex items-center gap-1 justify-end font-semibold text-sm">
                       {distressScore !== null ? (
                         <>
@@ -726,7 +726,7 @@ export default function CounsellorOverviewPage() {
                     )}
                     {typeof v.signals.distressScore === "number" && (
                       <span className="rounded bg-amber/20 px-1.5 py-0.5 font-medium text-[#b67926]">
-                        Distress: {v.signals.distressScore}
+                        SVI: {v.signals.distressScore}
                       </span>
                     )}
                   </div>

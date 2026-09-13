@@ -81,7 +81,7 @@ export default function CounsellorAlertsPage() {
               priority: "P1",
               severity: "urgent",
               status: "NEW",
-              reason: `High distress score (${c.currentDistressScore}/100) requires urgent clinical check-in.`,
+              reason: `Elevated Stress Vulnerability Index (${c.currentDistressScore}/100) requires clinical check-in.`,
               source: "sahayak",
               crisis: true,
               confidence: 0.94,

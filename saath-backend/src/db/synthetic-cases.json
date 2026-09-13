@@ -114,7 +114,7 @@
     "current_distress_score": 68,
     "predicted_7d_score": 77,
     "risk_level": "HIGH",
-    "assigned_counsellor_id": "C001",
+    "assigned_counsellor_id": "C002",
     "followup_frequency": "every_3_days"
   },
   {
@@ -173,7 +173,7 @@
     "current_distress_score": 75,
     "predicted_7d_score": 73,
     "risk_level": "HIGH",
-    "assigned_counsellor_id": "C001",
+    "assigned_counsellor_id": "C005",
     "followup_frequency": "every_2_days"
   },
   {

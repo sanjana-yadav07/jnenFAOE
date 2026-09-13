@@ -1,0 +1,312 @@
+{
+  "acts": [
+    {
+      "id": "poa-1989",
+      "title": "Scheduled Castes and Scheduled Tribes (Prevention of Atrocities) Act, 1989",
+      "short_description": "Comprehensive law to prevent atrocities against members of Scheduled Castes and Scheduled Tribes, providing special courts, victim rights, relief and rehabilitation.",
+      "plain_language_summary": "This law provides special protections for individuals from SC/ST communities against atrocities, discrimination, and violence. It establishes fast-track Special Courts, guarantees victim and witness protection, mandates immediate financial relief/compensation, and ensures free legal aid.",
+      "jurisdiction": "National (India)",
+      "applicable_case_types": ["Caste-based Violence", "Grievous Hurt & Intimidation", "Murder of Family Member", "Atrocity", "Caste Discrimination"],
+      "applicable_incident_categories": ["Caste discrimination, physical assault and threats", "Sexual violence and intimidation", "Targeted killing of family member"],
+      "content_type": "Act",
+      "official_source_name": "India Code · Legislative Department, Ministry of Law and Justice",
+      "official_source_url": "https://www.indiacode.nic.in/handle/123456789/1522",
+      "source_document_url": "https://www.indiacode.nic.in/bitstream/123456789/1522/1/A1989-33.pdf",
+      "last_verified_at": "2026-08-01",
+      "version": "Amended up to 2018",
+      "language": "en",
+      "status": "verified",
+      "key_provisions": [
+        {
+          "section": "Section 15A",
+          "title": "Rights of Victims and Witnesses",
+          "summary": "Guarantees rights to protection from intimidation, regular updates on case proceedings, free legal aid, travel/maintenance allowance during hearings, and protection from harassment.",
+          "official_url": "https://www.indiacode.nic.in/handle/123456789/1522"
+        },
+        {
+          "section": "Section 14",
+          "title": "Special Courts & Exclusive Special Courts",
+          "summary": "Mandates speedy trial and disposal of atrocity cases within two months of filing the chargesheet wherever feasible.",
+          "official_url": "https://www.indiacode.nic.in/handle/123456789/1522"
+        }
+      ]
+    },
+    {
+      "id": "pcr-1955",
+      "title": "Protection of Civil Rights Act, 1955",
+      "short_description": "Prescribes punishment for the preaching and practice of 'Untouchability' and for the enforcement of any disability arising therefrom.",
+      "plain_language_summary": "This Act makes it an offence to deny any individual access to public places, water bodies, religious premises, employment, or community services on grounds of untouchability or caste-based discrimination.",
+      "jurisdiction": "National (India)",
+      "applicable_case_types": ["Caste-based Discrimination", "Discrimination", "Untouchability", "Public Humiliation"],
+      "applicable_incident_categories": ["Discrimination, public humiliation and employment exclusion", "Social boycott"],
+      "content_type": "Act",
+      "official_source_name": "India Code · Ministry of Law and Justice",
+      "official_source_url": "https://www.indiacode.nic.in/handle/123456789/1521",
+      "source_document_url": "https://www.indiacode.nic.in/bitstream/123456789/1521/1/A1955-22.pdf",
+      "last_verified_at": "2026-08-01",
+      "version": "Current in force",
+      "language": "en",
+      "status": "verified"
+    },
+    {
+      "id": "lsa-1987",
+      "title": "Legal Services Authorities Act, 1987",
+      "short_description": "Constitutes legal services authorities to provide free and competent legal services to the weaker sections of the society.",
+      "plain_language_summary": "Under Section 12 of this Act, victims of caste atrocities, women, children, persons with disabilities, and individuals in custody are entitled to free legal aid, legal representation, and payment of court fees through NALSA, SLSAs, and DLSAs.",
+      "jurisdiction": "National (India)",
+      "applicable_case_types": ["All", "Caste-based Violence", "Sexual Assault", "Domestic Violence", "Caste-based Discrimination"],
+      "applicable_incident_categories": ["All"],
+      "content_type": "Act",
+      "official_source_name": "National Legal Services Authority (NALSA)",
+      "official_source_url": "https://nalsa.gov.in/acts-rules",
+      "source_document_url": "https://nalsa.gov.in/acts-rules/the-legal-services-authorities-act-1987",
+      "last_verified_at": "2026-08-15",
+      "version": "Current in force",
+      "language": "en",
+      "status": "verified"
+    },
+    {
+      "id": "bns-victim-relief",
+      "title": "Victim Rights and Relief Provisions under Indian Law",
+      "short_description": "Statutory provisions governing victim compensation, recording of statements by female police officers, and medical examination.",
+      "plain_language_summary": "Indian criminal procedure guarantees that survivors of violence are entitled to free medical treatment at all hospitals, prompt FIR registration, sensitive statement recording, and application to the District Legal Services Authority (DLSA) for interim victim compensation.",
+      "jurisdiction": "National (India)",
+      "applicable_case_types": ["Sexual Assault", "Domestic Violence", "Grievous Hurt", "Violence"],
+      "applicable_incident_categories": ["Sexual violence and intimidation", "Domestic Violence", "Physical assault"],
+      "content_type": "Victim right",
+      "official_source_name": "Department of Justice · Ministry of Law and Justice",
+      "official_source_url": "https://doj.gov.in/",
+      "source_document_url": "https://doj.gov.in/victim-compensation-scheme/",
+      "last_verified_at": "2026-08-10",
+      "version": "Current",
+      "language": "en",
+      "status": "verified"
+    }
+  ],
+  "rights": [
+    {
+      "id": "right-protection",
+      "title": "Right to Protection & Safety",
+      "summary": "Protection from threats, coercion, inducements, violence or intimidation by the accused or their associates.",
+      "details": "Under the SC/ST PoA Act (Section 15A) and Witness Protection Schemes, police and district administration are legally mandated to evaluate threat perceptions, provide physical security or police escort, and protect survivors and witnesses throughout the legal process.",
+      "source": "PoA Act 1989 Section 15A · India Code",
+      "source_url": "https://www.indiacode.nic.in/handle/123456789/1522",
+      "applicable_cases": ["Caste-based Violence", "Sexual Assault", "Murder of Family Member", "Intimidation"]
+    },
+    {
+      "id": "right-free-legal-aid",
+      "title": "Right to Free Legal Aid & Counsel",
+      "summary": "Complete free legal representation from filing the complaint through appeals.",
+      "details": "Section 12 of the Legal Services Authorities Act guarantees that eligible survivors pay zero fees for legal counsel, drafting petitions, court appearances, certified copies, and witness travel expenses through NALSA and DLSA panels.",
+      "source": "Legal Services Authorities Act, 1987 Section 12 · NALSA",
+      "source_url": "https://nalsa.gov.in/services/legal-aid/eligibility-criteria",
+      "applicable_cases": ["All"]
+    },
+    {
+      "id": "right-case-updates",
+      "title": "Right to Information on Proceedings",
+      "summary": "Timely information regarding court dates, bail hearings, chargesheet filing, and verdicts.",
+      "details": "Survivors and legal heirs have the right to be notified about all court dates, summons, bail applications moved by the accused, chargesheet submissions, and trial proceedings with reasonable advance notice.",
+      "source": "PoA Act 1989 Section 15A(3) & (5) · India Code",
+      "source_url": "https://www.indiacode.nic.in/handle/123456789/1522",
+      "applicable_cases": ["All"]
+    },
+    {
+      "id": "right-compensation",
+      "title": "Right to Relief & Financial Compensation",
+      "summary": "Mandated financial relief and interim compensation disbursed at stage milestones.",
+      "details": "Under the PoA Rules (Schedule Annexure I) and Central/State Victim Compensation Schemes, survivors are entitled to mandated relief amounts. A portion is disbursed immediately upon FIR registration, chargesheet, and court conviction to cover immediate medical, legal, and survival needs.",
+      "source": "PoA Rules 1995 (Schedule Annexure I) · DoSJE / NALSA",
+      "source_url": "https://socialjustice.gov.in/schemes/4",
+      "applicable_cases": ["Caste-based Violence", "Murder of Family Member", "Sexual Assault", "Grievous Hurt & Intimidation"]
+    },
+    {
+      "id": "right-dignity",
+      "title": "Right to Dignified & Sensitive Treatment",
+      "summary": "Trauma-informed treatment free from discriminatory or humiliating practices.",
+      "details": "All police, medical, and judicial officers are required by law to conduct examinations and proceedings with dignity. Recording of statements for women and minors must be done in a safe environment by female officers wherever available.",
+      "source": "Ministry of Home Affairs & Supreme Court Guidelines",
+      "source_url": "https://mha.gov.in/",
+      "applicable_cases": ["All"]
+    }
+  ],
+  "process_stages": [
+    {
+      "stage": "Registered",
+      "title": "Case Registration & Intake",
+      "general_overview": "The complaint is formally received and assigned an official docket identifier. Initial police verification or FIR registration commences.",
+      "key_rights": [
+        "Right to receive a free copy of the registered First Information Report (FIR).",
+        "Immediate referral to medical care and initial safety screening.",
+        "Option to request free legal aid from DLSA immediately."
+      ],
+      "next_steps_overview": "The investigating agency begins collecting evidence, recording statements, and filing preliminary paperwork."
+    },
+    {
+      "stage": "Investigation",
+      "title": "Police Investigation & Evidence Gathering",
+      "general_overview": "The appointed Investigating Officer (IO) collects forensic/documentary evidence, visits the scene, records witness statements, and determines whether an arrest is warranted.",
+      "key_rights": [
+        "Protection from threats or coercion by accused parties (Section 15A PoA Act).",
+        "Statement recording in a safe and supportive setting.",
+        "Initial installment of statutory interim relief / victim compensation upon FIR."
+      ],
+      "next_steps_overview": "Upon completing investigation, the IO submits a final report or Chargesheet to the jurisdictional court."
+    },
+    {
+      "stage": "Trial",
+      "title": "Court Hearings & Judicial Proceedings",
+      "general_overview": "The Special Court or District Court examines evidence, hears prosecution and defence arguments, and examines witnesses.",
+      "key_rights": [
+        "Right to advance notification of all hearing dates and bail petitions.",
+        "Right to be accompanied by a legal aid advocate or support counsellor.",
+        "Travel, food, and daily maintenance allowance for attending court hearings.",
+        "In-camera proceedings or screen protection during sensitive testimony if requested."
+      ],
+      "next_steps_overview": "After witness examinations and final arguments, the court pronounces judgment and orders sentencing/final relief."
+    },
+    {
+      "stage": "Compensation",
+      "title": "Financial Relief Assessment & Disbursal",
+      "general_overview": "The District Magistrate / Nodal Agency / DLSA processes statutory financial relief according to prescribed legal schedules.",
+      "key_rights": [
+        "Disbursal of balance relief compensation directly into survivor's bank account.",
+        "Reimbursement of medical and relocation expenses where applicable under state rules."
+      ],
+      "next_steps_overview": "Review of full disbursal and transition into long-term rehabilitation support."
+    },
+    {
+      "stage": "Rehabilitation",
+      "title": "Long-Term Rehabilitation & Social Support",
+      "general_overview": "Support measures to assist the survivor in regaining emotional stability, vocational security, education, and safe housing.",
+      "key_rights": [
+        "Access to government vocational training and livelihood support schemes.",
+        "Assistance with educational admission or safe housing if relocated.",
+        "Continued psychosocial support sessions with assigned counsellors."
+      ],
+      "next_steps_overview": "Ongoing monitoring by Safe Circle and community support network."
+    }
+  ],
+  "legal_aid": {
+    "title": "Free Legal Aid & Legal Services Authorities",
+    "authority": "National Legal Services Authority (NALSA) & State/District Legal Services Authorities (SLSA/DLSA)",
+    "statutory_basis": "Section 12 of the Legal Services Authorities Act, 1987",
+    "eligibility_summary": "Free legal aid is guaranteed by law to: (1) Members of Scheduled Castes and Scheduled Tribes, (2) Women and children, (3) Victims of trafficking or beggar, (4) Persons with disabilities, (5) Victims of mass disaster, ethnic violence, or atrocity, and (6) Persons in custody.",
+    "services_covered": [
+      "Payment of court fees, process fees, and all other charges payable in proceedings.",
+      "Providing service of lawyers in legal proceedings (Civil, Criminal, Revenue, Appellate).",
+      "Obtaining and supplying certified copies of orders and other documents in legal proceedings.",
+      "Preparation of appeal, paper book including printing and translation of documents in legal proceedings."
+    ],
+    "helpline_national": "15100",
+    "helpline_description": "NALSA National Legal Helpline (Toll-Free, 24/7 across India)",
+    "portal_url": "https://nalsa.gov.in/",
+    "online_application_url": "https://nalsa.gov.in/nalsa-portal/",
+    "source_url": "https://nalsa.gov.in/services/legal-aid",
+    "last_verified_at": "2026-08-15"
+  },
+  "official_resources": [
+    {
+      "id": "res-nalsa-helpline",
+      "name": "NALSA National Legal Aid Helpline",
+      "category": "Legal Aid",
+      "description": "Toll-free national legal helpline providing immediate assistance, advocate allocation, and legal guidance for vulnerable citizens.",
+      "phone": "15100",
+      "website": "https://nalsa.gov.in/",
+      "jurisdiction": "National (India)",
+      "official_source": "National Legal Services Authority (NALSA)",
+      "last_verified_at": "2026-08-15",
+      "action_type": "call",
+      "applicable_cases": ["All"]
+    },
+    {
+      "id": "res-nhaa-helpline",
+      "name": "National Helpline Against Atrocities (NHAA)",
+      "category": "Government Authority",
+      "description": "Toll-free 24x7 helpline by Department of Social Justice and Empowerment for victims of atrocities under PoA and PCR Acts.",
+      "phone": "14566",
+      "website": "https://socialjustice.gov.in/",
+      "jurisdiction": "National (India)",
+      "official_source": "Ministry of Social Justice & Empowerment, Govt. of India",
+      "last_verified_at": "2026-08-10",
+      "action_type": "call",
+      "applicable_cases": ["Caste-based Violence", "Caste-based Discrimination", "Atrocity", "Grievous Hurt & Intimidation", "Murder of Family Member"]
+    },
+    {
+      "id": "res-ncw-helpline",
+      "name": "National Commission for Women (NCW) Helpline",
+      "category": "Protection & Support",
+      "description": "24/7 dedicated helpline for women in distress, offering crisis intervention, legal support referrals, and police coordination.",
+      "phone": "7827170170",
+      "website": "http://ncw.nic.in/",
+      "jurisdiction": "National (India)",
+      "official_source": "National Commission for Women, Govt. of India",
+      "last_verified_at": "2026-08-05",
+      "action_type": "call",
+      "applicable_cases": ["Sexual Assault", "Domestic Violence", "Woman"]
+    },
+    {
+      "id": "res-india-code-portal",
+      "name": "India Code Digital Legislative Repository",
+      "category": "Official Source",
+      "description": "Official portal containing full unamended and amended Central and State Acts, Rules, and Notifications.",
+      "phone": null,
+      "website": "https://www.indiacode.nic.in/",
+      "jurisdiction": "National (India)",
+      "official_source": "Ministry of Law and Justice, Govt. of India",
+      "last_verified_at": "2026-08-01",
+      "action_type": "website",
+      "applicable_cases": ["All"]
+    },
+    {
+      "id": "res-dosje-relief",
+      "name": "Department of Social Justice & Empowerment (DoSJE)",
+      "category": "Compensation & Schemes",
+      "description": "Central nodal department administering PoA statutory relief schedules, development corporations, and rehabilitation programs.",
+      "phone": "011-23381643",
+      "website": "https://socialjustice.gov.in/",
+      "jurisdiction": "National (India)",
+      "official_source": "Ministry of Social Justice & Empowerment",
+      "last_verified_at": "2026-08-10",
+      "action_type": "website",
+      "applicable_cases": ["Caste-based Violence", "Caste-based Discrimination", "Atrocity"]
+    }
+  ],
+  "faqs": [
+    {
+      "id": "faq-1",
+      "question": "What is free legal aid and who pays for my lawyer?",
+      "answer": "Under the Legal Services Authorities Act, 1987, free legal aid means the government through NALSA or the District Legal Services Authority (DLSA) provides an experienced advocate without any fees from you. Court fees, typing, and paper costs are also covered.",
+      "official_source": "NALSA Legal Services Authority Act Section 12",
+      "source_url": "https://nalsa.gov.in/services/legal-aid/eligibility-criteria"
+    },
+    {
+      "id": "faq-2",
+      "question": "What can I do if I or my family feel unsafe or face intimidation?",
+      "answer": "Under Section 15A of the SC/ST PoA Act and the National Witness Protection Scheme, you have a legal right to state protection. You can notify your Investigating Officer, Special Court, or District Nodal Officer immediately. SAATH can also alert your assigned counsellor to assist in filing a protection requisition.",
+      "official_source": "PoA Act 1989 Section 15A",
+      "source_url": "https://www.indiacode.nic.in/handle/123456789/1522"
+    },
+    {
+      "id": "faq-3",
+      "question": "How does victim compensation and financial relief work?",
+      "answer": "Relief is disbursed in standardized installments at different milestones (upon FIR, upon chargesheet submission, and upon court decision). Disbursal is ordered by the District Magistrate or DLSA directly to your bank account without requiring application fees.",
+      "official_source": "PoA Rules 1995 & Central Victim Compensation Scheme",
+      "source_url": "https://socialjustice.gov.in/schemes/4"
+    },
+    {
+      "id": "faq-4",
+      "question": "What happens during court trials in a Special Court?",
+      "answer": "Special Courts are designated fast-track courts established to hear atrocity cases with sensitivity and speed. You have the right to a free legal aid advocate, advance notice of dates, travel allowances, and in-camera protection if safety is a concern.",
+      "official_source": "PoA Act 1989 Section 14",
+      "source_url": "https://www.indiacode.nic.in/handle/123456789/1522"
+    },
+    {
+      "id": "faq-5",
+      "question": "Is the information provided here considered legal advice?",
+      "answer": "No. SAATH provides educational and supportive summaries sourced from official government statutes. It does not replace an advocate or provide binding legal conclusions. For decisions specific to your case, please consult your assigned DLSA legal counsel.",
+      "official_source": "SAATH Legal & Rights Standards Notice",
+      "source_url": "https://doj.gov.in/"
+    }
+  ]
+}

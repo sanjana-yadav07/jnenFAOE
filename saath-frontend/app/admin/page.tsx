@@ -240,18 +240,18 @@ export default function AdminOverviewPage() {
           <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-4">
             <div className="rounded-2xl border border-pale-sage/60 bg-[color:var(--surface)] p-3.5 shadow-sm">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-text-secondary">Improving Cases</span>
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-text-secondary">Improving SVI</span>
                 <TrendingDown size={15} className="text-[#16a34a]" />
               </div>
               <p className="mt-1 text-2xl font-bold tracking-tight text-[#16a34a]">
                 {report.distressStats.trend.improving}
               </p>
-              <p className="text-[10px] text-text-secondary">&Delta; &le; -8 pts distress reduction</p>
+              <p className="text-[10px] text-text-secondary">&Delta; &le; -8 pts SVI reduction</p>
             </div>
 
             <div className="rounded-2xl border border-border-color bg-[color:var(--surface)] p-3.5 shadow-sm">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-text-secondary">Stable / Plateau</span>
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-text-secondary">Stable SVI</span>
                 <Activity size={15} className="text-deep-teal" />
               </div>
               <p className="mt-1 text-2xl font-bold tracking-tight text-text-primary">
@@ -262,7 +262,7 @@ export default function AdminOverviewPage() {
 
             <div className="rounded-2xl border border-warm-peach/30 bg-[color:var(--surface)] p-3.5 shadow-sm">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-text-secondary">Worsening Trend</span>
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-text-secondary">Rising SVI</span>
                 <TrendingUp size={15} className="text-warm-peach" />
               </div>
               <p className="mt-1 text-2xl font-bold tracking-tight text-warm-peach">

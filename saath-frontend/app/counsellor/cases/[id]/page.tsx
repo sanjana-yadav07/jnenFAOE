@@ -471,13 +471,30 @@ export default function CounsellorCaseDetailPage() {
         </div>
       </section>
 
-      {/* ── Distress & Recovery Snapshots ── */}
+      {/* ── Stress Vulnerability Index (SVI) & Recovery Snapshots ── */}
       <div className="grid gap-4 sm:grid-cols-2">
-        {/* Distress Snapshot */}
+        {/* Stress Vulnerability Index (SVI) Snapshot */}
         <Card className="p-5 border-l-4 border-l-warm-peach">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">
-            Current Distress Snapshot
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">
+              Stress Vulnerability Index (SVI)
+            </p>
+            {caseRecord.riskLevel && (
+              <Badge
+                tone={
+                  caseRecord.riskLevel === "CRITICAL"
+                    ? "peach"
+                    : caseRecord.riskLevel === "HIGH"
+                    ? "amber"
+                    : caseRecord.riskLevel === "MODERATE"
+                    ? "teal"
+                    : "sage"
+                }
+              >
+                Risk Level: {caseRecord.riskLevel}
+              </Badge>
+            )}
+          </div>
           <div className="mt-2 flex items-baseline justify-between">
             <div className="flex items-baseline gap-1.5">
               <span className="font-editorial text-4xl font-bold text-text-primary">
@@ -488,22 +505,31 @@ export default function CounsellorCaseDetailPage() {
             <div className="text-right">
               {caseRecord.baselineDistressScore ? (
                 <span className="text-xs text-text-secondary">
-                  Baseline: <strong>{caseRecord.baselineDistressScore}</strong>
+                  Baseline SVI: <strong>{caseRecord.baselineDistressScore}</strong>
                 </span>
               ) : null}
             </div>
           </div>
 
-          <div className="mt-3 flex flex-wrap gap-1.5 text-xs">
+          <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
             <Badge tone={latestOutput?.insufficientEvidence || checkIns.length < 2 ? "neutral" : "teal"}>
               {latestOutput?.insufficientEvidence || checkIns.length < 2
                 ? "Insufficient evidence yet"
                 : `Confidence: ${latestOutput?.confidence || "Moderate"}`}
             </Badge>
             {caseRecord.predicted7dScore && (
-              <Badge tone="amber">7-day risk estimate: {caseRecord.predicted7dScore}%</Badge>
+              <Badge tone="amber">7-day SVI estimate: {caseRecord.predicted7dScore}%</Badge>
+            )}
+            {!caseRecord.riskLevel && (
+              <Badge tone={(caseRecord.currentDistressScore ?? 50) >= 70 ? "peach" : "teal"}>
+                Risk Level: {(caseRecord.currentDistressScore ?? 50) >= 70 ? "HIGH" : (caseRecord.currentDistressScore ?? 50) >= 45 ? "MODERATE" : "LOW"}
+              </Badge>
             )}
           </div>
+
+          <p className="mt-2.5 text-[11px] text-text-secondary italic">
+            * SVI is an operational wellbeing signal and does not constitute a clinical or psychiatric diagnosis.
+          </p>
 
           {latestOutput?.contributingSignals && latestOutput.contributingSignals.length > 0 && (
             <div className="mt-3 border-t border-border-color/50 pt-2.5">
@@ -549,18 +575,18 @@ export default function CounsellorCaseDetailPage() {
         </Card>
       </div>
 
-      {/* ── Distress & Recovery Trend Graph (Strictly Survivor Isolated) ── */}
+      {/* ── Stress Vulnerability (SVI) & Recovery Trend Graph (Strictly Survivor Isolated) ── */}
       <Card className="p-5">
         <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
           <div>
-            <CardTitle>Distress &amp; Recovery Observations</CardTitle>
+            <CardTitle>Stress Vulnerability (SVI) &amp; Recovery Observations</CardTitle>
             <p className="text-xs text-text-secondary mt-0.5">
               Historical timeline of check-in observations for {caseRecord.survivorName} only.
             </p>
           </div>
           {baselineDistressAvg !== null && (
             <span className="text-xs font-semibold text-text-secondary bg-[color:var(--surface-subtle)] px-2.5 py-1 rounded-lg border border-border-color/60">
-              Personal baseline: {baselineDistressAvg}
+              Personal baseline SVI: {baselineDistressAvg}
             </span>
           )}
         </div>
@@ -587,7 +613,7 @@ export default function CounsellorCaseDetailPage() {
                     stroke="#8a9b94"
                     strokeDasharray="4 4"
                     label={{
-                      value: "Personal baseline",
+                      value: "Personal baseline SVI",
                       position: "insideTopLeft",
                       fontSize: 10,
                       fill: "#8a9b94",
@@ -599,7 +625,7 @@ export default function CounsellorCaseDetailPage() {
                   dataKey="distress"
                   stroke="#E89A78"
                   strokeWidth={2.5}
-                  name="Distress score"
+                  name="Stress Vulnerability Index (SVI)"
                   dot={{ r: 4 }}
                 />
                 <Line
@@ -863,7 +889,7 @@ export default function CounsellorCaseDetailPage() {
                   <th className="py-2 px-2">Fear</th>
                   <th className="py-2 px-2">Intrusion</th>
                   <th className="py-2 px-2">Social</th>
-                  <th className="py-2 pl-2 text-right">Distress Signal</th>
+                  <th className="py-2 pl-2 text-right">SVI Signal (0-100)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border-color/50">

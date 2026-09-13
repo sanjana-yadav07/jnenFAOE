@@ -20,6 +20,7 @@ import {
   Moon,
   MousePointer2,
   PhoneCall,
+  Scale,
   Settings,
   Shield,
   ShieldCheck,
@@ -446,7 +447,91 @@ export default function SurvivorProfilePage() {
           </div>
         </section>
 
-        {/* 4. My Activity Summary (Truthful, No Fake Streaks) */}
+        {/* 4. Legal & Rights Support (Case Specific) */}
+        <section className="surface flex flex-col justify-between rounded-[28px] p-6 md:p-7">
+          <div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 text-amber-800">
+                  <Scale size={20} />
+                </span>
+                <div>
+                  <h2 className="font-display text-xl font-bold text-text-primary">
+                    {hindi ? "कानूनी अधिकार व सुरक्षा" : "Legal & Rights Support"}
+                  </h2>
+                  <p className="text-xs text-text-secondary">
+                    {hindi ? "आपके केस से संबंधित वैधानिक अधिकार" : "Case-specific statutory rights & free legal aid"}
+                  </p>
+                </div>
+              </div>
+              <span className="rounded-full bg-amber-100/70 px-2.5 py-0.5 text-[11px] font-bold text-amber-800">
+                {hindi ? "सत्यापित" : "Verified"}
+              </span>
+            </div>
+
+            <div className="mt-6 space-y-3">
+              {/* Case Stage & Protection pill */}
+              <div className="rounded-2xl border border-border-color/80 bg-white/80 p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">
+                      {hindi ? "वर्तमान केस चरण" : "Current Case Stage"}
+                    </span>
+                    <p className="text-sm font-bold text-text-primary mt-0.5">
+                      {currentCase?.currentStage || "Investigation Phase"}
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-800">
+                    {hindi ? "मुफ्त विधिक सहायता सुलभ" : "Free Legal Aid Entitled"}
+                  </span>
+                </div>
+                <p className="mt-2 text-xs text-text-secondary leading-relaxed">
+                  {hindi
+                    ? "नालसा (NALSA) और एससी/एसटी अत्याचार निवारण अधिनियम 1989 के अंतर्गत आपको निःशुल्क वकील और गवाह सुरक्षा का कानूनी अधिकार प्राप्त है।"
+                    : "Under NALSA & PoA Act 1989 provisions, you are entitled to free legal counsel, certified document copies, and state witness protection."}
+                </p>
+              </div>
+
+              {/* Free Legal Aid Direct Line */}
+              <div className="flex items-center justify-between rounded-2xl border border-amber-200/80 bg-amber-50/50 p-3.5">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 text-amber-900 font-bold text-xs">
+                    15100
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-text-primary">
+                      {hindi ? "राष्ट्रीय विधिक सेवा प्राधिकरण (NALSA)" : "National Legal Services Helpline"}
+                    </p>
+                    <p className="text-[11px] text-text-secondary">
+                      {hindi ? "24/7 निःशुल्क हेल्पलाइन (टोल-फ्री)" : "24/7 Free & confidential legal assistance"}
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href="tel:15100"
+                  className="rounded-xl bg-amber-800 px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-amber-900 transition-colors"
+                >
+                  {hindi ? "कॉल 15100" : "Call 15100"}
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 border-t border-border-color/50 pt-4 flex items-center justify-between">
+            <span className="text-xs text-text-secondary">
+              {hindi ? "आधिकारिक भारत सरकार स्रोत (India Code)" : "Grounded in official India Code"}
+            </span>
+            <Link
+              href="/survivor/rights"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-deep-teal hover:underline"
+            >
+              {hindi ? "सभी अधिकार और धाराएँ देखें" : "Explore Know Your Rights"}
+              <ArrowRight size={13} />
+            </Link>
+          </div>
+        </section>
+
+        {/* 5. My Activity Summary (Truthful, No Fake Streaks) */}
         <section className="surface flex flex-col justify-between rounded-[28px] p-6 md:p-7">
           <div>
             <div className="flex items-center gap-3">
