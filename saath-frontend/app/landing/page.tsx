@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SaathLogo } from "@/components/SaathLogo";
+import { HeroSupportPathsReveal } from "@/components/landing/HeroSupportPathsReveal";
 import {
   ArrowRight,
   Lock,
@@ -126,64 +127,68 @@ export default function LandingPage() {
         </nav>
       </header>
 
-      {/* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── HERO ──────────────────────────────────── */}
       <section className="relative z-20 mx-auto max-w-4xl px-6 pb-12 pt-14 text-center sm:px-10 sm:pb-14 sm:pt-20">
+        {/* Subtle organic mouse morph-reveal behind hero */}
+        <HeroSupportPathsReveal />
 
-        {/* Eyebrow */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-[#0f766e]/20 bg-[#dcebdd]/50 px-4 py-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#0f766e] animate-pulse" />
-          <span className="text-[11px] font-semibold uppercase tracking-[0.17em] text-[#0f766e]" style={{ fontFamily: '"Inter", sans-serif' }}>
-            SAATH â€” You don't have to walk alone
-          </span>
-        </div>
-
-        {/* Headline â€” Instrument Serif, mixed weight treatment */}
-        <h1
-          className="mx-auto mt-7 max-w-3xl leading-[1.06] tracking-tight"
-          style={{
-            fontFamily: '"Instrument Serif", "DM Serif Display", Georgia, serif',
-            fontSize: "clamp(2.4rem, 5.5vw, 3.75rem)",
-          }}
-        >
-          <span className="block font-normal text-[#1c2b2e]">You do not have to</span>
-          <span className="block italic text-[#0f766e] mt-0.5">carry it alone.</span>
-        </h1>
-
-        {/* Sub-copy */}
-        <p className="mx-auto mt-5 max-w-xl text-[15px] leading-[1.65] text-[#46565a] sm:text-[16px]">
-          SAATH gives survivors a private space to check in, understand how they are doing, stay connected to support, and{" "}
-          <strong className="font-semibold text-[#1c2b2e]">move forward at their own pace.</strong>
-        </p>
-
-        {/* CTAs */}
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link
-            href="/welcome"
-            className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#0f766e] px-7 py-3 text-[14px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#0c6460] hover:shadow-md sm:w-auto"
-          >
-            Enter survivor space
-            <ArrowRight size={15} className="transition-transform duration-200 group-hover:translate-x-[3px]" />
-          </Link>
-          <Link
-            href="/about"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#0f766e]/35 bg-transparent px-7 py-3 text-[14px] font-medium text-[#0f766e] transition-all duration-200 hover:border-[#0f766e]/70 hover:bg-[#dcebdd]/30 sm:w-auto"
-          >
-            How SAATH protects you
-          </Link>
-        </div>
-
-        {/* Micro-trust strip */}
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-5 text-[12px] text-[#61706d] sm:gap-7">
-          {[
-            "100% consent-led",
-            "Zero forced reporting",
-            "Trauma-informed care",
-            "End-to-end private",
-          ].map((t) => (
-            <span key={t} className="inline-flex items-center gap-1.5 font-medium">
-              <CheckCircle2 size={13} className="text-[#0f766e]" /> {t}
+        <div className="relative z-10">
+          {/* Eyebrow */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#0f766e]/20 bg-[#dcebdd]/50 px-4 py-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#0f766e] animate-pulse" />
+            <span className="text-[11px] font-semibold uppercase tracking-[0.17em] text-[#0f766e]" style={{ fontFamily: '"Inter", sans-serif' }}>
+              SAATH — You don't have to walk alone
             </span>
-          ))}
+          </div>
+
+          {/* Headline — Instrument Serif, mixed weight treatment */}
+          <h1
+            className="mx-auto mt-7 max-w-3xl leading-[1.06] tracking-tight"
+            style={{
+              fontFamily: '"Instrument Serif", "DM Serif Display", Georgia, serif',
+              fontSize: "clamp(2.4rem, 5.5vw, 3.75rem)",
+            }}
+          >
+            <span className="block font-normal text-[#1c2b2e]">You do not have to</span>
+            <span className="block italic text-[#0f766e] mt-0.5">carry it alone.</span>
+          </h1>
+
+          {/* Sub-copy */}
+          <p className="mx-auto mt-5 max-w-xl text-[15px] leading-[1.65] text-[#46565a] sm:text-[16px]">
+            SAATH gives survivors a private space to check in, understand how they are doing, stay connected to support, and{" "}
+            <strong className="font-semibold text-[#1c2b2e]">move forward at their own pace.</strong>
+          </p>
+
+          {/* CTAs */}
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              href="/welcome"
+              className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#0f766e] px-7 py-3 text-[14px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#0c6460] hover:shadow-md sm:w-auto"
+            >
+              Enter survivor space
+              <ArrowRight size={15} className="transition-transform duration-200 group-hover:translate-x-[3px]" />
+            </Link>
+            <Link
+              href="/about"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#0f766e]/35 bg-transparent px-7 py-3 text-[14px] font-medium text-[#0f766e] transition-all duration-200 hover:border-[#0f766e]/70 hover:bg-[#dcebdd]/30 sm:w-auto"
+            >
+              How SAATH protects you
+            </Link>
+          </div>
+
+          {/* Micro-trust strip */}
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-5 text-[12px] text-[#61706d] sm:gap-7">
+            {[
+              "100% consent-led",
+              "Zero forced reporting",
+              "Trauma-informed care",
+              "End-to-end private",
+            ].map((t) => (
+              <span key={t} className="inline-flex items-center gap-1.5 font-medium">
+                <CheckCircle2 size={13} className="text-[#0f766e]" /> {t}
+              </span>
+            ))}
+          </div>
         </div>
       </section>
 
