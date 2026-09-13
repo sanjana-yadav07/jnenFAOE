@@ -5,10 +5,12 @@ import {
   ArrowLeft,
   BookHeart,
   Camera,
+  Check,
   FileText,
   ImagePlus,
   Mic,
   MessageCircleHeart,
+  Pencil,
   Sparkles,
   Trash2,
   X,
@@ -16,7 +18,7 @@ import {
 import { hopeVaultService } from "@/services/hope-vault";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
- 
+
 // Tab definitions for the history section below the "Add" buttons.
 // Each tab maps to one item "type" saved in the vault.
 const TABS = [
@@ -26,14 +28,16 @@ const TABS = [
   { key: "message", label: "Messages", icon: FileText },
   { key: "achievement", label: "Achievements", icon: Sparkles },
 ] as const;
- 
+
+const ICON_FOR: Record<string, any> = { memory: BookHeart, message: MessageCircleHeart, achievement: Sparkles, photo: Camera };
+
 function formatDate(value?: string) {
   if (!value) return "";
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return "";
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
- 
+
 export default function HopeVaultPage() {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,9 +49,17 @@ export default function HopeVaultPage() {
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const STORAGE_KEY = "saath_hope_vault_items";
- 
+
+  // Detail / edit modal — opened when a card in the history grid is clicked.
+  const [detailItem, setDetailItem] = useState<any | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editContent, setEditContent] = useState("");
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editError, setEditError] = useState("");
+
   // Single source of truth for persisting the vault's history to localStorage,
-  // so every mutation (add / delete / upload) saves the same way.
+  // so every mutation (add / delete / upload / edit) saves the same way.
   function persist(next: any[]) {
     setItems(next);
     if (typeof window !== "undefined") {
@@ -58,7 +70,7 @@ export default function HopeVaultPage() {
       }
     }
   }
- 
+
   useEffect(() => {
     // 1. Immediately hydrate from localStorage so it never gets stuck on "Loading..."
     if (typeof window !== "undefined") {
@@ -75,7 +87,7 @@ export default function HopeVaultPage() {
         // ignore parse error
       }
     }
- 
+
     // 2. Fetch from backend with timeout/catch so loading always terminates
     let cancelled = false;
     hopeVaultService
@@ -92,12 +104,12 @@ export default function HopeVaultPage() {
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
- 
+
     return () => {
       cancelled = true;
     };
   }, []);
- 
+
   async function handleSave() {
     if (!title.trim() || !content.trim()) {
       setError("Title and content are required.");
@@ -106,7 +118,7 @@ export default function HopeVaultPage() {
     setSubmitting(true);
     setError("");
     try {
-      const newItem = (await hopeVaultService.createItem({ type: modal.type, title, content })) as Record<string, any>;
+      const newItem = await hopeVaultService.createItem({ type: modal.type, title, content });
       persist([...items, { created_at: new Date().toISOString(), ...newItem }]);
       setModal({ type: "", isOpen: false });
       setTitle("");
@@ -122,7 +134,7 @@ export default function HopeVaultPage() {
       setSubmitting(false);
     }
   }
- 
+
   async function deleteItem(id: string) {
     try {
       await hopeVaultService.deleteItem(id);
@@ -130,23 +142,25 @@ export default function HopeVaultPage() {
       // ignore network failure, remove locally
     }
     persist(items.filter((i) => i.id !== id));
+    if (detailItem?.id === id) setDetailItem(null);
   }
- 
+
   async function addItem(type: string, file?: File) {
     setSubmitting(true);
     setError("");
     try {
+      let newItem;
       if (type === "photo" && file) {
-        const uploaded = (await hopeVaultService.uploadPhoto(file, "Photo")) as Record<string, any>;
-        persist([...items, { created_at: new Date().toISOString(), ...uploaded }]);
+        newItem = await hopeVaultService.uploadPhoto(file, "Photo");
+        persist([...items, { created_at: new Date().toISOString(), ...newItem }]);
       }
     } catch (e) {
-      setError("Failed to save. Please try again.");
+      setError(e instanceof Error ? e.message : "Failed to save. Please try again.");
     } finally {
       setSubmitting(false);
     }
   }
- 
+
   const filteredItems = useMemo(() => {
     const sorted = [...items].sort((a, b) => {
       const ta = new Date(a.created_at ?? 0).getTime();
@@ -156,15 +170,58 @@ export default function HopeVaultPage() {
     if (activeTab === "all") return sorted;
     return sorted.filter((i) => i.type === activeTab);
   }, [items, activeTab]);
- 
+
   const countFor = (key: string) => (key === "all" ? items.length : items.filter((i) => i.type === key).length);
- 
+
+  // ── Detail / edit modal handlers ────────────────────────────────
+  function openDetail(item: any) {
+    setDetailItem(item);
+    setEditing(false);
+    setEditError("");
+  }
+
+  function startEdit() {
+    if (!detailItem) return;
+    setEditTitle(detailItem.title ?? "");
+    setEditContent(detailItem.content ?? "");
+    setEditError("");
+    setEditing(true);
+  }
+
+  async function saveEdit() {
+    if (!detailItem) return;
+    if (!editTitle.trim()) {
+      setEditError("Title can't be empty.");
+      return;
+    }
+    setSavingEdit(true);
+    setEditError("");
+    try {
+      const updated = await hopeVaultService.updateItem(detailItem.id, {
+        title: editTitle.trim(),
+        content: editContent.trim(),
+      });
+      const merged = { ...detailItem, ...updated, title: editTitle.trim(), content: editContent.trim() };
+      persist(items.map((i) => (i.id === detailItem.id ? merged : i)));
+      setDetailItem(merged);
+      setEditing(false);
+    } catch (e) {
+      // Fall back to a local-only update so the edit isn't lost even if the API call failed
+      const merged = { ...detailItem, title: editTitle.trim(), content: editContent.trim() };
+      persist(items.map((i) => (i.id === detailItem.id ? merged : i)));
+      setDetailItem(merged);
+      setEditing(false);
+    } finally {
+      setSavingEdit(false);
+    }
+  }
+
   return (
     <div className="px-5 pb-10 md:px-10 xl:px-14">
       <Link href="/survivor/my-space" className="inline-flex items-center gap-2 text-sm font-semibold text-[#75857f]">
         <ArrowLeft size={16} /> My space
       </Link>
- 
+
       <div className="relative overflow-hidden rounded-4xl bg-[#fff0e5] p-8 md:p-12 mt-6">
         <div className="absolute -right-12 -top-16 h-56 w-56 rounded-full bg-[#f5c4a7]/35 blur-2xl" />
         <div className="relative max-w-2xl">
@@ -173,15 +230,18 @@ export default function HopeVaultPage() {
           <p className="mt-5 text-lg leading-relaxed text-[#7a5c4e]">Keep the things that remind you what matters. The little things count.</p>
         </div>
       </div>
- 
+
       <div className="mt-7 grid grid-cols-2 gap-3 md:grid-cols-4">
-        <input type="file" ref={fileInputRef} className="hidden" onChange={(e) => e.target.files?.[0] && addItem('photo', e.target.files[0])} />
+        <input type="file" accept="image/*" ref={fileInputRef} className="hidden" onChange={(e) => e.target.files?.[0] && addItem('photo', e.target.files[0])} />
         <button onClick={() => fileInputRef.current?.click()} className="flex min-h-28 flex-col items-center justify-center gap-3 rounded-[22px] border border-[#e9d5ca] bg-white/80 text-sm font-bold text-[#6b4b3d] hover:-translate-y-0.5 hover:bg-white"><ImagePlus size={20} className="text-[#c77d5c]" />Add Photo</button>
         <button onClick={() => setModal({ type: "memory", isOpen: true })} className="flex min-h-28 flex-col items-center justify-center gap-3 rounded-[22px] border border-[#e9d5ca] bg-white/80 text-sm font-bold text-[#6b4b3d] hover:-translate-y-0.5 hover:bg-white"><BookHeart size={20} className="text-[#c77d5c]" />Add Memory</button>
         <button onClick={() => setModal({ type: "message", isOpen: true })} className="flex min-h-28 flex-col items-center justify-center gap-3 rounded-[22px] border border-[#e9d5ca] bg-white/80 text-sm font-bold text-[#6b4b3d] hover:-translate-y-0.5 hover:bg-white"><MessageCircleHeart size={20} className="text-[#c77d5c]" />Add Message</button>
         <button onClick={() => setModal({ type: "achievement", isOpen: true })} className="flex min-h-28 flex-col items-center justify-center gap-3 rounded-[22px] border border-[#e9d5ca] bg-white/80 text-sm font-bold text-[#6b4b3d] hover:-translate-y-0.5 hover:bg-white"><Sparkles size={20} className="text-[#c77d5c]" />Add Achievement</button>
       </div>
- 
+
+      {submitting && <p className="mt-3 text-xs font-semibold text-[#b56e4e]">Saving…</p>}
+      {error && <p className="mt-3 text-sm font-semibold text-[#b5473f]">{error}</p>}
+
       {modal.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl">
@@ -196,14 +256,14 @@ export default function HopeVaultPage() {
           </div>
         </div>
       )}
- 
+
       {/* ── Hope Vault Tapes — history section ─────────────────────── */}
       <div className="mt-10 rounded-[26px] border border-[#e9d5ca] bg-[#fffaf5] p-6 md:p-8">
         <p className="eyebrow text-[#b56e4e]">Hope Vault Tapes</p>
         <p className="mt-1 text-sm leading-relaxed text-[#856f64]">
-          Everything you&apos;ve filed in your Hope Vault, sorted so you can read and look back on it.
+          Everything you&apos;ve filed in your Hope Vault. Tap anything to open it, or edit it.
         </p>
- 
+
         {/* Tab pills */}
         <div className="mt-5 flex flex-wrap gap-2">
           {TABS.map((t) => {
@@ -232,7 +292,7 @@ export default function HopeVaultPage() {
             );
           })}
         </div>
- 
+
         {/* History content */}
         <div className="mt-6">
           {loading ? (
@@ -256,25 +316,118 @@ export default function HopeVaultPage() {
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {filteredItems.map((item) =>
                 item.type === "photo" ? (
-                  <PhotoTape key={item.id} item={item} onDelete={() => deleteItem(item.id)} />
+                  <PhotoTape key={item.id} item={item} onOpen={() => openDetail(item)} onDelete={() => deleteItem(item.id)} />
                 ) : (
-                  <ScrapTape key={item.id} item={item} onDelete={() => deleteItem(item.id)} />
+                  <ScrapTape key={item.id} item={item} onOpen={() => openDetail(item)} onDelete={() => deleteItem(item.id)} />
                 )
               )}
             </div>
           )}
         </div>
       </div>
+
+      {/* ── Detail / edit modal ──────────────────────────────────────── */}
+      {detailItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setDetailItem(null)}>
+          <div
+            className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-xl md:p-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#fff0e5] text-[#b56e4e]">
+                {(() => {
+                  const Icon = ICON_FOR[detailItem.type] ?? FileText;
+                  return <Icon size={18} />;
+                })()}
+              </span>
+              <button onClick={() => setDetailItem(null)} className="rounded-lg p-1.5 text-[#8a6a58] hover:bg-[#fff0e5]">
+                <X size={20} />
+              </button>
+            </div>
+
+            {detailItem.type === "photo" && detailItem.image_url && (
+              <div className="mt-5 overflow-hidden rounded-2xl bg-[#f0e2d6]">
+                <img src={detailItem.image_url} alt={detailItem.title ?? "Photo"} className="max-h-80 w-full object-contain" />
+              </div>
+            )}
+
+            {editing ? (
+              <div className="mt-5">
+                <label className="text-sm font-semibold text-[#51635b]">
+                  Title
+                  <input
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="mt-2 w-full rounded-xl border border-[#c8d3d0] bg-white px-4 py-3 font-normal outline-none focus:border-[#0f766e]"
+                  />
+                </label>
+                <label className="mt-4 block text-sm font-semibold text-[#51635b]">
+                  Content
+                  <textarea
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                    rows={4}
+                    className="mt-2 w-full rounded-xl border border-[#c8d3d0] bg-white px-4 py-3 font-normal outline-none focus:border-[#0f766e]"
+                  />
+                </label>
+                {editError && <p className="mt-3 text-sm font-semibold text-[#b5473f]">{editError}</p>}
+                <div className="mt-6 flex justify-end gap-3">
+                  <button
+                    onClick={() => setEditing(false)}
+                    className="rounded-full px-5 py-2.5 text-sm font-bold text-[#51635b] hover:bg-[#eef2ef]"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={saveEdit}
+                    disabled={savingEdit}
+                    className="flex items-center gap-2 rounded-full bg-[#0f766e] px-5 py-2.5 text-sm font-bold text-white disabled:opacity-50"
+                  >
+                    <Check size={15} /> {savingEdit ? "Saving..." : "Save changes"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-5">
+                <h2 className="font-display text-2xl text-[#4a352d]">{detailItem.title}</h2>
+                {detailItem.content && <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-[#7a5c4e]">{detailItem.content}</p>}
+                {detailItem.created_at && <p className="mt-4 text-xs font-semibold text-[#b09084]">{formatDate(detailItem.created_at)}</p>}
+
+                <div className="mt-7 flex justify-end gap-3">
+                  <button
+                    onClick={() => deleteItem(detailItem.id)}
+                    className="flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-[#b5473f] hover:bg-[#fbe9e7]"
+                  >
+                    <Trash2 size={15} /> Delete
+                  </button>
+                  <button
+                    onClick={startEdit}
+                    className="flex items-center gap-2 rounded-full bg-[#0f766e] px-5 py-2.5 text-sm font-bold text-white"
+                  >
+                    <Pencil size={15} /> Edit
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
- 
+
 // ── Polaroid-style card for photo entries ──────────────────────────
-function PhotoTape({ item, onDelete }: { item: any; onDelete: () => void }) {
+function PhotoTape({ item, onOpen, onDelete }: { item: any; onOpen: () => void; onDelete: () => void }) {
   return (
-    <div className="group relative mx-auto w-full max-w-[280px] rounded-lg bg-white p-3 pb-5 shadow-[0_10px_30px_rgba(74,53,45,0.12)] transition-transform hover:-translate-y-1">
+    <div
+      onClick={onOpen}
+      className="group relative mx-auto w-full max-w-[280px] cursor-pointer rounded-lg bg-white p-3 pb-5 shadow-[0_10px_30px_rgba(74,53,45,0.12)] transition-transform hover:-translate-y-1"
+    >
       <button
-        onClick={onDelete}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete();
+        }}
         className="absolute right-2 top-2 z-10 rounded-full bg-black/40 p-1.5 text-white opacity-0 transition-opacity group-hover:opacity-100"
         title="Remove item"
       >
@@ -293,15 +446,20 @@ function PhotoTape({ item, onDelete }: { item: any; onDelete: () => void }) {
     </div>
   );
 }
- 
+
 // ── Text-scrap card for memory / message / achievement entries ─────
-function ScrapTape({ item, onDelete }: { item: any; onDelete: () => void }) {
-  const iconFor: Record<string, any> = { memory: BookHeart, message: MessageCircleHeart, achievement: Sparkles };
-  const Icon = iconFor[item.type] ?? FileText;
+function ScrapTape({ item, onOpen, onDelete }: { item: any; onOpen: () => void; onDelete: () => void }) {
+  const Icon = ICON_FOR[item.type] ?? FileText;
   return (
-    <div className="group relative rounded-2xl border border-[#e9d5ca] bg-white/90 p-5 transition-all hover:-translate-y-0.5 hover:shadow-md">
+    <div
+      onClick={onOpen}
+      className="group relative cursor-pointer rounded-2xl border border-[#e9d5ca] bg-white/90 p-5 transition-all hover:-translate-y-0.5 hover:shadow-md"
+    >
       <button
-        onClick={onDelete}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete();
+        }}
         className="absolute right-3 top-3 rounded-lg p-1.5 text-[#c77d5c] opacity-0 transition-opacity hover:bg-[#fff0e5] group-hover:opacity-100"
         title="Remove item"
       >
@@ -311,7 +469,7 @@ function ScrapTape({ item, onDelete }: { item: any; onDelete: () => void }) {
         <Icon size={16} />
       </span>
       <h3 className="mt-3 pr-6 font-bold text-[#4a352d]">{item.title}</h3>
-      <p className="mt-1 text-sm leading-relaxed text-[#7a5c4e]">{item.content}</p>
+      <p className="mt-1 line-clamp-3 text-sm leading-relaxed text-[#7a5c4e]">{item.content}</p>
       {item.created_at && <p className="mt-3 text-xs font-semibold text-[#b09084]">{formatDate(item.created_at)}</p>}
     </div>
   );
