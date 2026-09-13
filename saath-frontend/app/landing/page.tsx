@@ -105,49 +105,41 @@ export default function LandingPage() {
         <div className="absolute top-[35%] right-[-10%] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle_at_center,rgba(232,154,120,0.12),transparent_70%)] blur-3xl" />
         <div className="absolute bottom-[10%] left-[-10%] h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle_at_center,rgba(91,141,184,0.12),transparent_70%)] blur-3xl" />
         
-        {/* Fine Architectural Grid Texture */}
-        <div 
-          className="absolute inset-0 opacity-[0.035]" 
-          style={{
-            backgroundImage: `radial-gradient(#0f766e 1px, transparent 1px)`,
-            backgroundSize: "32px 32px",
-          }} 
-        />
+        {/* Subtle Centered Background Watermark */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-[18%] -translate-x-1/2 select-none font-display text-[26vw] font-bold leading-none text-[#0f766e]/[0.018] blur-[1px]"
+        >
+          SAATH
+        </div>
       </div>
 
-      {/* Main Top Navigation */}
-      <header className="relative z-30 mx-auto max-w-7xl px-5 pt-6 sm:px-8">
-        <nav className="flex items-center justify-between rounded-2xl border border-[#c8d3d0]/70 bg-white/85 px-6 py-3.5 backdrop-blur-md shadow-[0_4px_20px_rgba(23,35,38,0.03)]">
-          <div className="flex items-center gap-3.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0f766e] text-white shadow-sm">
-              <Sparkles size={18} />
-            </div>
-            <div>
-              <span className="font-display text-2xl font-bold tracking-tight text-[#0f766e]">
-                SAATH
-              </span>
-              <span className="hidden ml-2.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#61706d] md:inline border-l border-[#c8d3d0] pl-2.5">
-                Support After Trauma & Healing
-              </span>
-            </div>
-          </div>
+      {/* Main Top Navigation - Clean Edge-to-Edge with subtle border */}
+      <header className="relative z-30 mx-auto max-w-7xl px-5 pt-7 sm:px-10">
+        <nav className="flex items-center justify-between border-b border-[#c8d3d0]/60 pb-5" aria-label="Main Navigation">
+          <Link href="/landing" className="flex items-center gap-3">
+            <span className="text-xl text-[#d69e2e]" aria-hidden>
+              ✦
+            </span>
+            <span className="font-display text-3xl font-bold tracking-tight text-[#0f766e]">
+              SAATH
+            </span>
+            <span className="hidden h-4 w-px bg-[#c8d3d0] sm:inline" />
+            <span className="hidden text-[11px] font-semibold uppercase tracking-[0.18em] text-[#61706d] sm:inline">
+              Support After Trauma & Healing
+            </span>
+          </Link>
 
-          <div className="flex items-center gap-4 sm:gap-6">
+          <div className="flex items-center gap-5 sm:gap-7">
             <Link
               href="/about"
-              className="hidden text-xs font-semibold uppercase tracking-wider text-[#46565a] hover:text-[#0f766e] transition-colors sm:inline-block"
+              className="text-xs font-semibold uppercase tracking-wider text-[#46565a] hover:text-[#0f766e] transition-colors"
             >
-              Statutory Framework
-            </Link>
-            <Link
-              href="/about"
-              className="hidden text-xs font-semibold uppercase tracking-wider text-[#46565a] hover:text-[#0f766e] transition-colors md:inline-block"
-            >
-              Privacy Charter
+              How It Protects You
             </Link>
             <Link
               href="/staff-login"
-              className="group inline-flex items-center gap-2 rounded-xl border border-[#c8d3d0] bg-white px-4 py-2 text-xs font-bold text-[#172326] shadow-xs transition-all hover:border-[#0f766e] hover:text-[#0f766e]"
+              className="group inline-flex items-center gap-2 rounded-full border border-[#c8d3d0] bg-white/80 px-4 py-2 text-xs font-bold text-[#172326] shadow-xs transition-all hover:border-[#0f766e] hover:bg-white hover:text-[#0f766e]"
             >
               <KeyRound size={13} className="text-[#0f766e] transition-transform group-hover:rotate-12" />
               <span>Official Sign In</span>
