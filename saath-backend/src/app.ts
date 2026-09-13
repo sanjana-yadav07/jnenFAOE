@@ -13,6 +13,7 @@ import { moderatePost } from './services/moderation.js';
 import { computeDistressStatistics, computeRecoveryStatistics, computeOperationalMetrics, generateAdminReport, buildAdminAggregatePayload } from './services/admin-stats.js';
 import { getScopedAdminDataset, resolveAdminScope } from './services/admin-scope.js';
 import { rankInterventions, shouldEscalateToCounsellor, type InterventionOutcomeRecord } from './services/interventions.js';
+import { getSupportRecommendations, getRecommendationsForRisk } from './services/recommendations.js';
 import { generateSahayakReply } from './services/sahayak.js';
 
 const app=express(); app.use(helmet()); app.use(cors({origin:(origin,cb)=>!origin||corsOrigins.includes(origin)?cb(null,true):cb(new Error('CORS denied'))})); app.use(express.json({limit:'1mb'})); app.use(requestId); app.use(rateLimit({windowMs:60_000,max:120,standardHeaders:true,legacyHeaders:false}));
@@ -171,6 +172,7 @@ const withResolvedCounsellor = (c: any) => {
     assignedCounsellor: assignedCounsellor
       ? { name: assignedCounsellor.name, specialisation: assignedCounsellor.specialisation, phone: assignedCounsellor.phone }
       : null,
+    supportRecommendations: getSupportRecommendations(c),
   };
 };
 const connectCaseByDocket = async (req: { body: { reference_id?: string; docket?: string } }, res: express.Response) => {
@@ -242,6 +244,21 @@ app.get('/api/v1/cases/:id/timeline', requireAuth, asyncRoute(async (req: Authed
   }
   
   return ok(res, timeline);
+}));
+app.get('/api/v1/cases/:id/recommendations', requireAuth, asyncRoute(async (req: AuthedRequest, res) => {
+  const caseId = req.params.id;
+  const caseRecord = store.cases.find(c => c.id === caseId || c.docket === caseId || c.victimToken === caseId);
+  if (!caseRecord) throw new AppError(404, 'CASE_NOT_FOUND', 'Case not found.');
+  const supportRecommendations = getSupportRecommendations(caseRecord);
+  return ok(res, {
+    caseId: caseRecord.id,
+    docket: caseRecord.docket,
+    victimToken: caseRecord.victimToken,
+    riskLevel: caseRecord.riskLevel ?? 'LOW',
+    legalAidStatus: caseRecord.legalAidStatus,
+    protectionStatus: caseRecord.protectionStatus,
+    supportRecommendations,
+  });
 }));
 app.post('/api/v1/cases/:id/stage',requireAuth,requireRoles('COUNSELLOR','DISTRICT_ADMIN','STATE_ADMIN','NATIONAL_ADMIN'),body(z.object({stage:z.string().min(1)})),asyncRoute(async(req:AuthedRequest,res)=>{const caseId=String(req.params.id); const newStage=String(req.body.stage); const updated=await syncCaseStage(caseId,newStage); return ok(res,updated,200);}));
 

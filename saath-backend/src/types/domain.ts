@@ -66,6 +66,15 @@ export interface CaseRecord {
   lastActive?: string | null;
   lastReviewedAt?: string | null;
   lastCounsellorContactAt?: string | null;
+  supportRecommendations?: Array<{
+    category: string;
+    priority: string;
+    status: string;
+    title: string;
+    description: string;
+    reason: string;
+    actionType: string;
+  }>;
 }
 export interface Counsellor {
   id: string;

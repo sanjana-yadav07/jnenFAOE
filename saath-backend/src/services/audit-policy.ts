@@ -157,7 +157,7 @@ export const MINIMIZATION_SCHEMA = {
   adminAggregateOutput: ['scope', 'caseCount', 'alertStats', 'distressDistribution', 'recoveryTrend'] as const,
   // Counsellor case view is allowed identity fields because counsellors are the authorised
   // human-in-the-loop role; survivors and admins are not.
-  counsellorCaseView: ['id', 'docket', 'victimToken', 'survivorName', 'caseCategory', 'currentStage', 'riskLevel'] as const,
+  counsellorCaseView: ['id', 'docket', 'victimToken', 'survivorName', 'caseCategory', 'currentStage', 'riskLevel', 'supportRecommendations'] as const,
   // A survivor viewing their own case must never see their own registeredPhone echoed back
   // in the payload — the phone number is only ever used server-side to match SMS replies,
   // never surfaced in an API response, even to the survivor it belongs to.
@@ -172,7 +172,8 @@ export const MINIMIZATION_SCHEMA = {
     'currentDistressScore', 'assignedCounsellor', 'assignedCounsellorId', 'followupFrequency',
     'complainantType', 'ageGroup', 'gender', 'monitoringConsent', 'preferredContactChannel', 'incidentCategory',
     'complaintSummary', 'policeStation', 'districtNodalOfficerId', 'financialReliefEligible', 'lastPaymentDate',
-    'previousThreatReported', 'protectionRequested', 'relocationRequested', 'baselineCompleted', 'predicted7dScore'
+    'previousThreatReported', 'protectionRequested', 'relocationRequested', 'baselineCompleted', 'predicted7dScore',
+    'supportRecommendations'
   ] as const,
 } as const;
 
