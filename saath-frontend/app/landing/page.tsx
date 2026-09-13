@@ -103,22 +103,22 @@ export default function LandingPage() {
             </span>
           </Link>
 
-          <div className="flex items-center gap-7 sm:gap-8">
+          <div className="flex items-center gap-3 sm:gap-6 md:gap-8">
             <a
               href="#how-it-works"
-              className="saath-nav-link hidden text-[13px] font-medium tracking-[0.01em] text-[#46565a] transition-colors duration-200 sm:inline-block"
+              className="saath-nav-link hidden text-[13px] font-medium tracking-[0.01em] text-[#46565a] transition-colors duration-200 md:inline-block"
             >
               How it works
             </a>
             <Link
               href="/about"
-              className="saath-nav-link text-[13px] font-medium tracking-[0.01em] text-[#46565a] transition-colors duration-200"
+              className="saath-nav-link hidden text-[13px] font-medium tracking-[0.01em] text-[#46565a] transition-colors duration-200 md:inline-block"
             >
               How SAATH protects you
             </Link>
             <Link
               href="/staff-login"
-              className="group inline-flex items-center gap-1.5 rounded-full border border-[#c8d3d0] bg-white/80 px-4 py-2 text-[13px] font-medium text-[#172326] shadow-xs transition-all duration-200 hover:border-[#0f766e]/60 hover:text-[#0f766e]"
+              className="group inline-flex items-center gap-1.5 rounded-full border border-[#c8d3d0] bg-white/80 px-3 py-1.5 text-xs font-medium text-[#172326] shadow-xs transition-all duration-200 hover:border-[#0f766e]/60 hover:text-[#0f766e] sm:px-4 sm:py-2 sm:text-[13px]"
             >
               <KeyRound size={12} className="text-[#0f766e] transition-transform duration-200 group-hover:rotate-12" />
               Official sign in
@@ -448,7 +448,7 @@ export default function LandingPage() {
         <div className="flex flex-col items-center justify-between gap-5 md:flex-row">
           <div className="flex items-center gap-2">
             <ShieldCheck size={15} className="text-[#0f766e]" />
-            <span className="text-[12.5px] font-medium text-[#1c2b2e]">SAATH Â· Support After Trauma & Healing</span>
+            <span className="text-[12.5px] font-medium text-[#1c2b2e]">SAATH · You don't have to walk alone</span>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 text-[12.5px] text-[#61706d]">
             <a href="#how-it-works" className="saath-nav-link transition-colors duration-200">How it works</a>

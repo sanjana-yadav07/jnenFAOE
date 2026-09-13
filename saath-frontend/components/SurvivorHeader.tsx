@@ -120,10 +120,10 @@ export function SurvivorHeader() {
   const hindi = language === "Hindi";
 
   return (
-    <header className="flex items-center justify-between px-5 py-5 md:px-10 md:py-7 xl:px-14">
-      <div className="flex items-center gap-2.5 md:hidden">
-        <SaathLogo className="h-7 w-auto" size={28} />
-        <span className="font-display text-2xl font-bold text-deep-teal">SAATH</span>
+    <header className="flex items-center justify-between gap-2 px-4 py-4 sm:px-6 md:px-10 md:py-7 xl:px-14">
+      <div className="flex shrink-0 items-center gap-2 md:hidden">
+        <SaathLogo className="h-6.5 w-auto sm:h-7" size={26} />
+        <span className="font-display text-xl font-bold text-deep-teal sm:text-2xl">SAATH</span>
       </div>
       <div className="hidden md:block">
         <p className="text-xs font-bold uppercase tracking-[.18em] text-text-secondary">
@@ -131,7 +131,7 @@ export function SurvivorHeader() {
         </p>
       </div>
 
-      <div className="relative flex items-center gap-2">
+      <div className="relative flex shrink-0 items-center gap-1.5 sm:gap-2">
         {!hideLanguageSelector && (
           <LanguageDropdown variant="pill" />
         )}
@@ -144,23 +144,23 @@ export function SurvivorHeader() {
           aria-expanded={isAccessibilityOpen}
           aria-controls="saath-accessibility-panel"
           onClick={() => setIsAccessibilityOpen((current) => !current)}
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-border-color/70 bg-white/70 text-text-secondary transition-colors hover:text-deep-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0f766e] focus-visible:ring-offset-2"
+          className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-border-color/70 bg-white/70 text-text-secondary transition-colors hover:text-deep-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0f766e] focus-visible:ring-offset-2"
           title="Accessibility settings"
         >
-          <Accessibility size={16} />
+          <Accessibility size={15} />
         </button>
 
         <BackButton />
-        <Link href="/survivor/safety" aria-label={t("header.safety", language)} title={t("header.safety", language)} className="rounded-full border border-[#e4b7a8]/70 bg-[#fbe6e0]/70 p-2.5 text-[#a15f4e] hover:bg-[#fbe6e0]">
-          <Shield size={17} />
+        <Link href="/survivor/safety" aria-label={t("header.safety", language)} title={t("header.safety", language)} className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-[#e4b7a8]/70 bg-[#fbe6e0]/70 text-[#a15f4e] hover:bg-[#fbe6e0]">
+          <Shield size={16} />
         </Link>
         <Link
           href="/survivor/notifications"
           aria-label={`${t("header.notifications", language)} (${unreadCount})`}
           title={t("header.notifications", language)}
-          className="relative rounded-full border border-border-color/70 bg-white/70 p-2.5 text-text-secondary hover:text-deep-teal transition-colors"
+          className="relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-border-color/70 bg-white/70 text-text-secondary hover:text-deep-teal transition-colors"
         >
-          <Bell size={17} />
+          <Bell size={16} />
           {unreadCount > 0 && (
             <span
               aria-label={`${unreadCount} unread`}
@@ -179,7 +179,7 @@ export function SurvivorHeader() {
             aria-expanded={isProfileMenuOpen}
             aria-label={t("nav.profile", language)}
             onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-border-color/70 bg-white/80 text-xs font-bold text-deep-teal shadow-xs transition-all hover:border-primary-teal hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0f766e] focus-visible:ring-offset-2"
+            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-border-color/70 bg-white/80 text-xs font-bold text-deep-teal shadow-xs transition-all hover:border-primary-teal hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0f766e] focus-visible:ring-offset-2"
             title={displayName || t("nav.profile", language)}
           >
             {userInitials}
