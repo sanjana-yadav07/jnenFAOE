@@ -119,18 +119,18 @@ export function SurvivorHeader() {
   const hindi = language === "Hindi";
 
   return (
-    <header className="flex items-center justify-between gap-2 px-4 py-4 sm:px-6 md:px-10 md:py-7 xl:px-14">
-      <div className="flex shrink-0 items-center gap-2 md:hidden">
-        <SaathLogo className="h-6.5 w-auto sm:h-7" size={26} />
-        <span className="font-display text-xl font-bold text-deep-teal sm:text-2xl">SAATH</span>
-      </div>
+    <header className="flex items-center justify-between gap-2 px-3 py-3.5 sm:px-6 md:px-10 md:py-7 xl:px-14">
+      <Link href="/survivor" className="flex shrink-0 items-center gap-1.5 sm:gap-2 md:hidden">
+        <SaathLogo className="h-6 w-auto sm:h-7 shrink-0" size={24} />
+        <span className="font-display text-lg font-bold tracking-tight text-deep-teal sm:text-2xl">SAATH</span>
+      </Link>
       <div className="hidden md:block">
         <p className="text-xs font-bold uppercase tracking-[.18em] text-text-secondary">
           {new Date().toLocaleDateString(getLanguageOption(language).locale, { weekday: "long", day: "2-digit", month: "long", year: "numeric" })}
         </p>
       </div>
 
-      <div className="relative flex shrink-0 items-center gap-1.5 sm:gap-2">
+      <div className="relative flex shrink-0 items-center gap-1 sm:gap-2">
         <LanguageDropdown variant="pill" />
 
         <button
