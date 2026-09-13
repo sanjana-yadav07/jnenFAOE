@@ -97,6 +97,8 @@
   --color-input-background: var(--input-background);
   --color-focus-ring: var(--focus-ring);
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "DM Serif Display", Georgia, serif;
+  --font-editorial: "Fraunces", Georgia, serif;
 }
 
 * { border-color: var(--border-color); }

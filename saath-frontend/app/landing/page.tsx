@@ -130,12 +130,12 @@ const METRICS = [
 export default function LandingPage() {
   return (
     <div className="relative min-h-screen bg-[#faf8f5] text-[#172326] selection:bg-[#dcebdd] selection:text-[#0f766e]">
-      {/* Editorial Decorative Background */}
+      {/* Editorial Decorative Atmosphere */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        {/* Restrained Soft Warm Tones */}
-        <div className="absolute top-[-8%] left-[10%] h-[550px] w-[750px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(220,235,221,0.55),transparent_70%)] blur-3xl" />
-        <div className="absolute top-[30%] right-[-5%] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle_at_center,rgba(232,154,120,0.08),transparent_70%)] blur-3xl" />
-        <div className="absolute bottom-[10%] left-[-5%] h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle_at_center,rgba(214,158,46,0.06),transparent_70%)] blur-3xl" />
+        {/* Soft Warm Radiant Glows */}
+        <div className="absolute -top-[12%] left-1/2 -translate-x-1/2 h-[680px] w-[900px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(220,235,221,0.5),transparent_70%)] blur-3xl" />
+        <div className="absolute top-[28%] right-[-6%] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle_at_center,rgba(232,154,120,0.07),transparent_70%)] blur-3xl" />
+        <div className="absolute bottom-[14%] left-[-6%] h-[550px] w-[550px] rounded-full bg-[radial-gradient(circle_at_center,rgba(214,158,46,0.06),transparent_70%)] blur-3xl" />
       </div>
 
       {/* Main Top Navigation */}
@@ -176,153 +176,86 @@ export default function LandingPage() {
         </nav>
       </header>
 
-      {/* Hero Section — 2-Column Editorial Composition */}
-      <section className="relative z-20 mx-auto max-w-7xl px-5 pt-14 pb-20 sm:px-10 sm:pt-20 sm:pb-28">
-        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
-          {/* Left Column: Typography & Intentional CTAs */}
-          <div className="text-left lg:col-span-7">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#0f766e]/20 bg-[#dcebdd]/70 px-3.5 py-1.5 shadow-2xs backdrop-blur-xs">
-              <span className="h-2 w-2 rounded-full bg-[#0f766e] animate-pulse" />
-              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0f766e]">
-                SUPPORT AFTER TRAUMA & HEALING
-              </span>
-            </div>
+      {/* Hero Section — Centered Editorial Composition */}
+      <section className="relative z-20 mx-auto max-w-5xl px-5 pt-16 pb-20 sm:px-8 sm:pt-24 sm:pb-28 text-center">
+        {/* Delicate Decorative Organic Accent Behind Hero (SVG) */}
+        <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center overflow-hidden opacity-30" aria-hidden="true">
+          <svg
+            viewBox="0 0 1000 400"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-[1200px] max-w-none transform translate-y-12"
+          >
+            <path
+              d="M 50 220 C 250 120, 450 300, 700 180 C 850 110, 920 200, 980 150"
+              stroke="#0f766e"
+              strokeWidth="2"
+              strokeDasharray="6 6"
+              strokeOpacity="0.4"
+            />
+            <path
+              d="M 20 260 C 220 180, 480 340, 750 220 C 880 160, 940 240, 1000 200"
+              stroke="#d69e2e"
+              strokeWidth="1.5"
+              strokeDasharray="4 4"
+              strokeOpacity="0.3"
+            />
+          </svg>
+        </div>
 
-            <h1 className="mt-7 font-display text-4xl sm:text-6xl lg:text-[4.25rem] font-medium tracking-tight text-[#172326] leading-[1.06]">
-              You do not have to <br />
-              <span className="font-editorial italic font-normal text-[#0f766e]">
-                walk through it alone.
-              </span>
-            </h1>
+        {/* Reassuring Eyebrow Badge */}
+        <div className="inline-flex items-center gap-2 rounded-full border border-[#0f766e]/25 bg-[#dcebdd]/60 px-4 py-1.5 shadow-2xs backdrop-blur-xs">
+          <span className="h-2 w-2 rounded-full bg-[#0f766e] animate-pulse" />
+          <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0f766e]">
+            SUPPORT AFTER TRAUMA & HEALING
+          </span>
+        </div>
 
-            <p className="mt-6 max-w-xl text-base sm:text-lg leading-relaxed text-[#46565a]">
-              SAATH gives survivors a private space to check in, understand their wellbeing, stay connected to support, and move forward at their own pace.
-            </p>
+        {/* Hero Headline */}
+        <h1 className="mt-8 font-display text-4xl sm:text-6xl md:text-[4.5rem] font-medium tracking-tight text-[#172326] leading-[1.08]">
+          You do not have to <br />
+          <span className="font-editorial italic font-normal text-[#0f766e]">
+            walk through it alone.
+          </span>
+        </h1>
 
-            <div className="mt-9 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-              <Link
-                href="/welcome"
-                className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-[#0f766e] px-7 py-3.5 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:bg-[#0c625c] hover:shadow-lg hover:-translate-y-0.5"
-              >
-                <span>Enter Survivor Space</span>
-                <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" />
-              </Link>
+        {/* Hero Narrative Copy */}
+        <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg md:text-xl leading-relaxed text-[#46565a]">
+          SAATH gives survivors a private space to check in, understand their wellbeing, stay connected to support, and move forward at their own pace.
+        </p>
 
-              <Link
-                href="/about"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-[#0f766e]/40 bg-[#faf8f5] px-6 py-3.5 text-sm font-semibold text-[#0f766e] transition-all duration-200 hover:bg-[#dcebdd]/40 hover:border-[#0f766e]"
-              >
-                <span>How SAATH Protects You</span>
-              </Link>
-            </div>
+        {/* Centered Primary & Secondary CTAs */}
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link
+            href="/welcome"
+            className="group inline-flex w-full sm:w-auto items-center justify-center gap-2.5 rounded-full bg-[#0f766e] px-8 py-3.5 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:bg-[#0c625c] hover:shadow-lg hover:-translate-y-0.5"
+          >
+            <span>Enter Survivor Space</span>
+            <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" />
+          </Link>
 
-            <div className="mt-10 flex items-center gap-6 text-xs text-[#61706d]">
-              <span className="inline-flex items-center gap-1.5 font-medium">
-                <CheckCircle2 size={14} className="text-[#0f766e]" /> 100% Consent-Led
-              </span>
-              <span className="inline-flex items-center gap-1.5 font-medium">
-                <CheckCircle2 size={14} className="text-[#0f766e]" /> Zero Forced Reporting
-              </span>
-              <span className="inline-flex items-center gap-1.5 font-medium">
-                <CheckCircle2 size={14} className="text-[#0f766e]" /> Trauma-Informed
-              </span>
-            </div>
-          </div>
+          <Link
+            href="/about"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-[#0f766e]/40 bg-[#faf8f5] px-7 py-3.5 text-sm font-semibold text-[#0f766e] transition-all duration-200 hover:bg-[#dcebdd]/40 hover:border-[#0f766e]"
+          >
+            <span>How SAATH Protects You</span>
+          </Link>
+        </div>
 
-          {/* Right Column: Signature Abstract "Support Journey" Visual (Two Parallel Flowing Paths) */}
-          <div className="relative flex items-center justify-center lg:col-span-5">
-            <div className="relative w-full max-w-[460px] aspect-[4/3.8] rounded-3xl border border-[#c8d3d0]/80 bg-gradient-to-b from-white/95 to-[#f8faf8] p-7 shadow-[0_20px_45px_rgba(23,35,38,0.04)] backdrop-blur-sm">
-              <div className="flex items-center justify-between border-b border-[#c8d3d0]/50 pb-4">
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-[#0f766e]" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#61706d]">
-                    THE CONTINUUM OF CARE
-                  </span>
-                </div>
-                <span className="text-[11px] font-editorial italic text-[#d69e2e]">
-                  walking alongside
-                </span>
-              </div>
-
-              {/* Handcrafted Support Curve Artwork (SVG) */}
-              <div className="relative my-4 flex h-48 w-full items-center justify-center">
-                <svg
-                  viewBox="0 0 380 200"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-full h-full overflow-visible"
-                  aria-label="Two parallel flowing paths representing survivor journey and continuous human support"
-                >
-                  <defs>
-                    <linearGradient id="survivorPathGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#0f766e" stopOpacity="0.4" />
-                      <stop offset="50%" stopColor="#0f766e" stopOpacity="0.9" />
-                      <stop offset="100%" stopColor="#0f766e" stopOpacity="1" />
-                    </linearGradient>
-                    <linearGradient id="supportPathGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#d69e2e" stopOpacity="0.3" />
-                      <stop offset="60%" stopColor="#d69e2e" stopOpacity="0.8" />
-                      <stop offset="100%" stopColor="#0f766e" stopOpacity="0.8" />
-                    </linearGradient>
-                    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                      <feGaussianBlur stdDeviation="3" result="blur" />
-                      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                    </filter>
-                  </defs>
-
-                  {/* Sanctuary Protected Haven Circles */}
-                  <circle cx="90" cy="115" r="28" fill="#dcebdd" fillOpacity="0.35" />
-                  <circle cx="210" cy="85" r="34" fill="#dcebdd" fillOpacity="0.45" />
-                  <circle cx="330" cy="65" r="24" fill="#fff9f0" stroke="#d69e2e" strokeWidth="1" strokeDasharray="3 3" />
-
-                  {/* Path 1: Survivor's Organic Journey */}
-                  <path
-                    d="M 20 150 C 70 140, 110 95, 170 100 C 230 105, 270 70, 360 55"
-                    stroke="url(#survivorPathGrad)"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                  />
-
-                  {/* Path 2: Dedicated Continuous Support Path (Running Alongside) */}
-                  <path
-                    d="M 20 170 C 80 160, 120 125, 180 120 C 240 115, 280 85, 360 70"
-                    stroke="url(#supportPathGrad)"
-                    strokeWidth="2.5"
-                    strokeDasharray="4 3"
-                    strokeLinecap="round"
-                  />
-
-                  {/* Waypoint Markers */}
-                  <circle cx="90" cy="115" r="5" fill="#0f766e" />
-                  <circle cx="210" cy="85" r="6" fill="#0f766e" filter="url(#glow)" />
-                  <circle cx="330" cy="65" r="4.5" fill="#d69e2e" />
-
-                  {/* Waypoint Labels */}
-                  <text x="75" y="152" fill="#61706d" fontSize="9" fontWeight="600" letterSpacing="0.05em">
-                    SAFE ENTRY
-                  </text>
-                  <text x="180" y="60" fill="#0f766e" fontSize="9" fontWeight="700" letterSpacing="0.05em">
-                    PROTECTED SPACE
-                  </text>
-                  <text x="310" y="42" fill="#d69e2e" fontSize="9" fontWeight="600" letterSpacing="0.05em">
-                    HORIZON
-                  </text>
-                </svg>
-              </div>
-
-              {/* Visual Micro-Legend */}
-              <div className="flex items-center justify-between border-t border-[#c8d3d0]/50 pt-4 text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="h-1.5 w-4 rounded-full bg-[#0f766e]" />
-                  <span className="text-[11px] font-medium text-[#46565a]">Your Personal Pace</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="h-1.5 w-4 rounded-full border border-dashed border-[#d69e2e]" />
-                  <span className="text-[11px] font-medium text-[#46565a]">Counsellor & Rights</span>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Trust Badges Strip */}
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-xs text-[#61706d]">
+          <span className="inline-flex items-center gap-1.5 font-medium">
+            <CheckCircle2 size={15} className="text-[#0f766e]" /> 100% Consent-Led
+          </span>
+          <span className="inline-flex items-center gap-1.5 font-medium">
+            <CheckCircle2 size={15} className="text-[#0f766e]" /> Zero Forced Reporting
+          </span>
+          <span className="inline-flex items-center gap-1.5 font-medium">
+            <CheckCircle2 size={15} className="text-[#0f766e]" /> Trauma-Informed Care
+          </span>
+          <span className="inline-flex items-center gap-1.5 font-medium">
+            <CheckCircle2 size={15} className="text-[#0f766e]" /> End-to-End Privacy
+          </span>
         </div>
       </section>
 
