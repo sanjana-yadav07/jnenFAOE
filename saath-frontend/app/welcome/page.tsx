@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SaathLogo } from "@/components/SaathLogo";
 import { ArrowRight, HeartHandshake, ShieldCheck, Sparkles, FileText, Lock, MessageSquareHeart } from "lucide-react";
 
 const options = [
@@ -21,8 +22,12 @@ export default function WelcomePage() {
     <main className="min-h-screen bg-[radial-gradient(circle_at_90%_0%,rgba(220,235,221,.8),transparent_30%),var(--warm-cream)] px-5 py-10 md:px-8 xl:px-16">
       <div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:py-10">
         <section className="mx-auto w-full max-w-xl text-left">
-          <p className="mb-5 inline-flex items-center gap-2 rounded-full bg-sage/60 px-3.5 py-1.5 text-[12px] font-bold uppercase tracking-[.18em] text-deep-teal">
-            {/* <Sparkles size={12} /> */}
+          <Link href="/landing" className="inline-flex items-center gap-3 mb-6 group">
+            <SaathLogo className="h-10 w-auto transition-transform duration-200 group-hover:scale-105" size={40} />
+            <span className="font-display text-3xl font-bold tracking-tight text-deep-teal">SAATH</span>
+          </Link>
+
+          <p className="mb-5 block w-fit items-center gap-2 rounded-full bg-sage/60 px-3.5 py-1.5 text-[12px] font-bold uppercase tracking-[.18em] text-deep-teal">
             WHY CHOOSE SAATH
           </p>
 

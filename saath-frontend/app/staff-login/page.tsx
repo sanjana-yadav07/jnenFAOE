@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -9,6 +10,7 @@ import { apiRequest, setSession } from "@/lib/api";
 import { counsellorService } from "@/services/case";
 import { useAppStore } from "@/store/useAppStore";
 import { Role } from "@/types";
+import { SaathLogo } from "@/components/SaathLogo";
 
 const STATE_DISTRICT_MAP: Record<string, string[]> = {
   Delhi: ["South Delhi", "North Delhi", "West Delhi", "New Delhi"],
@@ -110,6 +112,10 @@ export default function StaffLoginPage() {
 
   return (
     <div className="flex-1 flex flex-col px-6 py-10 max-w-md mx-auto w-full">
+      <Link href="/landing" className="flex items-center gap-2.5 mb-6 group w-fit">
+        <SaathLogo className="h-8 w-auto transition-transform duration-200 group-hover:scale-105" size={32} />
+        <span className="font-display text-2xl font-bold tracking-tight text-deep-teal">SAATH</span>
+      </Link>
       <p className="text-xs font-semibold text-amber uppercase tracking-wide">Secure staff access</p>
       <h1 className="mt-1 text-xl font-semibold">Staff sign in</h1>
 

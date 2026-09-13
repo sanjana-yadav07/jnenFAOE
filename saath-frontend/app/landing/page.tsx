@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SaathLogo } from "@/components/SaathLogo";
 import {
   ArrowRight,
   Sparkles,
@@ -140,10 +141,8 @@ export default function LandingPage() {
       {/* Main Top Navigation */}
       <header className="relative z-30 mx-auto max-w-7xl px-5 pt-7 sm:px-10">
         <nav className="flex items-center justify-between border-b border-[#c8d3d0]/60 pb-5" aria-label="Main Navigation">
-          <Link href="/landing" className="flex items-center gap-3">
-            <span className="text-xl text-[#d69e2e]" aria-hidden>
-              ✦
-            </span>
+          <Link href="/landing" className="flex items-center gap-3 group">
+            <SaathLogo className="h-9 w-auto transition-transform duration-200 group-hover:scale-105" size={38} />
             <span className="font-display text-3xl font-bold tracking-tight text-[#0f766e]">
               SAATH
             </span>

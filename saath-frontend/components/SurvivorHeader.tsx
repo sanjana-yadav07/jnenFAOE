@@ -3,6 +3,7 @@
 import { Accessibility, Bell, LogOut, Settings, Shield, User, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { SaathLogo } from "@/components/SaathLogo";
 import { useEffect, useRef, useState } from "react";
 import { BackButton } from "@/components/BackButton";
 import { defaultAccessibilitySettings, useAppStore } from "@/store/useAppStore";
@@ -118,7 +119,8 @@ export function SurvivorHeader() {
 
   return (
     <header className="flex items-center justify-between px-5 py-5 md:px-10 md:py-7 xl:px-14">
-      <div className="flex items-center gap-3 md:hidden">
+      <div className="flex items-center gap-2.5 md:hidden">
+        <SaathLogo className="h-7 w-auto" size={28} />
         <span className="font-display text-2xl font-bold text-deep-teal">SAATH</span>
       </div>
       <div className="hidden md:block">
