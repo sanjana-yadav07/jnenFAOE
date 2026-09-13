@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowRight, ExternalLink, HeartHandshake, MapPinned, MessagesSquare, PhoneCall, ShieldCheck, UsersRound } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
-import { SUPPORT_ITEMS } from "@/data/translations";
+import { getSupportItems, t } from "@/lib/i18n";
 
 const iconMap: Record<string, any> = {
   PhoneCall,
@@ -14,44 +14,62 @@ const iconMap: Record<string, any> = {
 
 export default function SupportPage() {
   const language = useAppStore((state) => state.language);
-  const hindi = language === "Hindi";
+  const items = getSupportItems(language);
 
   return (
     <div className="px-5 pb-10 md:px-10 xl:px-14">
       <div className="rounded-[30px] bg-[#0f766e] p-8 text-white md:p-12">
         <p className="text-xs font-bold uppercase tracking-[.2em] text-[#bde5d1]">
-          {hindi ? "सहायता" : "Support"}
+          {t("nav.support", language)}
         </p>
         <h1 className="mt-4 font-display text-5xl leading-none md:text-6xl">
-          {hindi ? "आपको यह अकेले सहने की ज़रूरत नहीं है।" : "You do not have to carry this alone."}
+          {language === "Hindi"
+            ? "आपको यह अकेले सहने की ज़रूरत नहीं है।"
+            : language === "Bengali"
+            ? "আপনাকে এটি একাকী বহন করতে হবে না।"
+            : language === "Marathi"
+            ? "तुम्हाला हे एकट्याने सहन करण्याची गरज नाही."
+            : language === "Tamil"
+            ? "நீங்கள் இதை தனியாக தாங்க வேண்டியதில்லை."
+            : language === "Telugu"
+            ? "మీరు దీన్ని ఒంటరిగా మోయవలసిన అవసరం లేదు."
+            : "You do not have to carry this alone."}
         </h1>
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">
-          {hindi
+          {language === "Hindi"
             ? "वह सहायता चुनें जो आज सही लगे। एक पेशेवर व्यक्ति, कोई संसाधन, एक भरोसेमंद साथी, या सिर्फ़ अकेलापन कम करने की जगह।"
+            : language === "Bengali"
+            ? "আজ যে ধরণের সহায়তা সঠিক মনে হয় তা বেছে নিন — একজন পেশাদার, সম্পদ, বা বিশ্বস্ত সঙ্গী।"
+            : language === "Marathi"
+            ? "आज जी मदत योग्य वाटेल ती निवडा — एक समुपदेशक, संसाधन किंवा विश्वासू व्यक्ती."
+            : language === "Tamil"
+            ? "இன்று உங்களுக்குச் சரியாகத் தோன்றும் ஆதரவைத் தேர்ந்தெடுக்கவும்."
+            : language === "Telugu"
+            ? "ఈ రోజు మీకు సరైనదనిపించే మద్దతును ఎంచుకోండి."
             : "Choose the kind of support that feels right today. A human, a resource, a trusted person, or simply a place to feel less alone."}
         </p>
       </div>
 
       <div className="mt-8 grid gap-4 md:grid-cols-2">
-        {SUPPORT_ITEMS.map(({ href, icon, titleEn, titleHi, descEn, descHi, tone }) => {
+        {items.map(({ href, icon, title, desc, tone }) => {
           const Icon = iconMap[icon] || PhoneCall;
           return (
             <Link
               href={href}
-              key={titleEn}
+              key={href}
               className="surface group rounded-[26px] p-6 hover:-translate-y-1 hover:shadow-xl transition-all"
             >
               <span className={`flex h-12 w-12 items-center justify-center rounded-2xl ${tone}`}>
                 <Icon size={21} />
               </span>
               <h2 className="mt-6 font-display text-2xl text-[#243630]">
-                {hindi ? titleHi : titleEn}
+                {title}
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-[#6b7b75]">
-                {hindi ? descHi : descEn}
+                {desc}
               </p>
               <span className="mt-6 inline-flex items-center gap-2 text-xs font-bold text-[#0f766e]">
-                {hindi ? "देखें" : "Explore"} <ArrowRight size={14} />
+                {language === "Hindi" ? "देखें" : language === "Bengali" ? "দেখুন" : language === "Marathi" ? "पहा" : language === "Tamil" ? "ஆராயுங்கள்" : language === "Telugu" ? "చూడండి" : "Explore"} <ArrowRight size={14} />
               </span>
             </Link>
           );
@@ -60,8 +78,16 @@ export default function SupportPage() {
 
       <div className="mt-6 flex items-center gap-3 rounded-2xl bg-[#f4f6ec] p-4 text-sm text-[#5c6d66]">
         <ShieldCheck size={18} className="text-[#0f766e] shrink-0" />
-        {hindi
+        {language === "Hindi"
           ? "निगरानी रोके जाने या बंद किए जाने पर भी सभी सहायता सेवाएँ उपलब्ध रहेंगी।"
+          : language === "Bengali"
+          ? "পর্যবেক্ষণ স্থগিত বা বন্ধ থাকলেও সমস্ত সহায়তা পরিষেবা উপলব্ধ থাকবে।"
+          : language === "Marathi"
+          ? "देखरेख थांबवली तरी सर्व मदत सेवा सुरूच राहतील."
+          : language === "Tamil"
+          ? "கண்காணிப்பு நிறுத்தப்பட்டாலும் அனைத்து ஆதரவு சேவைகளும் கிடைக்கும்."
+          : language === "Telugu"
+          ? "పర్యవేక్షణ నిలిపివేయబడినప్పటికీ అన్ని సహాయ సేవలు అందుబాటులో ఉంటాయి."
           : "Support remains available even if monitoring is paused or stopped."}
       </div>
 
@@ -72,7 +98,7 @@ export default function SupportPage() {
         className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-border-color bg-white/70 p-4 text-sm text-[#3f504a] hover:border-deep-teal hover:bg-white transition-all"
       >
         <span>
-          {hindi ? (
+          {language === "Hindi" ? (
             <>क्या नई शिकायत दर्ज करानी है? <span className="font-semibold text-[#0f766e]">NHAA एकीकृत पोर्टल</span> पर जाएँ।</>
           ) : (
             <>Need to register a new grievance? Visit the <span className="font-semibold text-[#0f766e]">NHAA Integrated Portal</span>.</>
