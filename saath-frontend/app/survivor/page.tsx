@@ -8,6 +8,7 @@ import { caseService } from "@/services/case";
 import { CaseRecord } from "@/types";
 import { formatDate } from "@/lib/utils";
 import { Sahayak } from "@/components/Sahayak";
+import { getHomeTranslations } from "@/lib/i18n";
 
 const moods = [
   { key: "light", icon: CloudDrizzle, tone: "bg-success-bg text-success" },
@@ -21,10 +22,7 @@ export default function SurvivorHomePage() {
   const { victimToken, survivorName, language, currentCase, docket } = useAppStore();
   const [caseRecord, setCaseRecord] = useState<CaseRecord | null>(currentCase ?? null);
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
-  const hindi = language === "Hindi";
-  const copy = hindi ? {
-    greeting: "नमस्ते", enough: "आप यहाँ हैं। इतना काफ़ी है।", private: "आपकी जगह निजी और आपकी सहमति के अनुसार है", checkin: "आज आप कैसा महसूस कर रहे हैं?", noWrong: "आधार बनें, बस उस भाव को चुनें जो सबसे सही लगे।", moodPrompt: "एक पल रुकें और वह भाव चुनें जो अभी सबसे ज़्यादा फिट बैठता है।", moods: { light: "ठीक हूँ", heavy: "थोड़ा मुश्किल है", veryHeavy: "बहुत मुश्किल है", okay: "बहुत भारी लग रहा है" }, selected: "चुना गया", continue: "चेक-इन जारी रखें", care: "आपके लिए कुछ", careText: "दो मिनट रुककर एक शांत गतिविधि करें।", way: "अपने तरीके से चेक-इन", wayText: "टेक्स्ट, आवाज़ या IVRS में से जो सहज लगे चुनें।", case: "आपका केस", connect: "केस कनेक्ट करें", hearing: "अगली सुनवाई", support: "आपकी सहायता टीम आपके साथ है", privacy: "आपकी पसंद, सहमति और गोपनीयता नियंत्रण हमेशा आपके पास हैं", demo: "सिंथेटिक डेमो डेटा" } : {
-    greeting: new Date().getHours() < 12 ? "Good morning" : new Date().getHours() < 17 ? "Good afternoon" : "Good evening", enough: "Take today at your own pace.", checkin: "How are things feeling today?", noWrong: "Choose the feeling that fits best right now.", moodPrompt: "Take a moment and pick the one that feels closest.", moods: { light: "I'm okay", heavy: "A little heavy", veryHeavy: "Quite heavy", okay: "I'm overwhelmed" }, selected: "Selected", continue: "Continue check-in", care: "Something for you", careText: "Take two minutes to slow down with a gentle grounding activity.", way: "Check in your way", wayText: "Text, voice, or IVRS. Choose what feels most comfortable today.", case: "Your case", connect: "Connect your case", hearing: "Next hearing", support: "Your support team is with you", privacy: "Your choices, consent, and privacy controls are always visible.", demo: "Synthetic demonstration data" };
+  const copy = getHomeTranslations(language);
 
   useEffect(() => {
     if (victimToken) {
@@ -58,16 +56,12 @@ export default function SurvivorHomePage() {
             )}
           </h1>
           <p className="mt-3 text-base text-text-secondary md:text-lg">
-            {hindi ? (
-              <span>आप यहाँ हैं। <strong className="font-semibold text-text-primary">इतना काफ़ी है।</strong></span>
-            ) : (
-              <span>Take today <strong className="font-semibold text-text-primary">at your own pace.</strong></span>
-            )}
+            <span>{copy.enough}</span>
           </p>
         </div>
         <div className="hidden items-center gap-2 text-xs font-medium text-text-secondary md:flex">
           <ShieldCheck size={14} className="text-deep-teal" />
-          <span>{copy.private}</span>
+          <span>{copy.privateSpace}</span>
         </div>
       </div>
 
@@ -80,11 +74,7 @@ export default function SurvivorHomePage() {
                 Quick check-in
               </div>
               <h2 className="font-editorial text-2xl text-text-primary md:text-[34px] leading-tight">
-                {hindi ? (
-                  <>आज आप <span className="italic text-deep-teal">कैसा महसूस</span> कर रहे हैं?</>
-                ) : (
-                  <>How are things <span className="italic text-deep-teal">feeling today?</span></>
-                )}
+                {copy.checkInHeading}
               </h2>
               <p className="text-sm leading-relaxed text-text-secondary max-w-xl">
                 {copy.moodPrompt}
@@ -119,12 +109,12 @@ export default function SurvivorHomePage() {
 
             {selectedMood && (
               <div className="mt-5 flex items-center justify-between rounded-2xl bg-surface-subtle px-4 py-3.5 text-sm text-text-secondary border border-border-color/50">
-                <span>{copy.noWrong}</span>
+                <span>{copy.continueCheckIn}</span>
                 <Link
                   href="/survivor/check-in"
                   className="group ml-3 inline-flex items-center gap-1 whitespace-nowrap text-sm font-semibold text-deep-teal hover:underline"
                 >
-                  <span>{copy.continue}</span>
+                  <span>{copy.continueCheckIn}</span>
                   <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-1" />
                 </Link>
               </div>
@@ -144,14 +134,10 @@ export default function SurvivorHomePage() {
                 <ArrowRight size={18} className="text-text-secondary transition-all duration-200 group-hover:translate-x-1 group-hover:text-deep-teal" />
               </div>
               <h3 className="mt-6 font-editorial text-2xl text-text-primary">
-                {hindi ? (
-                  <>आपके लिए <span className="italic text-deep-teal">कुछ</span></>
-                ) : (
-                  <>Something <span className="italic text-deep-teal">for you</span></>
-                )}
+                {copy.careCardTitle}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                {copy.careText}
+                {copy.careCardDesc}
               </p>
             </Link>
 
@@ -166,14 +152,10 @@ export default function SurvivorHomePage() {
                 <ArrowRight size={18} className="text-text-secondary transition-all duration-200 group-hover:translate-x-1 group-hover:text-deep-teal" />
               </div>
               <h3 className="mt-6 font-editorial text-2xl text-text-primary">
-                {hindi ? (
-                  <>अपने तरीके से <span className="italic text-deep-teal">चेक-इन</span></>
-                ) : (
-                  <>Check in <span className="italic text-deep-teal">your way</span></>
-                )}
+                {copy.wayCardTitle}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                {copy.wayText}
+                {copy.wayCardDesc}
               </p>
             </Link>
           </div>
@@ -188,19 +170,31 @@ export default function SurvivorHomePage() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-text-secondary">
-                  {copy.case}
+                  {copy.caseCardTitle}
                 </p>
                 {activeCase ? (
                   <p className="mt-2 font-mono text-sm font-semibold text-text-primary tracking-wide">
                     {activeCase.docket}
                   </p>
                 ) : (
-                  <p className="mt-2 text-sm text-text-secondary">{copy.connect}</p>
+                  <p className="mt-2 text-sm text-text-secondary">
+                    {language === "Hindi"
+                      ? "अपना केस जोड़ें"
+                      : language === "Bengali"
+                      ? "আপনার কেস যুক্ত করুন"
+                      : language === "Marathi"
+                      ? "आपली केस जोडा"
+                      : language === "Tamil"
+                      ? "உங்கள் வழக்கை இணைக்கவும்"
+                      : language === "Telugu"
+                      ? "మీ కేసును అనుసంధానించండి"
+                      : "Connect your case"}
+                  </p>
                 )}
               </div>
               <Link
                 href={activeCase ? "/survivor/case" : "/connect-case"}
-                aria-label={copy.case}
+                aria-label={copy.caseCardTitle}
                 className="group rounded-full p-2 text-text-secondary hover:bg-surface-subtle hover:text-deep-teal transition-colors"
               >
                 <ArrowRight size={18} className="transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -217,13 +211,13 @@ export default function SurvivorHomePage() {
                     <p className="text-sm font-semibold text-success">
                       {activeCase.currentStage ?? "Investigation"}
                     </p>
-                    <p className="mt-0.5 text-xs text-text-secondary">{copy.support}</p>
+                    <p className="mt-0.5 text-xs text-text-secondary">{copy.supportTeam}</p>
                   </div>
                 </div>
 
                 <div className="mt-5 flex items-center justify-between border-t border-border-color/60 pt-4">
                   <div className="flex items-center gap-2 text-xs font-medium text-text-secondary">
-                    <CalendarDays size={15} /> {copy.hearing}
+                    <CalendarDays size={15} /> {copy.hearingLabel}
                   </div>
                   <span className="text-sm font-semibold text-text-primary">
                     {activeCase.nextHearingDate ? formatDate(activeCase.nextHearingDate) : "—"}
@@ -235,11 +229,11 @@ export default function SurvivorHomePage() {
 
           <div className="flex items-center gap-3 px-2 text-xs leading-relaxed text-text-secondary">
             <ShieldCheck size={16} className="shrink-0 text-sage" />
-            <span>{copy.privacy}</span>
+            <span>{copy.privacyNotice}</span>
           </div>
           <div className="flex items-center gap-2 px-2 text-xs text-text-secondary">
             <Leaf size={13} className="text-sage" />
-            <span>{copy.demo}</span>
+            <span>{copy.demoData}</span>
           </div>
         </aside>
       </div>
