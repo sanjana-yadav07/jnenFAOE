@@ -77,8 +77,8 @@ export default function AboutPage() {
               SAATH
             </span>
             <span className="hidden h-4 w-px bg-[#c8d3d0] sm:inline" />
-            <span className="hidden text-[11px] font-semibold uppercase tracking-[0.18em] text-[#61706d] sm:inline">
-              Support After Trauma & Healing
+            <span className="hidden text-[11px] font-semibold tracking-wide text-[#61706d] sm:inline">
+              You Don&apos;t Have to Walk Alone
             </span>
           </Link>
 
