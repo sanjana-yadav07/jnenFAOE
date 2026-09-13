@@ -14,8 +14,8 @@ const modelOutput = z.object({ distressScore:z.number().min(0).max(100), recover
 
 export type CrisisLevel = 'none' | 'self_harm' | 'immediate_danger';
 
-const immediateDangerPattern = /(kill(?:ing)? myself|end my life|take my own life|want to die|better off dead|don't want to (?:live|be alive)|do not want to (?:live|be alive)|can't stay safe|cannot stay safe|can't keep myself safe|going to hurt myself|plan(?:ning)? to (?:kill|hurt) myself|have (?:a gun|pills|a weapon) (?:ready|with me))/i;
-const selfHarmPattern = /(self[- ]?harm|hurt(?:ing)? myself|cut(?:ting)? myself|overdose|starv(?:e|ing) myself)/i;
+const immediateDangerPattern = /(kill(?:ing)? myself|end my life|take my own life|want to die|better off dead|don't want to (?:live|be alive)|do not want to (?:live|be alive)|can't stay safe|cannot stay safe|can't keep myself safe|going to hurt myself|plan(?:ning)? to (?:kill|hurt) myself|have (?:a gun|pills|a weapon) (?:ready|with me)|jeene ka mann nahi|sab khatam karna chaht(?:a|i)|mar jaana chaht(?:a|i)|khudkushi|aatmhatya|jaan de dung(?:a|i)|जीने का मन नहीं|सब खत्म करना चाहता|सब खत्म करना चाहती|मर जाना चाहता|मर जाना चाहती|खुदकुशी|आत्महत्या|जान दे दूंगा|जान दे दूंगी)/i;
+const selfHarmPattern = /(self[- ]?harm|hurt(?:ing)? myself|cut(?:ting)? myself|overdose|starv(?:e|ing) myself|apne aap ko chot|apne aap ko nuksan|खुद को चोट|खुद को नुकसान)/i;
 
 /** Rule-based, deterministic - no model hallucination risk. Check highest severity first. */
 export const detectCrisisLevel = (text: string): CrisisLevel => {

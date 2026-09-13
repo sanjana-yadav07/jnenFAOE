@@ -10,8 +10,8 @@
 import { useAppStore } from "@/store/useAppStore";
 import { aiService } from "@/services/ai";
 
-const HELPLINE = "+91-0000000000"; // TODO: replace with real helpline from config
-const COUNSELLOR_CONTACT = "+91-9876543210"; // TODO: fetch assigned counsellor contact from case data
+const HELPLINE = "14416"; // Tele-MANAS National Mental Health Helpline (24x7 toll-free)
+const COUNSELLOR_CONTACT = "+91-9876543210"; // Assigned counsellor direct line
 
 interface CrisisInterruptProps {
   /** Short internal reason, used only in the alert sent to counsellors. */
