@@ -590,6 +590,7 @@ app.post('/api/v1/ai/analyze-text', requireAuth, body(z.object({ text: z.string(
     recoveryScore: analysis.recoveryScore,
     confidence: analysis.confidence,
     crisis: analysis.crisis,
+    indicators: analysis.indicators ?? [],
   });
 }));
 
@@ -608,7 +609,7 @@ app.post('/api/v1/ai/analyze-voice', requireAuth, upload.single('audio'), asyncR
     const voice = await analyzeVoice({ victimToken: caseRecord?.victimToken ?? req.user!.victimToken ?? 'unknown', audio: req.file.buffer, mimeType: req.file.mimetype, language: (req.body as { language?: string }).language });
     const signalId = id();
     record('voice_signals', { id: signalId, victimToken: caseRecord?.victimToken ?? req.user!.victimToken, transcriptAvailable: true, analysis: voice.analysis, createdAt: new Date().toISOString() });
-    return ok(res, { signalId, transcript: voice.transcript, features: voice.analysis.signals, status: voice.analysis.status, distressScore: voice.analysis.distressScore, confidence: voice.analysis.confidence, crisis: voice.analysis.crisis });
+    return ok(res, { signalId, transcript: voice.transcript, features: voice.analysis.signals, status: voice.analysis.status, distressScore: voice.analysis.distressScore, confidence: voice.analysis.confidence, crisis: voice.analysis.crisis, indicators: voice.analysis.indicators ?? [] });
   } catch {
     throw new AppError(503, 'VOICE_ANALYSIS_UNAVAILABLE', 'Voice transcription is temporarily unavailable.');
   }
