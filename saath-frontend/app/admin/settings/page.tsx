@@ -23,10 +23,17 @@ export default function AdminSettingsPage() {
       .catch(() => {});
 
     staffService.getCounsellors()
-      .then(setCounsellors)
+      .then((res) => {
+        if (Array.isArray(res)) {
+          setCounsellors(res);
+        } else {
+          setCounsellorsError(true);
+        }
+      })
       .catch(() => setCounsellorsError(true))
       .finally(() => setCounsellorsLoading(false));
   }, []);
+
 
   function signOut() {
     logout();

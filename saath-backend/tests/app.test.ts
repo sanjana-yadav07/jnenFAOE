@@ -229,4 +229,37 @@ describe('SAATH API', () => {
       }
     });
   });
+
+  describe('voice analysis escalation and fallback', () => {
+    it('includes voice_features in escalation input when acoustic features are present', async () => {
+      const { buildEscalationInput } = await import('../src/services/escalation.js');
+      const mockVoiceFeatures = {
+        speakingPaceWpm: 124.5,
+        pauseCount: 4,
+        avgPauseDurationSec: 0.52,
+        pitchMeanHz: 185.0,
+        energyRms: 0.045,
+        confidence: 0.88,
+      };
+      const input = buildEscalationInput('user-1', 'victim-token-1', {
+        distressScore: 65,
+        signals: {
+          voiceFeatures: mockVoiceFeatures,
+        },
+      });
+      expect(input).toHaveProperty('voice_features');
+      expect(input.voice_features).toEqual(mockVoiceFeatures);
+    });
+
+    it('omits voice_features from escalation input when not present', async () => {
+      const { buildEscalationInput } = await import('../src/services/escalation.js');
+      const input = buildEscalationInput('user-2', 'victim-token-2', {
+        distressScore: 40,
+        signals: {},
+      });
+      expect(input).not.toHaveProperty('voice_features');
+    });
+  });
 });
+
+
