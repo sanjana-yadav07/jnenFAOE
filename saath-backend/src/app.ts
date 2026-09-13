@@ -15,6 +15,7 @@ import { getScopedAdminDataset, resolveAdminScope } from './services/admin-scope
 import { rankInterventions, shouldEscalateToCounsellor, type InterventionOutcomeRecord } from './services/interventions.js';
 import { getSupportRecommendations, getRecommendationsForRisk } from './services/recommendations.js';
 import { generateSahayakReply } from './services/sahayak.js';
+import { evaluateCheckInFreshness } from './services/checkin-freshness.js';
 
 const app=express(); app.use(helmet()); app.use(cors({origin:(origin,cb)=>!origin||corsOrigins.includes(origin)?cb(null,true):cb(new Error('CORS denied'))})); app.use(express.json({limit:'1mb'})); app.use(requestId); app.use(rateLimit({windowMs:60_000,max:120,standardHeaders:true,legacyHeaders:false}));
 const body=(schema:z.ZodTypeAny)=>(req:AuthedRequest,_res:express.Response,next:express.NextFunction)=>{const parsed=schema.safeParse(req.body); if(!parsed.success) return next(new AppError(400,'VALIDATION_ERROR','Request validation failed',parsed.error.flatten())); req.body=parsed.data; next();};
@@ -29,11 +30,13 @@ const severityFromAlert = (source: string, crisis = false, requestedSupport = fa
   if (requestedSupport) return { priority: 'P2', severity: 'support_request' };
   return { priority: 'P3', severity: 'watch' };
 };
-const recordAlert = (payload: { victimToken?: string; caseReference?: string; reason: string; source?: string; crisis?: boolean; requestedSupport?: boolean; channel?: string; status?: string; confidence?: number; metadata?: Record<string, unknown> }) => {
+const recordAlert = (payload: { victimToken?: string; caseReference?: string; reason: string; source?: string; priority?: string; severity?: string; crisis?: boolean; requestedSupport?: boolean; channel?: string; status?: string; confidence?: number; metadata?: Record<string, unknown> }) => {
   const now = new Date().toISOString();
+  const defaultSeverity = severityFromAlert(payload.source ?? 'manual', payload.crisis ?? false, payload.requestedSupport ?? false);
   const normalized = {
     ...payload,
-    ...severityFromAlert(payload.source ?? 'manual', payload.crisis ?? false, payload.requestedSupport ?? false),
+    priority: payload.priority ?? defaultSeverity.priority,
+    severity: payload.severity ?? defaultSeverity.severity,
     status: payload.status ?? 'NEW',
     createdAt: now,
     updatedAt: now,
@@ -69,6 +72,94 @@ const recordAlert = (payload: { victimToken?: string; caseReference?: string; re
   }
   return created;
 };
+
+/**
+ * Evaluates real survivor check-in freshness across cases and flags counsellor attention items.
+ * Deduplicates against any active/unresolved STALE_CHECKIN alert for that case.
+ */
+function evaluateStaleCheckInsForStore() {
+  const allAlerts = store.records.get('alerts:all') || [];
+  for (const c of store.cases) {
+    if (!c.victimToken) continue;
+
+    // Find linked user ID
+    const linkedUser = [...store.users.entries()].find(([, user]) => user?.victimToken === c.victimToken)?.[0];
+    const userKey = linkedUser ? `checkins:${linkedUser}` : `checkins:${c.victimToken}`;
+    const directUserObservations = store.records.get(userKey) || [];
+    const directTokenObservations = store.records.get(`checkins:${c.victimToken}`) || [];
+    const allSurvivorCheckIns = [...directUserObservations, ...directTokenObservations].filter(Boolean);
+
+    // Find latest REAL survivor check-in (never counsellor actions)
+    let latestCheckInAt: string | null = null;
+    for (const chk of allSurvivorCheckIns) {
+      const ts = chk.createdAt ?? chk.timestamp;
+      if (ts && (!latestCheckInAt || new Date(ts).getTime() > new Date(latestCheckInAt).getTime())) {
+        latestCheckInAt = ts;
+      }
+    }
+
+    const evaluation = evaluateCheckInFreshness({
+      victimToken: c.victimToken,
+      riskLevel: c.riskLevel,
+      lastCheckInAt: latestCheckInAt,
+    });
+
+    if (evaluation.shouldFlagCounsellor) {
+      // Check if there is already an unresolved STALE_CHECKIN alert for this victimToken
+      const hasUnresolvedAlert = allAlerts.some((a: any) =>
+        a &&
+        a.victimToken === c.victimToken &&
+        (a.source === 'stale_checkin' || a.metadata?.category === 'STALE_CHECKIN') &&
+        ['NEW', 'ACKNOWLEDGED', 'ASSIGNED'].includes(a.status)
+      );
+
+      if (!hasUnresolvedAlert) {
+        recordAlert({
+          victimToken: c.victimToken,
+          caseReference: c.docket ?? c.victimToken,
+          reason: evaluation.reason,
+          source: 'stale_checkin',
+          priority: evaluation.priority ?? (evaluation.riskLevel === 'CRITICAL' ? 'P1' : evaluation.riskLevel === 'HIGH' ? 'P2' : 'P3'),
+          severity: evaluation.riskLevel === 'CRITICAL' ? 'urgent' : evaluation.riskLevel === 'HIGH' ? 'support_request' : 'watch',
+          crisis: evaluation.riskLevel === 'CRITICAL',
+          requestedSupport: evaluation.riskLevel === 'HIGH',
+          metadata: {
+            category: 'STALE_CHECKIN',
+            status: evaluation.status,
+            riskLevel: evaluation.riskLevel,
+            thresholdHours: evaluation.thresholdHours,
+            elapsedHours: evaluation.elapsedHours,
+            lastCheckInAt: evaluation.lastCheckInAt,
+          },
+        });
+      }
+    }
+  }
+}
+
+/**
+ * When a survivor submits a new valid check-in, naturally resolve non-critical STALE_CHECKIN alerts.
+ * (Critical human-review alerts require conscious human acknowledgement/resolution per safety policy).
+ */
+function resolveStaleCheckInAlertOnNewCheckIn(victimToken?: string) {
+  if (!victimToken) return;
+  const allAlerts = store.records.get('alerts:all') || [];
+  const now = new Date().toISOString();
+  for (const alert of allAlerts) {
+    if (
+      alert &&
+      alert.victimToken === victimToken &&
+      (alert.source === 'stale_checkin' || alert.metadata?.category === 'STALE_CHECKIN') &&
+      ['NEW', 'ACKNOWLEDGED', 'ASSIGNED'].includes(alert.status) &&
+      !alert.crisis // Non-critical stale check-ins clear naturally
+    ) {
+      alert.status = 'RESOLVED';
+      alert.updatedAt = now;
+      alert.resolvedAt = now;
+      record('audit:alerts', { id: id(), alertId: alert.id, action: 'resolved', actor: 'system', details: 'Auto-resolved after new valid survivor check-in.', createdAt: now });
+    }
+  }
+}
 
 const notifySafeCircleOnCrisis = async (victimToken: string | undefined, alertId: string) => {
   if (!victimToken) return;
@@ -260,6 +351,38 @@ app.get('/api/v1/cases/:id/recommendations', requireAuth, asyncRoute(async (req:
     supportRecommendations,
   });
 }));
+app.get('/api/v1/cases/:id/freshness', requireAuth, requireRoles('COUNSELLOR','DISTRICT_ADMIN','STATE_ADMIN','NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
+  const caseId = req.params.id;
+  const caseRecord = store.cases.find(c => c.id === caseId || c.docket === caseId || c.victimToken === caseId);
+  if (!caseRecord) throw new AppError(404, 'CASE_NOT_FOUND', 'Case not found.');
+
+  const linkedUser = [...store.users.entries()].find(([, user]) => user?.victimToken === caseRecord.victimToken)?.[0];
+  const userKey = linkedUser ? `checkins:${linkedUser}` : `checkins:${caseRecord.victimToken}`;
+  const directUserObservations = store.records.get(userKey) || [];
+  const directTokenObservations = store.records.get(`checkins:${caseRecord.victimToken}`) || [];
+  const allSurvivorCheckIns = [...directUserObservations, ...directTokenObservations].filter(Boolean);
+
+  let lastCheckInAt: string | null = null;
+  for (const chk of allSurvivorCheckIns) {
+    const ts = chk.createdAt ?? chk.timestamp;
+    if (ts && (!lastCheckInAt || new Date(ts).getTime() > new Date(lastCheckInAt).getTime())) {
+      lastCheckInAt = ts;
+    }
+  }
+
+  const evaluation = evaluateCheckInFreshness({
+    victimToken: caseRecord.victimToken,
+    riskLevel: caseRecord.riskLevel,
+    lastCheckInAt,
+  });
+
+  return ok(res, {
+    caseId: caseRecord.id,
+    docket: caseRecord.docket,
+    victimToken: caseRecord.victimToken,
+    ...evaluation,
+  });
+}));
 app.post('/api/v1/cases/:id/stage',requireAuth,requireRoles('COUNSELLOR','DISTRICT_ADMIN','STATE_ADMIN','NATIONAL_ADMIN'),body(z.object({stage:z.string().min(1)})),asyncRoute(async(req:AuthedRequest,res)=>{const caseId=String(req.params.id); const newStage=String(req.body.stage); const updated=await syncCaseStage(caseId,newStage); return ok(res,updated,200);}));
 
 const consentSchema=z.union([
@@ -273,14 +396,17 @@ const checkinSchema=z.object({victimToken:z.string().optional(),mood:z.number().
 app.post('/api/v1/check-ins/mood',requireAuth,requireMonitoringConsent,body(checkinSchema.extend({mood:z.number().int().min(1).max(5),sleep:z.number().int().min(1).max(5),perceivedSafety:z.number().int().min(1).max(5),socialConnectedness:z.number().int().min(1).max(5)})),asyncRoute(async(req:AuthedRequest,res)=>{const now=new Date().toISOString(); const summary=`Structured check-in: mood ${req.body.mood}/5, sleep ${req.body.sleep}/5, fear ${req.body.fear??'not answered'}/5, unwanted memories ${req.body.intrusion??'not answered'}/5, safety ${req.body.perceivedSafety}/5, social connection ${req.body.socialConnectedness}/5.`; const ml=await analyzeText({victimToken:req.user!.victimToken||'unknown',text:summary}); const result=record(`checkins:${req.user!.id}`,{id:id(),type:'mood',...req.body,ml,createdAt:now,analyticalState:ml.confidence<.5?'insufficient_evidence':'scored'}); if(ml.crisis) recordAlert({victimToken:req.user!.victimToken,caseReference:req.user!.victimToken,reason:'Structured check-in requires human review.',source:'checkin',crisis:true,confidence:ml.confidence}); 
   trackCheckinCompletion(record, id, { userId: req.user!.id, victimToken: req.user!.victimToken, channel: 'mood', createdAt: now });
   await updateBaseline(req.user!.id);
+  resolveStaleCheckInAlertOnNewCheckIn(req.user!.victimToken);
   return ok(res,result,201)}));
 app.post('/api/v1/check-ins/quick-mood',requireAuth,requireMonitoringConsent,body(z.object({mood:z.number().int().min(1).max(5),label:z.string().min(1).max(80)})),asyncRoute(async(req:AuthedRequest,res)=>{const now=new Date().toISOString(); const ml=await analyzeText({victimToken:req.user!.victimToken||'unknown',text:`Quick wellbeing check-in: the survivor selected mood "${req.body.label}" (${req.body.mood}/5).`}); const result=record(`checkins:${req.user!.id}`,{id:id(),type:'quick_mood',mood:req.body.mood,label:req.body.label,ml,createdAt:now,analyticalState:ml.confidence<.5?'insufficient_evidence':'scored'}); 
   trackCheckinCompletion(record, id, { userId: req.user!.id, victimToken: req.user!.victimToken, channel: 'quick_mood', createdAt: now });
   await updateBaseline(req.user!.id);
+  resolveStaleCheckInAlertOnNewCheckIn(req.user!.victimToken);
   return ok(res,result,201)}));
 app.post('/api/v1/check-ins/text',requireAuth,requireConsent('text_analysis'),body(checkinSchema.extend({text:z.string().trim().min(1).max(10000)})),asyncRoute(async(req:AuthedRequest,res)=>{const now=new Date().toISOString(); const ml=await analyzeText({victimToken:req.user!.victimToken||'unknown',text:req.body.text,language:req.body.language}); const result=record(`checkins:${req.user!.id}`,{id:id(),type:'text',victimToken:req.user!.victimToken,textSubmitted:true,ml,createdAt:now,analyticalState:ml.status==='unavailable'||ml.insufficientEvidence?'insufficient_evidence':'scored'}); if(ml.crisis) recordAlert({victimToken:req.user!.victimToken,caseReference:req.user!.victimToken,reason:'Crisis safety screening requires human review.',source:'text',crisis:true,confidence:ml.confidence}); 
   trackCheckinCompletion(record, id, { userId: req.user!.id, victimToken: req.user!.victimToken, channel: 'text', createdAt: now });
   await updateBaseline(req.user!.id);
+  resolveStaleCheckInAlertOnNewCheckIn(req.user!.victimToken);
   return ok(res,result,201); }));
 app.get('/api/v1/monitoring/baseline',requireAuth,asyncRoute(async(req:AuthedRequest,res)=>{
   // H07/I23: baseline is recomputed on every observation, so this just reads the latest snapshot.
@@ -310,6 +436,7 @@ app.get('/api/v1/monitoring/trends',requireAuth,asyncRoute(async(req:AuthedReque
   return ok(res, { distressTrend: [], recoveryTrend: [], baselineComparison: 'stable', recentObservations: observations.slice(-5) });
 }));
 app.get('/api/v1/alerts',requireAuth,asyncRoute(async(req:AuthedRequest,res)=>{
+  evaluateStaleCheckInsForStore();
   const allAlerts = store.records.get('alerts:all') || [];
   for (const user of store.users.values()) {
     if (!user.victimToken) continue;
@@ -635,7 +762,7 @@ app.post('/api/v1/ai/crisis-screen', requireAuth, body(z.object({ text: z.string
   if (crisis) recordAlert({ victimToken: req.user!.victimToken, caseReference: req.user!.victimToken, reason: 'Crisis screen flagged this message for human review.', source: 'checkin', crisis: true, confidence: analysis.confidence });
   return ok(res, { riskLevel, flags, confidence: analysis.confidence, crisis, response: crisis ? 'Your safety matters. Please contact immediate human support or a trusted person who can stay with you. A counsellor has been notified for human review.' : null, humanReviewRequired: crisis });
 }));
-app.post('/api/v1/check-ins/voice',requireAuth,requireConsent('voice_analysis'),upload.single('audio'),asyncRoute(async(req:AuthedRequest,res)=>{if(!req.file) throw new AppError(400,'AUDIO_REQUIRED','A supported audio file is required.'); try { const voice=await analyzeVoice({victimToken:req.user!.victimToken||'unknown',audio:req.file.buffer,mimeType:req.file.mimetype,language:(req.body as {language?:string}).language}); const result=record(`checkins:${req.user!.id}`,{id:id(),type:'voice',victimToken:req.user!.victimToken,transcript:voice.transcript,transcriptAvailable:true,ml:voice.analysis,rawAudioRetained:false,createdAt:new Date().toISOString(),analyticalState:voice.analysis.status==='unavailable'||voice.analysis.insufficientEvidence?'insufficient_evidence':'scored'}); if(voice.analysis.crisis) recordAlert({victimToken:req.user!.victimToken,caseReference:req.user!.victimToken,reason:'Voice check-in requires human review.',source:'voice',crisis:true,confidence:voice.analysis.confidence}); trackCheckinCompletion(record, id, { userId: req.user!.id, victimToken: req.user!.victimToken, channel: 'voice' }); await updateBaseline(req.user!.id); return ok(res,{...result,transcript:voice.transcript},201); } catch { throw new AppError(503,'VOICE_ANALYSIS_UNAVAILABLE','Voice transcription is temporarily unavailable. Please try a text check-in.'); }}));
+app.post('/api/v1/check-ins/voice',requireAuth,requireConsent('voice_analysis'),upload.single('audio'),asyncRoute(async(req:AuthedRequest,res)=>{if(!req.file) throw new AppError(400,'AUDIO_REQUIRED','A supported audio file is required.'); try { const voice=await analyzeVoice({victimToken:req.user!.victimToken||'unknown',audio:req.file.buffer,mimeType:req.file.mimetype,language:(req.body as {language?:string}).language}); const result=record(`checkins:${req.user!.id}`,{id:id(),type:'voice',victimToken:req.user!.victimToken,transcript:voice.transcript,transcriptAvailable:true,ml:voice.analysis,rawAudioRetained:false,createdAt:new Date().toISOString(),analyticalState:voice.analysis.status==='unavailable'||voice.analysis.insufficientEvidence?'insufficient_evidence':'scored'}); if(voice.analysis.crisis) recordAlert({victimToken:req.user!.victimToken,caseReference:req.user!.victimToken,reason:'Voice check-in requires human review.',source:'voice',crisis:true,confidence:voice.analysis.confidence}); trackCheckinCompletion(record, id, { userId: req.user!.id, victimToken: req.user!.victimToken, channel: 'voice' }); await updateBaseline(req.user!.id); resolveStaleCheckInAlertOnNewCheckIn(req.user!.victimToken); return ok(res,{...result,transcript:voice.transcript},201); } catch { throw new AppError(503,'VOICE_ANALYSIS_UNAVAILABLE','Voice transcription is temporarily unavailable. Please try a text check-in.'); }}));
 
 
 // ...existing code...
@@ -659,6 +786,7 @@ app.post('/api/v1/check-ins/ivrs', requireAuth, body(ivrsSchema), asyncRoute(asy
   if (req.body.requestCounsellorCall) recordAlert({ victimToken: req.user!.victimToken, caseReference: req.user!.victimToken, reason: 'Survivor requested a counsellor phone call via IVRS check-in.', source: 'checkin', crisis: false, requestedSupport: true, confidence: ml.confidence });
   trackCheckinCompletion(record, id, { userId: req.user!.id, victimToken: req.user!.victimToken, channel: 'ivrs' });
   await updateBaseline(req.user!.id);
+  resolveStaleCheckInAlertOnNewCheckIn(req.user!.victimToken);
 
   return ok(res, result, 201);
 }));
