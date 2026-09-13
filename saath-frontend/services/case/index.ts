@@ -129,6 +129,71 @@ export const caseService = {
       body: JSON.stringify(payload),
     });
   },
+
+  async createProtectionRequest(caseId: string, payload: {
+    threatType?: string;
+    threatSource?: string;
+    riskPerception?: string;
+    notes?: string;
+    measuresNeeded?: string[];
+  }): Promise<any> {
+    return apiRequest<any>(`/api/v1/cases/${encodeURIComponent(caseId)}/protection-request`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async updateProtectionStatus(caseId: string, payload: {
+    status: string;
+    assignedOfficer?: string;
+    notes?: string;
+  }): Promise<any> {
+    return apiRequest<any>(`/api/v1/cases/${encodeURIComponent(caseId)}/protection-status`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async getProtectionRequests(caseId: string): Promise<any[]> {
+    try {
+      return await apiRequest<any[]>(`/api/v1/cases/${encodeURIComponent(caseId)}/protection-requests`);
+    } catch {
+      return [];
+    }
+  },
+
+  async createRelocationRequest(caseId: string, payload: {
+    threatLevel?: string;
+    safeHouseNeeded?: boolean;
+    familyMembersCount?: number;
+    urgency?: string;
+    reason?: string;
+  }): Promise<any> {
+    return apiRequest<any>(`/api/v1/cases/${encodeURIComponent(caseId)}/relocation-request`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async updateRelocationStatus(caseId: string, payload: {
+    status: string;
+    facilityType?: string;
+    securityLevel?: string;
+    notes?: string;
+  }): Promise<any> {
+    return apiRequest<any>(`/api/v1/cases/${encodeURIComponent(caseId)}/relocation-status`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async getRelocationRequests(caseId: string): Promise<any[]> {
+    try {
+      return await apiRequest<any[]>(`/api/v1/cases/${encodeURIComponent(caseId)}/relocation-requests`);
+    } catch {
+      return [];
+    }
+  },
 };
 
 export const counsellorService = {

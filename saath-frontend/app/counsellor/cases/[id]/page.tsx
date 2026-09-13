@@ -37,6 +37,9 @@ import {
   TrendingDown,
   TrendingUp,
   UserCheck,
+  Home,
+  Lock,
+  RefreshCw,
 } from "lucide-react";
 import {
   LineChart,
@@ -157,6 +160,21 @@ export default function CounsellorCaseDetailPage() {
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
 
+  // Protection & Relocation State
+  const [protectionRequests, setProtectionRequests] = useState<any[]>([]);
+  const [relocationRequests, setRelocationRequests] = useState<any[]>([]);
+  const [showProtectionModal, setShowProtectionModal] = useState(false);
+  const [showRelocationModal, setShowRelocationModal] = useState(false);
+  const [protectionStatusDraft, setProtectionStatusDraft] = useState("UNDER_REVIEW");
+  const [protectionOfficerDraft, setProtectionOfficerDraft] = useState("");
+  const [protectionNotesDraft, setProtectionNotesDraft] = useState("");
+  const [relocationStatusDraft, setRelocationStatusDraft] = useState("UNDER_REVIEW");
+  const [relocationFacilityDraft, setRelocationFacilityDraft] = useState("Safehouse");
+  const [relocationSecurityDraft, setRelocationSecurityDraft] = useState("High");
+  const [relocationNotesDraft, setRelocationNotesDraft] = useState("");
+  const [submittingProtection, setSubmittingProtection] = useState(false);
+  const [submittingRelocation, setSubmittingRelocation] = useState(false);
+
   // STRICT CASE ISOLATION: Fetch all data specifically for this victimToken/caseId
   useEffect(() => {
     setLoading(true);
@@ -164,7 +182,7 @@ export default function CounsellorCaseDetailPage() {
 
     async function loadCaseData() {
       try {
-        const [cRecord, trajectory, history, tLine, esc, allAlerts, allVoice] = await Promise.all([
+        const [cRecord, trajectory, history, tLine, esc, allAlerts, allVoice, pReqs, rReqs] = await Promise.all([
           caseService.getCase(victimToken),
           aiService.getDistressTrajectory(victimToken).catch(() => []),
           aiService.getCheckInHistory().catch(() => []),
@@ -172,6 +190,8 @@ export default function CounsellorCaseDetailPage() {
           aiService.getEscalationEstimate(victimToken).catch(() => null),
           aiService.getAlerts().catch(() => []),
           aiService.getCounsellorVoiceCheckIns().catch(() => []),
+          caseService.getProtectionRequests(victimToken).catch(() => []),
+          caseService.getRelocationRequests(victimToken).catch(() => []),
         ]);
 
         if (!cRecord) {
@@ -184,6 +204,8 @@ export default function CounsellorCaseDetailPage() {
         setCheckIns(Array.isArray(history) ? (history as CheckIn[]) : []);
         setTimeline(tLine);
         setEscalation(esc);
+        setProtectionRequests(pReqs);
+        setRelocationRequests(rReqs);
 
         // Filter alerts strictly for this case
         const matchedAlerts = (allAlerts as any[]).filter(
@@ -337,6 +359,59 @@ export default function CounsellorCaseDetailPage() {
     setInterventions((prev) => [newItem, ...prev]);
     setShowInterventionModal(false);
     setNewInterventionNotes("");
+  };
+
+  // Handle Update Protection Status
+  const handleUpdateProtection = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!caseRecord) return;
+    setSubmittingProtection(true);
+    try {
+      await caseService.updateProtectionStatus(victimToken, {
+        status: protectionStatusDraft,
+        assignedOfficer: protectionOfficerDraft || undefined,
+        notes: protectionNotesDraft || undefined,
+      });
+      setCaseRecord((prev) => (prev ? { ...prev, protectionStatus: protectionStatusDraft, protectionRequested: true } : prev));
+      const [updatedReqs, updatedTimeline] = await Promise.all([
+        caseService.getProtectionRequests(victimToken).catch(() => []),
+        caseService.getTimeline(victimToken).catch(() => []),
+      ]);
+      setProtectionRequests(updatedReqs);
+      setTimeline(updatedTimeline);
+      setShowProtectionModal(false);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSubmittingProtection(false);
+    }
+  };
+
+  // Handle Update Relocation Status
+  const handleUpdateRelocation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!caseRecord) return;
+    setSubmittingRelocation(true);
+    try {
+      await caseService.updateRelocationStatus(victimToken, {
+        status: relocationStatusDraft,
+        facilityType: relocationFacilityDraft || undefined,
+        securityLevel: relocationSecurityDraft || undefined,
+        notes: relocationNotesDraft || undefined,
+      });
+      setCaseRecord((prev) => (prev ? { ...prev, relocationStatus: relocationStatusDraft, relocationRequested: true } : prev));
+      const [updatedReqs, updatedTimeline] = await Promise.all([
+        caseService.getRelocationRequests(victimToken).catch(() => []),
+        caseService.getTimeline(victimToken).catch(() => []),
+      ]);
+      setRelocationRequests(updatedReqs);
+      setTimeline(updatedTimeline);
+      setShowRelocationModal(false);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSubmittingRelocation(false);
+    }
   };
 
   if (loading) {
@@ -762,6 +837,138 @@ export default function CounsellorCaseDetailPage() {
         </Card>
       </div>
 
+      {/* ── Witness Protection & Safe Relocation Security State Machine ── */}
+      <Card className="p-5 border-l-4 border-l-warm-peach">
+        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <ShieldAlert size={18} className="text-warm-peach" /> Witness Protection &amp; Safe Relocation Security
+            </CardTitle>
+            <p className="text-xs text-text-secondary mt-0.5">
+              Coordinated safety protocols, police protection escalation, and confidential relocation management.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => {
+                setProtectionStatusDraft(caseRecord.protectionStatus || "UNDER_REVIEW");
+                setShowProtectionModal(true);
+              }}
+              className="flex items-center gap-1 text-xs"
+            >
+              <Shield size={13} className="text-deep-teal" /> Update Protection
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => {
+                setRelocationStatusDraft(caseRecord.relocationStatus || "UNDER_REVIEW");
+                setShowRelocationModal(true);
+              }}
+              className="flex items-center gap-1 text-xs"
+            >
+              <Home size={13} className="text-amber" /> Update Relocation
+            </Button>
+          </div>
+        </div>
+
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          {/* Protection status box */}
+          <div className="rounded-xl border border-border-color bg-surface p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-text-secondary flex items-center gap-1.5">
+                <Shield size={14} className="text-deep-teal" /> Witness Protection
+              </span>
+              <Badge tone={
+                caseRecord.protectionStatus === "APPROVED" || caseRecord.protectionStatus === "IN_PROGRESS" || caseRecord.protectionStatus === "ASSIGNED"
+                  ? "teal"
+                  : caseRecord.protectionStatus === "COMPLETED"
+                  ? "sage"
+                  : caseRecord.protectionStatus === "REJECTED"
+                  ? "neutral"
+                  : "peach"
+              }>
+                {caseRecord.protectionStatus || "Not requested"}
+              </Badge>
+            </div>
+            <p className="mt-2 text-xs text-text-secondary">
+              {caseRecord.protectionRequested ? "Formal police protection request logged." : "No active protection request on file."}
+            </p>
+            {protectionRequests.length > 0 && (
+              <div className="mt-3 pt-2.5 border-t border-border-color/50 text-[11px] space-y-1">
+                <p className="font-semibold text-text-primary">Latest Request Details:</p>
+                <p className="text-text-secondary">Threat: {protectionRequests[0].threatType || "Direct intimidation"}</p>
+                {protectionRequests[0].notes && <p className="text-text-secondary italic">&ldquo;{protectionRequests[0].notes}&rdquo;</p>}
+                {protectionRequests[0].assignedOfficer && (
+                  <p className="text-deep-teal font-medium">Assigned Officer: {protectionRequests[0].assignedOfficer}</p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Relocation status box */}
+          <div className="rounded-xl border border-border-color bg-surface p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-text-secondary flex items-center gap-1.5">
+                <Home size={14} className="text-amber" /> Safe House / Relocation
+              </span>
+              <Badge tone={
+                caseRecord.relocationStatus === "APPROVED" || caseRecord.relocationStatus === "IN_PROGRESS" || caseRecord.relocationStatus === "ASSIGNED"
+                  ? "teal"
+                  : caseRecord.relocationStatus === "COMPLETED"
+                  ? "sage"
+                  : caseRecord.relocationStatus === "REJECTED"
+                  ? "neutral"
+                  : "amber"
+              }>
+                {caseRecord.relocationStatus || "Not requested"}
+              </Badge>
+            </div>
+            <p className="mt-2 text-xs text-text-secondary">
+              {caseRecord.relocationRequested ? "Confidential relocation coordination active." : "Survivor currently at registered primary residence."}
+            </p>
+            {relocationRequests.length > 0 && (
+              <div className="mt-3 pt-2.5 border-t border-border-color/50 text-[11px] space-y-1">
+                <p className="font-semibold text-text-primary">Latest Request Details:</p>
+                <p className="text-text-secondary">Facility: {relocationRequests[0].facilityType || "Safehouse"}</p>
+                <p className="text-text-secondary">Security Level: {relocationRequests[0].securityLevel || "High"}</p>
+                {relocationRequests[0].reason && <p className="text-text-secondary italic">&ldquo;{relocationRequests[0].reason}&rdquo;</p>}
+              </div>
+            )}
+          </div>
+        </div>
+      </Card>
+
+      {/* ── Longitudinal Case History & Event Timeline ── */}
+      {timeline.length > 0 && (
+        <Card className="p-5">
+          <CardTitle className="flex items-center gap-2">
+            <Clock size={16} className="text-deep-teal" /> Comprehensive Case Lifecycle Timeline ({timeline.length} events)
+          </CardTitle>
+          <p className="text-xs text-text-secondary mt-0.5">
+            Chronological audit of legal milestones, check-in signals, automated alerts, and protection status changes.
+          </p>
+          <div className="mt-4 relative border-l-2 border-border-color ml-3 pl-4 space-y-3">
+            {timeline.slice().reverse().map((ev, idx) => (
+              <div key={idx} className="relative group">
+                <span className={`absolute -left-[23px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-white ${
+                  ev.type === "wellbeing" ? "bg-warm-peach" : ev.type === "support" ? "bg-deep-teal" : "bg-amber"
+                }`} />
+                <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
+                  <span className="text-xs font-semibold text-text-primary">{ev.label}</span>
+                  <span className="text-[11px] text-text-secondary">{formatDate(ev.date)}</span>
+                </div>
+                <Badge tone={ev.type === "wellbeing" ? "peach" : ev.type === "support" ? "teal" : "amber"} className="mt-1 text-[10px]">
+                  {ev.type === "wellbeing" ? "Wellbeing Signal" : ev.type === "support" ? "Care / Support" : "Legal Milestone"}
+                </Badge>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
       {/* ── Survivor Direct Messages ── */}
       {caseMessages.length > 0 && (
         <Card className="p-5 border-deep-teal/30 bg-[#f4f9f7]/60">
@@ -1171,6 +1378,164 @@ export default function CounsellorCaseDetailPage() {
                 </Button>
                 <Button size="sm" type="submit">
                   Recommend Exercise
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── Protection Status Update Modal ── */}
+      {showProtectionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-md rounded-2xl border border-border-color bg-surface p-6 shadow-xl">
+            <h3 className="font-editorial text-xl font-bold text-text-primary flex items-center gap-2">
+              <Shield className="text-deep-teal" size={20} /> Update Witness Protection Status
+            </h3>
+            <p className="mt-1 text-xs text-text-secondary">
+              Update formal protection state machine, assign security officer, and log safety notes for {caseRecord.survivorName}.
+            </p>
+
+            <form onSubmit={handleUpdateProtection} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-1">
+                  Protection Status
+                </label>
+                <select
+                  value={protectionStatusDraft}
+                  onChange={(e) => setProtectionStatusDraft(e.target.value)}
+                  className="w-full rounded-xl border border-border-color bg-white px-3 py-2.5 text-xs text-text-primary outline-none focus:border-deep-teal"
+                >
+                  <option value="REQUESTED">REQUESTED</option>
+                  <option value="UNDER_REVIEW">UNDER_REVIEW</option>
+                  <option value="APPROVED">APPROVED</option>
+                  <option value="ASSIGNED">ASSIGNED</option>
+                  <option value="IN_PROGRESS">IN_PROGRESS</option>
+                  <option value="COMPLETED">COMPLETED</option>
+                  <option value="REJECTED">REJECTED</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-1">
+                  Assigned Police / Security Officer (Optional)
+                </label>
+                <Input
+                  placeholder="e.g. INSP-DELHI-402 or Sub-Inspector Ramesh Kumar"
+                  value={protectionOfficerDraft}
+                  onChange={(e) => setProtectionOfficerDraft(e.target.value)}
+                  className="text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-1">
+                  Security Notes / Review Justification
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="e.g. Patrolling sanctioned near residence; nodal officer notified"
+                  value={protectionNotesDraft}
+                  onChange={(e) => setProtectionNotesDraft(e.target.value)}
+                  className="w-full rounded-xl border border-border-color bg-white p-2.5 text-xs text-text-primary outline-none focus:border-deep-teal resize-none"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-border-color/50">
+                <Button size="sm" variant="secondary" type="button" onClick={() => setShowProtectionModal(false)}>
+                  Cancel
+                </Button>
+                <Button size="sm" type="submit" disabled={submittingProtection}>
+                  {submittingProtection ? "Updating..." : "Save Protection Status"}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── Relocation Status Update Modal ── */}
+      {showRelocationModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-md rounded-2xl border border-border-color bg-surface p-6 shadow-xl">
+            <h3 className="font-editorial text-xl font-bold text-text-primary flex items-center gap-2">
+              <Home className="text-amber" size={20} /> Update Relocation &amp; Safe House Status
+            </h3>
+            <p className="mt-1 text-xs text-text-secondary">
+              Update confidential relocation state machine, facility tier, and logistical security measures for {caseRecord.survivorName}.
+            </p>
+
+            <form onSubmit={handleUpdateRelocation} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-1">
+                  Relocation Status
+                </label>
+                <select
+                  value={relocationStatusDraft}
+                  onChange={(e) => setRelocationStatusDraft(e.target.value)}
+                  className="w-full rounded-xl border border-border-color bg-white px-3 py-2.5 text-xs text-text-primary outline-none focus:border-deep-teal"
+                >
+                  <option value="REQUESTED">REQUESTED</option>
+                  <option value="UNDER_REVIEW">UNDER_REVIEW</option>
+                  <option value="APPROVED">APPROVED</option>
+                  <option value="ASSIGNED">ASSIGNED</option>
+                  <option value="IN_PROGRESS">IN_PROGRESS</option>
+                  <option value="COMPLETED">COMPLETED</option>
+                  <option value="REJECTED">REJECTED</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-1">
+                    Facility Type
+                  </label>
+                  <select
+                    value={relocationFacilityDraft}
+                    onChange={(e) => setRelocationFacilityDraft(e.target.value)}
+                    className="w-full rounded-xl border border-border-color bg-white px-3 py-2.5 text-xs text-text-primary outline-none focus:border-deep-teal"
+                  >
+                    <option value="Safehouse">Safehouse</option>
+                    <option value="Govt Shelter">Govt Shelter</option>
+                    <option value="Hostel">Hostel</option>
+                    <option value="Inter-State Transit">Inter-State Transit</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-1">
+                    Security Level
+                  </label>
+                  <select
+                    value={relocationSecurityDraft}
+                    onChange={(e) => setRelocationSecurityDraft(e.target.value)}
+                    className="w-full rounded-xl border border-border-color bg-white px-3 py-2.5 text-xs text-text-primary outline-none focus:border-deep-teal"
+                  >
+                    <option value="High">High Security</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="Standard">Standard</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-1">
+                  Coordination Notes
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="e.g. Confidential transfer scheduled; emergency transport arranged"
+                  value={relocationNotesDraft}
+                  onChange={(e) => setRelocationNotesDraft(e.target.value)}
+                  className="w-full rounded-xl border border-border-color bg-white p-2.5 text-xs text-text-primary outline-none focus:border-deep-teal resize-none"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-border-color/50">
+                <Button size="sm" variant="secondary" type="button" onClick={() => setShowRelocationModal(false)}>
+                  Cancel
+                </Button>
+                <Button size="sm" type="submit" disabled={submittingRelocation}>
+                  {submittingRelocation ? "Updating..." : "Save Relocation Status"}
                 </Button>
               </div>
             </form>

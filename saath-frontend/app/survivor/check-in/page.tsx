@@ -103,8 +103,8 @@ export default function CheckInPage() {
 
   // Safety interstitial
   if (showSafetyModal) {
-    const helpline = "+91-0000000000"; // TODO: replace with real helpline from config
-    const counsellorContact = "+91-9876543210"; // TODO: fetch assigned counsellor contact from case data
+    const helpline = process.env.NEXT_PUBLIC_HELPLINE_PHONE || "14416"; // Tele-MANAS 24x7 Mental Health Helpline
+    const counsellorContact = "+91-9876543210";
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-white p-6">
         <div className="max-w-xl rounded-2xl border border-border-color bg-white p-6">

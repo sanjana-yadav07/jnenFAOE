@@ -47,6 +47,7 @@ const INDICATOR_RULES: IndicatorRule[] = [
       /\bshaken\s+since\s+(?:the\s+incident|what\s+happened|that\s+day)\b/i,
       /\bhaunted\s+by\s+(?:the\s+incident|what\s+happened|memories)\b/i,
       /\btrigger(?:ed)?\s+by\s+memories\b/i,
+      /(?:पुरानी यादें|बुरा सपना|सदमा|घटना याद आ रही|हादसा याद)/i,
     ],
   },
   {
@@ -61,6 +62,7 @@ const INDICATOR_RULES: IndicatorRule[] = [
       /\bscared\s+of\s+(?:him|them|her|retaliation|what\s+will\s+happen)\b/i,
       /\btoo\s+afraid\b/i,
       /\btoo\s+scared\b/i,
+      /(?:डर लग रहा|बहुत डर|सुरक्षित नहीं|भयभीत|खौफ|dar lag raha|bohot dar|bahut darr|khauf)/i,
     ],
   },
   {
@@ -78,6 +80,7 @@ const INDICATOR_RULES: IndicatorRule[] = [
       /\bcannot\s+stop\s+crying\b/i,
       /\bhave\s+no\s+energy\s+or\s+will\b/i,
       /\bfeeling\s+worthless\b/i,
+      /(?:बहुत परेशान|नींद नहीं आ रही|उदास|निराश|मन नहीं लगता|जीने की इच्छा नहीं|bahut pareshan|bohot pareshan|neend nahi aa rahi|udas|udaas|nirash)/i,
     ],
   },
   {
@@ -94,6 +97,7 @@ const INDICATOR_RULES: IndicatorRule[] = [
       /\bthreatens\s+(?:me|my\s+family|to\s+hurt)\b/i,
       /\bcontrolling\s+me\b/i,
       /\bcoerced\b/i,
+      /(?:धमकी|धमकाया|दबाव|डरा रहे|चुप रहने को कहा|dhamki|dhamkaya|dabav|dabao)/i,
     ],
   },
   {
@@ -112,6 +116,7 @@ const INDICATOR_RULES: IndicatorRule[] = [
       /\bhave\s+no\s+one\b/i,
       /\ball\s+by\s+myself\b/i,
       /\bwithdrawing\s+from\s+(?:everyone|others|society)\b/i,
+      /(?:अकेला महसूस|अकेली महसूस|कोई साथ नहीं|कोई नहीं है|सब छूट गए|akela mehsoos|akeli mehsoos|koi nahi hai|kisi se baat nahi)/i,
     ],
   },
 ];

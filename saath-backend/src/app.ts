@@ -317,25 +317,254 @@ app.get('/api/v1/cases/:id/escalation',requireAuth,requireRoles('COUNSELLOR','DI
   if (existing && existing.status === 'available') return ok(res, existing);
   return ok(res, await generateEscalation(userId, c.victimToken));
 }));
+function getObservationsForTarget(userId?: string, victimToken?: string, caseId?: string): any[] {
+  const gathered: any[] = [];
+  const seenIds = new Set<string>();
+
+  const keysToTry: string[] = [];
+  if (userId) keysToTry.push(`checkins:${userId}`);
+  if (victimToken) keysToTry.push(`checkins:${victimToken}`);
+  if (caseId) keysToTry.push(`checkins:${caseId}`);
+
+  for (const key of keysToTry) {
+    const list = store.records.get(key) || [];
+    for (const item of list) {
+      if (item && item.id && !seenIds.has(item.id)) {
+        seenIds.add(item.id);
+        gathered.push(item);
+      }
+    }
+  }
+
+  for (const [k, list] of store.records.entries()) {
+    if (k.startsWith('checkins:')) {
+      for (const item of list) {
+        if (
+          item &&
+          item.id &&
+          !seenIds.has(item.id) &&
+          ((victimToken && item.victimToken === victimToken) || (caseId && item.caseId === caseId))
+        ) {
+          seenIds.add(item.id);
+          gathered.push(item);
+        }
+      }
+    }
+  }
+
+  return gathered.sort((a, b) => {
+    const tA = new Date(a.createdAt || a.timestamp || 0).getTime();
+    const tB = new Date(b.createdAt || b.timestamp || 0).getTime();
+    return tA - tB;
+  });
+}
+
+function computeMonitoringTrends(observations: any[], baselineRecord?: any | null) {
+  const sorted = [...observations].sort((a, b) => {
+    const tA = new Date(a.createdAt || a.timestamp || 0).getTime();
+    const tB = new Date(b.createdAt || b.timestamp || 0).getTime();
+    return tA - tB;
+  });
+
+  const distressTrend: Array<{ date: string; score: number }> = [];
+  const recoveryTrend: Array<{ date: string; score: number }> = [];
+  const records: any[] = [];
+
+  for (const o of sorted) {
+    const date = o.createdAt || o.timestamp || new Date().toISOString();
+    const dScore = typeof o.ml?.distressScore === 'number'
+      ? o.ml.distressScore
+      : typeof o.distressScore === 'number'
+        ? o.distressScore
+        : typeof o.mood === 'number'
+          ? Math.round(100 - o.mood * 20)
+          : null;
+
+    const rScore = typeof o.ml?.recoveryScore === 'number'
+      ? o.ml.recoveryScore
+      : typeof o.recoveryScore === 'number'
+        ? o.recoveryScore
+        : typeof o.mood === 'number'
+          ? Math.round(o.mood * 20)
+          : null;
+
+    if (dScore !== null) {
+      distressTrend.push({ date, score: dScore });
+    }
+    if (rScore !== null) {
+      recoveryTrend.push({ date, score: rScore });
+    }
+
+    records.push({
+      createdAt: date,
+      timestamp: date,
+      distressScore: dScore ?? 50,
+      recoveryScore: rScore ?? 50,
+      confidence: o.ml?.confidence ?? 0.8,
+      contributingFactors: o.ml?.contributingFactors ?? [],
+      indicators: o.ml?.indicators ?? [],
+    });
+  }
+
+  if (distressTrend.length < 2) {
+    const singleConf = sorted.length > 0 && typeof sorted[0].ml?.confidence === 'number' ? sorted[0].ml.confidence : 0;
+    return {
+      distressTrend,
+      recoveryTrend,
+      baselineComparison: 'insufficient evidence' as const,
+      change: 0,
+      confidence: Number(singleConf.toFixed(2)),
+      recentObservations: sorted.slice(-5),
+      records,
+    };
+  }
+
+  const firstScore = distressTrend[0].score;
+  const latestScore = distressTrend[distressTrend.length - 1].score;
+  const change = latestScore - firstScore;
+
+  let baselineComparison: 'improving' | 'stable' | 'worsening' | 'insufficient evidence' = 'stable';
+  if (baselineRecord && typeof baselineRecord.mean === 'number') {
+    const deviation = latestScore - baselineRecord.mean;
+    if (deviation <= -8) baselineComparison = 'improving';
+    else if (deviation >= 8) baselineComparison = 'worsening';
+    else baselineComparison = 'stable';
+  } else {
+    if (change <= -8) baselineComparison = 'improving';
+    else if (change >= 8) baselineComparison = 'worsening';
+    else baselineComparison = 'stable';
+  }
+
+  const avgConfidence = sorted.reduce((acc, o) => acc + (typeof o.ml?.confidence === 'number' ? o.ml.confidence : 0.8), 0) / (sorted.length || 1);
+
+  return {
+    distressTrend,
+    recoveryTrend,
+    baselineComparison,
+    change,
+    confidence: Number(avgConfidence.toFixed(2)),
+    recentObservations: sorted.slice(-5),
+    records,
+  };
+}
+
+const VALID_WORKFLOW_STATES = ['REQUESTED', 'UNDER_REVIEW', 'APPROVED', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETED', 'REJECTED'] as const;
+type WorkflowState = typeof VALID_WORKFLOW_STATES[number];
+
 app.get('/api/v1/cases/:id/timeline', requireAuth, asyncRoute(async (req: AuthedRequest, res) => {
   const caseId = req.params.id;
   const caseRecord = store.cases.find(c => c.id === caseId || c.docket === caseId || c.victimToken === caseId);
   if (!caseRecord) throw new AppError(404, 'CASE_NOT_FOUND', 'Case not found.');
-  
-  const timeline: TimelineEvent[] = [
-    { id: id(), caseId: caseRecord.id, date: caseRecord.registrationDate, type: 'case', label: 'Case registered' },
-  ];
-  
-  if (caseRecord.firStatus === 'Registered') {
-    timeline.push({ id: id(), caseId: caseRecord.id, date: caseRecord.registrationDate, type: 'case', label: 'FIR registered' });
+
+  const events: TimelineEvent[] = [];
+
+  // Stored timeline events
+  const storedEvents = store.timelines.filter(t => t.caseId === caseRecord.id || t.victimToken === caseRecord.victimToken);
+  events.push(...storedEvents);
+
+  // Registration & docket dates
+  if (caseRecord.registrationDate && !events.some(e => e.label.includes('Case registered'))) {
+    events.push({
+      id: id(),
+      caseId: caseRecord.id,
+      date: caseRecord.registrationDate,
+      type: 'case',
+      label: 'Case registered with Support & Safety Registry',
+    });
   }
-  
-  if (caseRecord.currentStage === 'Investigation') {
-    timeline.push({ id: id(), caseId: caseRecord.id, date: new Date().toISOString(), type: 'case', label: 'Investigation in progress' });
+  if (caseRecord.incidentDate && !events.some(e => e.label.includes('Incident date'))) {
+    events.push({
+      id: id(),
+      caseId: caseRecord.id,
+      date: caseRecord.incidentDate,
+      type: 'case',
+      label: 'Incident date recorded in docket',
+    });
   }
-  
-  return ok(res, timeline);
+
+  // Stage & FIR status
+  if (caseRecord.firStatus === 'Registered' && !events.some(e => e.label.includes('FIR registered'))) {
+    events.push({
+      id: id(),
+      caseId: caseRecord.id,
+      date: caseRecord.registrationDate,
+      type: 'legal',
+      label: 'FIR registered with district police authorities',
+    });
+  }
+  if (caseRecord.currentStage && !events.some(e => e.label.includes(`Stage: ${caseRecord.currentStage}`))) {
+    events.push({
+      id: id(),
+      caseId: caseRecord.id,
+      date: caseRecord.registrationDate,
+      type: 'legal',
+      label: `Current procedural stage: ${caseRecord.currentStage}`,
+    });
+  }
+
+  // Hearing schedule
+  if (caseRecord.nextHearingDate) {
+    events.push({
+      id: id(),
+      caseId: caseRecord.id,
+      date: caseRecord.nextHearingDate,
+      type: 'legal',
+      label: `Scheduled Court Hearing (${caseRecord.courtName || 'Special Fast Track Court'})`,
+    });
+  }
+
+  // Real survivor check-ins
+  const observations = getObservationsForTarget(undefined, caseRecord.victimToken, caseRecord.id);
+  for (const obs of observations) {
+    const dScore = typeof obs.ml?.distressScore === 'number' ? obs.ml.distressScore : obs.distressScore;
+    events.push({
+      id: obs.id || id(),
+      caseId: caseRecord.id,
+      date: obs.createdAt || obs.timestamp || new Date().toISOString(),
+      type: 'checkin',
+      label: `Survivor check-in (${obs.type || 'wellness'})${typeof dScore === 'number' ? ` — SVI distress: ${dScore}/100` : ''}`,
+    });
+  }
+
+  // Case alerts
+  const alerts = (store.records.get('alerts:all') || []).filter(
+    (a: any) => a && (a.victimToken === caseRecord.victimToken || a.caseReference === caseRecord.docket)
+  );
+  for (const a of alerts) {
+    events.push({
+      id: a.id,
+      caseId: caseRecord.id,
+      date: a.createdAt,
+      type: 'alert',
+      label: `Alert [${a.priority || 'P3'}]: ${a.reason || 'Safety notification logged'}`,
+    });
+  }
+
+  // Follow-ups
+  const followUps = (store.records.get('follow_ups') || []).filter(
+    (f: any) => f && (f.victimToken === caseRecord.victimToken || f.caseId === caseRecord.id || f.docket === caseRecord.docket)
+  );
+  for (const f of followUps) {
+    events.push({
+      id: f.id,
+      caseId: caseRecord.id,
+      date: f.date || f.createdAt,
+      type: 'followup',
+      label: `Counsellor follow-up session (${f.status || 'SCHEDULED'})`,
+    });
+  }
+
+  const seenIds = new Set<string>();
+  const uniqueEvents = events.filter(e => {
+    if (!e || !e.id || seenIds.has(e.id)) return false;
+    seenIds.add(e.id);
+    return true;
+  });
+
+  uniqueEvents.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  return ok(res, uniqueEvents);
 }));
+
 app.get('/api/v1/cases/:id/recommendations', requireAuth, asyncRoute(async (req: AuthedRequest, res) => {
   const caseId = req.params.id;
   const caseRecord = store.cases.find(c => c.id === caseId || c.docket === caseId || c.victimToken === caseId);
@@ -351,6 +580,7 @@ app.get('/api/v1/cases/:id/recommendations', requireAuth, asyncRoute(async (req:
     supportRecommendations,
   });
 }));
+
 app.get('/api/v1/cases/:id/freshness', requireAuth, requireRoles('COUNSELLOR','DISTRICT_ADMIN','STATE_ADMIN','NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
   const caseId = req.params.id;
   const caseRecord = store.cases.find(c => c.id === caseId || c.docket === caseId || c.victimToken === caseId);
@@ -383,7 +613,250 @@ app.get('/api/v1/cases/:id/freshness', requireAuth, requireRoles('COUNSELLOR','D
     ...evaluation,
   });
 }));
+
 app.post('/api/v1/cases/:id/stage',requireAuth,requireRoles('COUNSELLOR','DISTRICT_ADMIN','STATE_ADMIN','NATIONAL_ADMIN'),body(z.object({stage:z.string().min(1)})),asyncRoute(async(req:AuthedRequest,res)=>{const caseId=String(req.params.id); const newStage=String(req.body.stage); const updated=await syncCaseStage(caseId,newStage); return ok(res,updated,200);}));
+
+// Protection Request & Status Workflow
+app.post('/api/v1/cases/:id/protection-request', requireAuth, body(z.object({
+  reason: z.string().min(1).max(2000),
+  priority: z.enum(['URGENT', 'HIGH', 'ROUTINE']).default('HIGH'),
+  threatDetails: z.string().max(2000).optional(),
+})), asyncRoute(async (req: AuthedRequest, res) => {
+  const caseId = req.params.id;
+  const caseRecord = store.cases.find(c => c.id === caseId || c.docket === caseId || c.victimToken === caseId);
+  if (!caseRecord) throw new AppError(404, 'CASE_NOT_FOUND', 'Case not found.');
+
+  const now = new Date().toISOString();
+  const requestId = id();
+  const newRequest = {
+    id: requestId,
+    caseId: caseRecord.id,
+    docket: caseRecord.docket,
+    victimToken: caseRecord.victimToken,
+    type: 'PROTECTION',
+    reason: req.body.reason,
+    priority: req.body.priority,
+    threatDetails: req.body.threatDetails,
+    status: 'REQUESTED' as WorkflowState,
+    requestedBy: req.user!.id,
+    requestedRole: req.user!.role,
+    history: [{ status: 'REQUESTED', changedBy: req.user!.id, timestamp: now, note: req.body.reason }],
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  caseRecord.protectionStatus = 'REQUESTED';
+  caseRecord.protectionRequested = true;
+  record('protection:requests', newRequest);
+  record(`protection:requests:${caseRecord.id}`, newRequest);
+
+  store.timelines.push({
+    id: id(),
+    caseId: caseRecord.id,
+    date: now,
+    type: 'protection',
+    label: `Witness protection requested (${req.body.priority} priority): ${req.body.reason.slice(0, 80)}`,
+  });
+
+  record('audit:cases', {
+    id: id(),
+    caseId: caseRecord.id,
+    action: 'protection_requested',
+    actor: req.user!.id,
+    details: { reason: req.body.reason, priority: req.body.priority },
+    createdAt: now,
+  });
+
+  return ok(res, newRequest, 201);
+}));
+
+app.post('/api/v1/cases/:id/relocation-request', requireAuth, body(z.object({
+  reason: z.string().min(1).max(2000),
+  priority: z.enum(['URGENT', 'HIGH', 'ROUTINE']).default('HIGH'),
+  targetDistrict: z.string().max(100).optional(),
+  targetState: z.string().max(100).optional(),
+})), asyncRoute(async (req: AuthedRequest, res) => {
+  const caseId = req.params.id;
+  const caseRecord = store.cases.find(c => c.id === caseId || c.docket === caseId || c.victimToken === caseId);
+  if (!caseRecord) throw new AppError(404, 'CASE_NOT_FOUND', 'Case not found.');
+
+  const now = new Date().toISOString();
+  const requestId = id();
+  const newRequest = {
+    id: requestId,
+    caseId: caseRecord.id,
+    docket: caseRecord.docket,
+    victimToken: caseRecord.victimToken,
+    type: 'RELOCATION',
+    reason: req.body.reason,
+    priority: req.body.priority,
+    targetDistrict: req.body.targetDistrict,
+    targetState: req.body.targetState,
+    status: 'REQUESTED' as WorkflowState,
+    requestedBy: req.user!.id,
+    requestedRole: req.user!.role,
+    history: [{ status: 'REQUESTED', changedBy: req.user!.id, timestamp: now, note: req.body.reason }],
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  caseRecord.relocationStatus = 'REQUESTED';
+  caseRecord.relocationRequested = true;
+  record('relocation:requests', newRequest);
+  record(`relocation:requests:${caseRecord.id}`, newRequest);
+
+  store.timelines.push({
+    id: id(),
+    caseId: caseRecord.id,
+    date: now,
+    type: 'relocation',
+    label: `Safe relocation requested (${req.body.priority} priority): ${req.body.reason.slice(0, 80)}`,
+  });
+
+  record('audit:cases', {
+    id: id(),
+    caseId: caseRecord.id,
+    action: 'relocation_requested',
+    actor: req.user!.id,
+    details: { reason: req.body.reason, priority: req.body.priority },
+    createdAt: now,
+  });
+
+  return ok(res, newRequest, 201);
+}));
+
+app.post('/api/v1/cases/:id/protection-status', requireAuth, requireRoles('COUNSELLOR', 'DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), body(z.object({
+  status: z.enum(VALID_WORKFLOW_STATES),
+  notes: z.string().max(2000).optional(),
+  assignedOfficial: z.string().max(200).optional(),
+  officialContact: z.string().max(100).optional(),
+})), asyncRoute(async (req: AuthedRequest, res) => {
+  const caseId = req.params.id;
+  const caseRecord = store.cases.find(c => c.id === caseId || c.docket === caseId || c.victimToken === caseId);
+  if (!caseRecord) throw new AppError(404, 'CASE_NOT_FOUND', 'Case not found.');
+
+  const now = new Date().toISOString();
+  const previousStatus = caseRecord.protectionStatus;
+  caseRecord.protectionStatus = req.body.status;
+  if (req.body.assignedOfficial) {
+    caseRecord.protectionOfficerAssigned = req.body.assignedOfficial;
+  }
+
+  const allRequests = store.records.get(`protection:requests:${caseRecord.id}`) || store.records.get('protection:requests') || [];
+  const latestReq = allRequests.find((r: any) => r.caseId === caseRecord.id || r.victimToken === caseRecord.victimToken);
+  if (latestReq) {
+    latestReq.status = req.body.status;
+    latestReq.assignedOfficial = req.body.assignedOfficial ?? latestReq.assignedOfficial;
+    latestReq.updatedAt = now;
+    latestReq.history = latestReq.history || [];
+    latestReq.history.push({
+      status: req.body.status,
+      changedBy: req.user!.id,
+      role: req.user!.role,
+      timestamp: now,
+      note: req.body.notes ?? `Protection status updated from ${previousStatus} to ${req.body.status}`,
+    });
+  }
+
+  store.timelines.push({
+    id: id(),
+    caseId: caseRecord.id,
+    date: now,
+    type: 'protection',
+    label: `Protection status: ${req.body.status}${req.body.assignedOfficial ? ` (Official: ${req.body.assignedOfficial})` : ''}`,
+  });
+
+  record('audit:cases', {
+    id: id(),
+    caseId: caseRecord.id,
+    action: 'protection_status_updated',
+    actor: req.user!.id,
+    details: { previousStatus, newStatus: req.body.status, notes: req.body.notes, assignedOfficial: req.body.assignedOfficial },
+    createdAt: now,
+  });
+
+  return ok(res, {
+    caseId: caseRecord.id,
+    protectionStatus: caseRecord.protectionStatus,
+    protectionOfficerAssigned: caseRecord.protectionOfficerAssigned,
+    updatedAt: now,
+    request: latestReq ?? null,
+  });
+}));
+
+app.post('/api/v1/cases/:id/relocation-status', requireAuth, requireRoles('COUNSELLOR', 'DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), body(z.object({
+  status: z.enum(VALID_WORKFLOW_STATES),
+  notes: z.string().max(2000).optional(),
+  assignedOfficial: z.string().max(200).optional(),
+  targetSafeLocation: z.string().max(200).optional(),
+})), asyncRoute(async (req: AuthedRequest, res) => {
+  const caseId = req.params.id;
+  const caseRecord = store.cases.find(c => c.id === caseId || c.docket === caseId || c.victimToken === caseId);
+  if (!caseRecord) throw new AppError(404, 'CASE_NOT_FOUND', 'Case not found.');
+
+  const now = new Date().toISOString();
+  const previousStatus = caseRecord.relocationStatus;
+  caseRecord.relocationStatus = req.body.status;
+
+  const allRequests = store.records.get(`relocation:requests:${caseRecord.id}`) || store.records.get('relocation:requests') || [];
+  const latestReq = allRequests.find((r: any) => r.caseId === caseRecord.id || r.victimToken === caseRecord.victimToken);
+  if (latestReq) {
+    latestReq.status = req.body.status;
+    latestReq.assignedOfficial = req.body.assignedOfficial ?? latestReq.assignedOfficial;
+    latestReq.targetSafeLocation = req.body.targetSafeLocation ?? latestReq.targetSafeLocation;
+    latestReq.updatedAt = now;
+    latestReq.history = latestReq.history || [];
+    latestReq.history.push({
+      status: req.body.status,
+      changedBy: req.user!.id,
+      role: req.user!.role,
+      timestamp: now,
+      note: req.body.notes ?? `Relocation status updated from ${previousStatus} to ${req.body.status}`,
+    });
+  }
+
+  store.timelines.push({
+    id: id(),
+    caseId: caseRecord.id,
+    date: now,
+    type: 'relocation',
+    label: `Relocation status: ${req.body.status}${req.body.assignedOfficial ? ` (Assigned: ${req.body.assignedOfficial})` : ''}`,
+  });
+
+  record('audit:cases', {
+    id: id(),
+    caseId: caseRecord.id,
+    action: 'relocation_status_updated',
+    actor: req.user!.id,
+    details: { previousStatus, newStatus: req.body.status, notes: req.body.notes, assignedOfficial: req.body.assignedOfficial },
+    createdAt: now,
+  });
+
+  return ok(res, {
+    caseId: caseRecord.id,
+    relocationStatus: caseRecord.relocationStatus,
+    updatedAt: now,
+    request: latestReq ?? null,
+  });
+}));
+
+app.get('/api/v1/cases/:id/protection-requests', requireAuth, asyncRoute(async (req: AuthedRequest, res) => {
+  const caseId = req.params.id;
+  const caseRecord = store.cases.find(c => c.id === caseId || c.docket === caseId || c.victimToken === caseId);
+  if (!caseRecord) throw new AppError(404, 'CASE_NOT_FOUND', 'Case not found.');
+  const requests = (store.records.get(`protection:requests:${caseRecord.id}`) || store.records.get('protection:requests') || [])
+    .filter((r: any) => r.caseId === caseRecord.id || r.victimToken === caseRecord.victimToken);
+  return ok(res, requests);
+}));
+
+app.get('/api/v1/cases/:id/relocation-requests', requireAuth, asyncRoute(async (req: AuthedRequest, res) => {
+  const caseId = req.params.id;
+  const caseRecord = store.cases.find(c => c.id === caseId || c.docket === caseId || c.victimToken === caseId);
+  if (!caseRecord) throw new AppError(404, 'CASE_NOT_FOUND', 'Case not found.');
+  const requests = (store.records.get(`relocation:requests:${caseRecord.id}`) || store.records.get('relocation:requests') || [])
+    .filter((r: any) => r.caseId === caseRecord.id || r.victimToken === caseRecord.victimToken);
+  return ok(res, requests);
+}));
 
 const consentSchema=z.union([
   z.object({consent_type:z.enum(['wellbeing_monitoring','text_analysis','voice_analysis','behavioural_signals']),granted:z.boolean(),version:z.string().min(1).max(80).default('1.0')}),
@@ -391,6 +864,137 @@ const consentSchema=z.union([
 ]);
 app.post('/api/v1/consents',requireAuth,body(consentSchema),asyncRoute(async(req:AuthedRequest,res)=>{const now=new Date().toISOString(); const selections='consent_type' in req.body ? [{type:req.body.consent_type,granted:req.body.granted}] : [{type:'wellbeing_monitoring',granted:req.body.monitoring},{type:'text_analysis',granted:req.body.text},{type:'voice_analysis',granted:req.body.voice},{type:'behavioural_signals',granted:req.body.behavioural}]; const records=selections.map(({type,granted})=>record(`consent:${req.user!.id}`,{id:id(),userId:req.user!.id,consentType:type,consentVersion:req.body.version,state:granted?'GRANTED':'REVOKED',grantedAt:granted?now:null,revokedAt:granted?null:now,createdAt:now})); return ok(res,records,201)}));
 app.get('/api/v1/consents',requireAuth,asyncRoute(async(req:AuthedRequest,res)=>ok(res,store.records.get(`consent:${req.user!.id}`)||[])));
+// Automated Monitoring Scheduler
+app.post('/api/v1/monitoring/process-due', requireAuth, asyncRoute(async (req: AuthedRequest, res) => {
+  const nowMs = Date.now();
+  const nowIso = new Date(nowMs).toISOString();
+  const processedCases: any[] = [];
+  const dueCases: any[] = [];
+  const overdueCases: any[] = [];
+  const remindersSent: any[] = [];
+
+  for (const caseRecord of store.cases) {
+    if (!caseRecord.victimToken) continue;
+
+    const linkedUser = [...store.users.entries()].find(([, user]) => user?.victimToken === caseRecord.victimToken)?.[0];
+    const targetUserId = linkedUser || `docket-${caseRecord.id}`;
+    const observations = getObservationsForTarget(targetUserId, caseRecord.victimToken, caseRecord.id);
+
+    let lastCheckInAt: string = caseRecord.registrationDate || nowIso;
+    for (const obs of observations) {
+      const ts = obs.createdAt || obs.timestamp;
+      if (ts && new Date(ts).getTime() > new Date(lastCheckInAt).getTime()) {
+        lastCheckInAt = ts;
+      }
+    }
+
+    const daysSinceLastCheckin = Math.max(0, Math.floor((nowMs - new Date(lastCheckInAt).getTime()) / 86_400_000));
+
+    let cadenceDays = 7;
+    const freq = (caseRecord.followupFrequency || '').toLowerCase();
+    const risk = caseRecord.riskLevel || 'LOW';
+    if (freq.includes('daily') || risk === 'CRITICAL' || risk === 'HIGH') {
+      cadenceDays = 1;
+    } else if (freq.includes('3') || risk === 'MODERATE') {
+      cadenceDays = 3;
+    } else {
+      cadenceDays = 7;
+    }
+
+    const isDue = daysSinceLastCheckin >= cadenceDays;
+    const daysOverdue = Math.max(0, daysSinceLastCheckin - cadenceDays);
+
+    const caseSummary = {
+      caseId: caseRecord.id,
+      docket: caseRecord.docket,
+      victimToken: caseRecord.victimToken,
+      riskLevel: risk,
+      cadenceDays,
+      daysSinceLastCheckin,
+      lastCheckInAt,
+      isDue,
+      daysOverdue,
+    };
+    processedCases.push(caseSummary);
+
+    if (isDue) {
+      dueCases.push(caseSummary);
+    }
+    if (daysOverdue > 0) {
+      overdueCases.push(caseSummary);
+    }
+
+    if (isDue) {
+      const existingReminders = store.records.get(`notifications:reminders:${targetUserId}`) || [];
+      const hasRecentReminder = existingReminders.some((r: any) => {
+        const rTime = new Date(r.createdAt || 0).getTime();
+        return nowMs - rTime < 24 * 60 * 60 * 1000;
+      });
+
+      if (!hasRecentReminder) {
+        const escalated = nextEscalationStage(daysOverdue, existingReminders);
+        const reminderRecord = record(`notifications:reminders:${targetUserId}`, {
+          id: id(),
+          type: 'checkin',
+          caseId: caseRecord.id,
+          victimToken: caseRecord.victimToken,
+          daysSinceLastCheckin,
+          daysOverdue,
+          message: escalated.message,
+          tone: escalated.tone,
+          createdAt: nowIso,
+          status: 'sent',
+        });
+
+        record(`notifications:${targetUserId}`, {
+          id: id(),
+          title: 'Gentle Wellbeing Check-in',
+          message: escalated.message,
+          type: 'reminder',
+          createdAt: nowIso,
+          read: false,
+        });
+
+        record('monitoring:events', {
+          id: id(),
+          caseId: caseRecord.id,
+          victimToken: caseRecord.victimToken,
+          event: 'reminder_sent',
+          tone: escalated.tone,
+          daysOverdue,
+          createdAt: nowIso,
+        });
+
+        recordAudit(targetUserId, 'monitoring_reminder_processed', reminderRecord.id, {
+          caseId: caseRecord.id,
+          daysOverdue,
+          tone: escalated.tone,
+        });
+
+        remindersSent.push({
+          caseId: caseRecord.id,
+          docket: caseRecord.docket,
+          victimToken: caseRecord.victimToken,
+          tone: escalated.tone,
+          message: escalated.message,
+          daysOverdue,
+        });
+      }
+    }
+  }
+
+  evaluateStaleCheckInsForStore();
+
+  return ok(res, {
+    processedCount: processedCases.length,
+    dueCasesCount: dueCases.length,
+    overdueCasesCount: overdueCases.length,
+    remindersSentCount: remindersSent.length,
+    remindersSent,
+    overdueCases,
+  });
+}));
+
 app.post('/api/v1/monitoring/:action',requireAuth,body(z.object({reason:z.string().max(500).optional()})),asyncRoute(async(req:AuthedRequest,res)=>{const action=String(req.params.action); if(!['pause','resume','stop'].includes(action)) throw new AppError(404,'NOT_FOUND','Monitoring action not found.'); return ok(res,record(`monitoring:${req.user!.id}`,{state:action==='pause'?'paused':action==='stop'?'stopped':'active',reason:req.body.reason,createdAt:new Date().toISOString()}));}));
 const checkinSchema=z.object({victimToken:z.string().optional(),mood:z.number().int().min(1).max(5).optional(),sleep:z.number().int().min(1).max(5).optional(),fear:z.number().int().min(1).max(5).optional(),intrusion:z.number().int().min(1).max(5).optional(),avoidance:z.number().int().min(1).max(5).optional(),perceivedSafety:z.number().int().min(1).max(5).optional(),dailyFunctioning:z.number().int().min(1).max(5).optional(),socialConnectedness:z.number().int().min(1).max(5).optional(),text:z.string().max(10000).optional(),language:z.string().default('en')});
 app.post('/api/v1/check-ins/mood',requireAuth,requireMonitoringConsent,body(checkinSchema.extend({mood:z.number().int().min(1).max(5),sleep:z.number().int().min(1).max(5),perceivedSafety:z.number().int().min(1).max(5),socialConnectedness:z.number().int().min(1).max(5)})),asyncRoute(async(req:AuthedRequest,res)=>{const now=new Date().toISOString(); const summary=`Structured check-in: mood ${req.body.mood}/5, sleep ${req.body.sleep}/5, fear ${req.body.fear??'not answered'}/5, unwanted memories ${req.body.intrusion??'not answered'}/5, safety ${req.body.perceivedSafety}/5, social connection ${req.body.socialConnectedness}/5.`; const ml=await analyzeText({victimToken:req.user!.victimToken||'unknown',text:summary}); const result=record(`checkins:${req.user!.id}`,{id:id(),type:'mood',...req.body,ml,createdAt:now,analyticalState:ml.confidence<.5?'insufficient_evidence':'scored'}); if(ml.crisis) recordAlert({victimToken:req.user!.victimToken,caseReference:req.user!.victimToken,reason:'Structured check-in requires human review.',source:'checkin',crisis:true,confidence:ml.confidence}); 
@@ -409,32 +1013,65 @@ app.post('/api/v1/check-ins/text',requireAuth,requireConsent('text_analysis'),bo
   resolveStaleCheckInAlertOnNewCheckIn(req.user!.victimToken);
   return ok(res,result,201); }));
 app.get('/api/v1/monitoring/baseline',requireAuth,asyncRoute(async(req:AuthedRequest,res)=>{
-  // H07/I23: baseline is recomputed on every observation, so this just reads the latest snapshot.
-  const baseline = store.records.get(`baseline:${req.user!.id}`)?.at(-1) ?? null;
+  const queryToken = req.query.victimToken ? String(req.query.victimToken) : undefined;
+  const targetUser = queryToken ? [...store.users.values()].find(u => u.victimToken === queryToken) : undefined;
+  const targetId = targetUser?.id ?? req.user!.id;
+  const targetToken = queryToken ?? req.user!.victimToken;
+
+  const observations = getObservationsForTarget(targetId, targetToken);
+  const baseline = store.records.get(`baseline:${targetId}`)?.at(-1) ?? recomputeBaseline(observations);
   return ok(res, {
     baseline: baseline?.mean ?? null,
-    observationCount: baseline?.count ?? 0,
+    observationCount: baseline?.count ?? observations.length,
     range: baseline ? { min: baseline.min, max: baseline.max } : null,
     updatedAt: baseline?.updatedAt ?? null,
     insufficientEvidence: !baseline,
   });
 }));
 app.get('/api/v1/monitoring/distress',requireAuth,asyncRoute(async(req:AuthedRequest,res)=>{
-  const observations = store.records.get(`checkins:${req.user!.id}`) || [];
-  const baseline = store.records.get(`baseline:${req.user!.id}`)?.at(-1) ?? null;
+  const queryToken = req.query.victimToken ? String(req.query.victimToken) : undefined;
+  const queryCaseId = req.query.caseId ? String(req.query.caseId) : undefined;
+  const targetUser = queryToken ? [...store.users.values()].find(u => u.victimToken === queryToken) : undefined;
+  const targetId = targetUser?.id ?? req.user!.id;
+  const targetToken = queryToken ?? req.user!.victimToken;
+
+  const observations = getObservationsForTarget(targetId, targetToken, queryCaseId);
+  const baseline = store.records.get(`baseline:${targetId}`)?.at(-1) ?? recomputeBaseline(observations);
   const result = generateDistressScore(observations, baseline);
-  return ok(res, { ...result, state: result.insufficientEvidence ? 'insufficient_evidence' : 'scored', summary: observations.length ? 'observed' : 'no_data' });
+  const records = observations.map(o => ({
+    createdAt: o.createdAt || o.timestamp || new Date().toISOString(),
+    distressScore: typeof o.ml?.distressScore === 'number' ? o.ml.distressScore : (typeof o.distressScore === 'number' ? o.distressScore : (o.mood ? Math.round(100 - o.mood * 20) : 50)),
+    recoveryScore: typeof o.ml?.recoveryScore === 'number' ? o.ml.recoveryScore : (typeof o.recoveryScore === 'number' ? o.recoveryScore : (o.mood ? Math.round(o.mood * 20) : 50)),
+    confidence: o.ml?.confidence ?? 0.8,
+    contributingFactors: o.ml?.contributingFactors ?? [],
+  }));
+  return ok(res, { ...result, records, state: result.insufficientEvidence ? 'insufficient_evidence' : 'scored', summary: observations.length ? 'observed' : 'no_data' });
 }));
 app.get('/api/v1/monitoring/recovery',requireAuth,asyncRoute(async(req:AuthedRequest,res)=>{
-  const observations = store.records.get(`checkins:${req.user!.id}`) || [];
-  const baseline = store.records.get(`baseline:${req.user!.id}`)?.at(-1) ?? null;
+  const queryToken = req.query.victimToken ? String(req.query.victimToken) : undefined;
+  const queryCaseId = req.query.caseId ? String(req.query.caseId) : undefined;
+  const targetUser = queryToken ? [...store.users.values()].find(u => u.victimToken === queryToken) : undefined;
+  const targetId = targetUser?.id ?? req.user!.id;
+  const targetToken = queryToken ?? req.user!.victimToken;
+
+  const observations = getObservationsForTarget(targetId, targetToken, queryCaseId);
+  const baseline = store.records.get(`baseline:${targetId}`)?.at(-1) ?? recomputeBaseline(observations);
   const result = generateRecoveryScore(observations, baseline);
   return ok(res, { ...result, state: result.insufficientEvidence ? 'insufficient_evidence' : 'scored', summary: observations.length ? 'observed' : 'no_data' });
 }));
 app.get('/api/v1/monitoring/trends',requireAuth,asyncRoute(async(req:AuthedRequest,res)=>{
-  const observations = store.records.get(`checkins:${req.user!.id}`) || [];
-  return ok(res, { distressTrend: [], recoveryTrend: [], baselineComparison: 'stable', recentObservations: observations.slice(-5) });
+  const queryToken = req.query.victimToken ? String(req.query.victimToken) : undefined;
+  const queryCaseId = req.query.caseId ? String(req.query.caseId) : undefined;
+  const targetUser = queryToken ? [...store.users.values()].find(u => u.victimToken === queryToken) : undefined;
+  const targetId = targetUser?.id ?? req.user!.id;
+  const targetToken = queryToken ?? req.user!.victimToken;
+
+  const observations = getObservationsForTarget(targetId, targetToken, queryCaseId);
+  const baseline = store.records.get(`baseline:${targetId}`)?.at(-1) ?? recomputeBaseline(observations);
+  const trendResult = computeMonitoringTrends(observations, baseline);
+  return ok(res, trendResult);
 }));
+
 app.get('/api/v1/alerts',requireAuth,asyncRoute(async(req:AuthedRequest,res)=>{
   evaluateStaleCheckInsForStore();
   const allAlerts = store.records.get('alerts:all') || [];
