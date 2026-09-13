@@ -10,6 +10,7 @@ import { CaseRecord } from "@/types";
 import { formatDate } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
 import { CheckCircle2, FileText, ArrowLeft } from "lucide-react";
+import { SaathLogo } from "@/components/SaathLogo";
 
 function Row({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
@@ -68,7 +69,7 @@ function CaseFoundInner() {
       {/* ── Left panel ── */}
       <aside className="hidden md:flex flex-col justify-between w-[46%] xl:w-[42%] min-h-screen bg-[#0d3a31] px-12 py-14 xl:px-16">
         <Link href="/landing" className="flex items-center gap-3 group w-fit">
-          <span className="text-2xl text-[#e8bd66] transition-transform duration-300 group-hover:rotate-12">✦</span>
+          <SaathLogo className="h-9 w-auto transition-transform duration-200 group-hover:scale-105" size={36} />
           <div>
             <div className="font-editorial text-[28px] font-bold leading-none text-white tracking-tight">SAATH</div>
             <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9cc8bb]">with you, over time</div>
@@ -100,7 +101,7 @@ function CaseFoundInner() {
       <div className="flex-1 flex flex-col justify-center px-6 py-12 md:px-14 xl:px-20">
         {/* Mobile logo */}
         <div className="flex items-center gap-2 mb-8 md:hidden">
-          <span className="text-xl text-accent-gold">✦</span>
+          <SaathLogo className="h-7 w-auto" size={28} />
           <span className="font-editorial text-[22px] font-bold text-deep-teal">SAATH</span>
         </div>
 

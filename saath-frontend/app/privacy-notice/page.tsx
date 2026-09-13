@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck, Eye, Lock, UserCheck, Bell, Settings, RefreshCw, Mail } from "lucide-react";
+import { SaathLogo } from "@/components/SaathLogo";
 
 const sections = [
   {
@@ -65,8 +66,8 @@ export default function PrivacyNoticePage() {
     <div className="min-h-screen saath-page-bg">
       {/* ── Top bar ── */}
       <header className="border-b border-border-color/60 bg-surface/80 backdrop-blur-sm px-6 py-4 md:px-10 xl:px-16 flex items-center justify-between">
-        <Link href="/landing" className="flex items-center gap-2.5 group w-fit">
-          <span className="text-lg text-accent-gold transition-transform duration-300 group-hover:rotate-12">✦</span>
+        <Link href="/landing" className="flex items-center gap-2 group w-fit">
+          <SaathLogo className="h-7 w-auto transition-transform duration-200 group-hover:scale-105" size={28} />
           <span className="font-editorial text-[20px] font-bold text-deep-teal leading-none">SAATH</span>
         </Link>
         <Link

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { ProgressDots } from "@/components/ui/ProgressDots";
 import { caseService } from "@/services/case";
 import { ShieldCheck, Lock, ArrowLeft } from "lucide-react";
+import { SaathLogo } from "@/components/SaathLogo";
 
 export default function ConnectCasePage() {
   const router = useRouter();
@@ -33,12 +34,13 @@ export default function ConnectCasePage() {
       {/* ── Left panel ── */}
       <aside className="hidden md:flex flex-col justify-between w-[46%] xl:w-[42%] min-h-screen bg-[#0d3a31] px-12 py-14 xl:px-16">
         <Link href="/landing" className="flex items-center gap-3 group w-fit">
-          <span className="text-2xl text-[#e8bd66] transition-transform duration-300 group-hover:rotate-12">✦</span>
+          <SaathLogo className="h-9 w-auto transition-transform duration-200 group-hover:scale-105" size={36} />
           <div>
             <div className="font-editorial text-[28px] font-bold leading-none text-white tracking-tight">SAATH</div>
             <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9cc8bb]">with you, over time</div>
           </div>
         </Link>
+
 
         <div>
           <p className="text-[12px] font-bold uppercase tracking-[0.22em] text-[#68c5b9] mb-5">Step 1 of 5</p>
@@ -71,7 +73,7 @@ export default function ConnectCasePage() {
       <div className="flex-1 flex flex-col justify-center px-6 py-12 md:px-14 xl:px-20">
         {/* Mobile logo */}
         <div className="flex items-center gap-2 mb-8 md:hidden">
-          <span className="text-xl text-accent-gold">✦</span>
+          <SaathLogo className="h-7 w-auto" size={28} />
           <span className="font-editorial text-[22px] font-bold text-deep-teal">SAATH</span>
         </div>
 
