@@ -69,15 +69,17 @@ describe('Admin Role Hierarchy & Server-Side Geographic Scoping', () => {
       scopeTitle: 'Delhi State',
     });
 
-    // 2. Report: includes South Delhi and North Delhi cases (total 5 Delhi cases)
+    // 2. Report: includes all Delhi districts (total 7 Delhi cases)
     const reportRes = await request(app).get('/api/v1/admin/reports').set('Authorization', `Bearer ${token}`);
     expect(reportRes.status).toBe(200);
     const report = reportRes.body;
     expect(report.scope).toBe('state:Delhi');
-    expect(report.caseStats.caseCount).toBe(5);
+    expect(report.caseStats.caseCount).toBe(7);
     const districts = report.caseStats.districtStats?.map((d: any) => d.district);
     expect(districts).toContain('South Delhi');
     expect(districts).toContain('North Delhi');
+    expect(districts).toContain('West Delhi');
+    expect(districts).toContain('New Delhi');
     expect(districts).not.toContain('Jaipur');
     expect(districts).not.toContain('Pune');
     expect(districts).not.toContain('Kolkata');
@@ -86,12 +88,12 @@ describe('Admin Role Hierarchy & Server-Side Geographic Scoping', () => {
   it('authorizes National Admin across complete national dataset', async () => {
     const token = await getStaffToken('NATIONAL_ADMIN', 'admin_national');
 
-    // 1. Report: all 20 cases across all states
+    // 1. Report: all 29 cases across all states
     const reportRes = await request(app).get('/api/v1/admin/reports').set('Authorization', `Bearer ${token}`);
     expect(reportRes.status).toBe(200);
     const report = reportRes.body;
     expect(report.scope).toBe('national');
-    expect(report.caseStats.caseCount).toBe(21);
+    expect(report.caseStats.caseCount).toBe(29);
 
     // 2. Counsellors: all counsellors in roster
     const counsellorsRes = await request(app).get('/api/v1/admin/counsellors').set('Authorization', `Bearer ${token}`);

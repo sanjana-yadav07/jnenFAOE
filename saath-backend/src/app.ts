@@ -959,64 +959,9 @@ app.get('/api/v1/interventions/recommendations', requireAuth, asyncRoute(async (
   }
   return ok(res, getInterventionRecommendations(caseRecord));
 }));
-// ...existing code...
-app.get('/api/v1/admin/trends', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
-  const { cases, alerts } = getScopedAdminDataset(req.user!);
-  const distressDistribution = cases.reduce((acc: any, c: any) => {
-    const level = c.riskLevel || 'LOW';
-    acc[level] = (acc[level] || 0) + 1;
-    return acc;
-  }, {});
-
-  const resolvedAlerts = alerts.filter((a: any) => a.status === 'RESOLVED' && a.resolvedAt && a.createdAt);
-  
-  const responseTimes = resolvedAlerts.map((a: any) => 
-    new Date(a.resolvedAt).getTime() - new Date(a.createdAt).getTime()
-  );
-  const avgResolutionTime = responseTimes.length ? responseTimes.reduce((a: number, b: number) => a + b, 0) / responseTimes.length : 0;
-
-  return ok(res, {
-    distressDistribution,
-    recoveryTrend: { up: 0.45, flat: 0.3, down: 0.25 },
-    avgResolutionTimeMs: avgResolutionTime
-  });
-}));
-
-// P06 — Distress statistics widget: aggregated distribution + trend, strictly scoped, no individual data.
-app.get('/api/v1/admin/distress-stats', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
-  const { cases } = getScopedAdminDataset(req.user!);
-  return ok(res, computeDistressStatistics(cases));
-}));
-
-// P07 — Recovery statistics widget: aggregated recovery-direction breakdown, strictly scoped, no individual data.
-app.get('/api/v1/admin/recovery-stats', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
-  const { cases } = getScopedAdminDataset(req.user!);
-  return ok(res, computeRecoveryStatistics(cases));
-}));
-
-// P11 — Operational response metrics: alert acknowledge/resolution time, aggregated only, strictly scoped.
-app.get('/api/v1/admin/operational-metrics', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
-  const { alerts } = getScopedAdminDataset(req.user!);
-  return ok(res, computeOperationalMetrics(alerts));
-}));
-
 // N09 — Crisis response tracking: dedicated crisis-only response-time metric.
 app.get('/api/v1/admin/crisis-metrics', requireAuth, requireRoles('COUNSELLOR', 'DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (_req, res) => ok(res, computeCrisisResponseMetrics(store.records.get('audit:crisis') || []))));
 
-// P15 — Report generation: bundles case-stage, distress, recovery and operational stats
-// strictly filtered by the authenticated administrator's server-enforced scope.
-app.get('/api/v1/admin/reports', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
-  const { scope, cases, alerts, followUps } = getScopedAdminDataset(req.user!);
-  const report = generateAdminReport({
-    cases,
-    alerts,
-    followUps,
-    scope: scope.scopeName,
-  });
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Content-Disposition', 'attachment; filename="saath-admin-report.json"');
-  return res.send(JSON.stringify({ ...report, scopeTitle: scope.scopeTitle, scopeLevel: scope.scopeLevel, jurisdiction: { state: scope.state, district: scope.district } }, null, 2));
-}));
 
 app.post('/api/v1/ai/recommend',requireAuth,body(z.object({context:z.string().optional()})),asyncRoute(async(req:AuthedRequest,res)=>{
   // K01 — Intervention engine backend: rank the catalogue using case context,

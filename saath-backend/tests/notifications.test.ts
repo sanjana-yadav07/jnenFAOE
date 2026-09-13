@@ -85,9 +85,9 @@ describe('SAATH Case-Specific Notifications', () => {
     expect(hearing.message).toContain('2026-09-15');
     expect(hearing.message).not.toContain('2026-09-18');
 
-    // Different counsellor (C002 -> Ravi Kumar)
+    // Different counsellor (C008 -> Lakshmi Raman)
     const counsellor = notifs.find((n: any) => n.type === 'counsellor_assigned');
-    expect(counsellor.message).toContain('Ravi Kumar');
+    expect(counsellor.message).toContain('Lakshmi Raman');
     expect(counsellor.message).not.toContain('Anjali Sharma');
 
     // Different counselling schedule (daily)

@@ -11,13 +11,13 @@ import { useAppStore } from "@/store/useAppStore";
 import { Role } from "@/types";
 
 const STATE_DISTRICT_MAP: Record<string, string[]> = {
-  Delhi: ["South Delhi", "North Delhi"],
-  Rajasthan: ["Jaipur"],
-  Maharashtra: ["Pune"],
-  "Uttar Pradesh": ["Lucknow"],
-  "West Bengal": ["Kolkata"],
-  Karnataka: ["Bengaluru Urban"],
-  "Tamil Nadu": ["Chennai"],
+  Delhi: ["South Delhi", "North Delhi", "West Delhi", "New Delhi"],
+  Rajasthan: ["Jaipur", "Jodhpur"],
+  Maharashtra: ["Pune", "Mumbai Suburban"],
+  "Uttar Pradesh": ["Lucknow", "Varanasi"],
+  "West Bengal": ["Kolkata", "Howrah"],
+  Karnataka: ["Bengaluru Urban", "Mysuru"],
+  "Tamil Nadu": ["Chennai", "Coimbatore"],
   Bihar: ["Patna"],
   Gujarat: ["Ahmedabad"],
   Odisha: ["Bhubaneswar"],
