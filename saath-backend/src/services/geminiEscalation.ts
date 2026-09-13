@@ -17,6 +17,11 @@ IMPORTANT:
 - Consider all provided features together.
 - Pay particular attention to distress trajectory, adverse events,
   case-related stress, wellbeing signals, support status, and engagement.
+- SUPPLEMENTARY ACOUSTIC SIGNALS: Any voice/acoustic features in 'voice_features'
+  (such as speaking pace, pause counts/durations, pitch variability, voice energy)
+  are SUPPLEMENTARY review indicators only. Never diagnose, infer medical pathology,
+  or escalate risk based on an acoustic feature alone. Explicit crisis indicators,
+  threats, and longitudinal distress changes remain primary and far more important.
 - Do not diagnose any mental health condition.
 - Do not make autonomous medical, legal, police, relocation,
   hospitalisation, or other high-stakes decisions.
@@ -47,7 +52,7 @@ EVIDENCE RULES:
 - Early warning signals must be based on actual input features.
 - Do not use external knowledge or web searches.
 
-The input contains these 20 features:
+The input contains these core features:
 1. Case type
 2. Case stage
 3. Sentiment
@@ -68,6 +73,7 @@ The input contains these 20 features:
 18. Rehabilitation status
 19. Missed check-ins in the last 7 days
 20. Sleep quality
+(Optional supplementary): voice_features (objective acoustic metrics including speaking pace, pause statistics, pitch mean/variance, and voice energy).
 
 Return only the requested structured JSON output.
 `;
@@ -113,7 +119,7 @@ ${JSON.stringify(input)}
             type: 'string',
           },
           description:
-            'The 3 to 5 most important factors contributing to the prediction.',
+            'The 3 to 5 most important factors contributing to the prediction. Longitudinal distress changes, crisis signals, and case events take precedence over supplementary acoustic indicators.',
         },
         early_warning_signals: {
           type: 'array',
@@ -121,7 +127,7 @@ ${JSON.stringify(input)}
             type: 'string',
           },
           description:
-            'Important signals indicating that distress may be worsening.',
+            'Important signals indicating that distress may be worsening. Acoustic indicators may be cited as supplementary context, but never as the sole driver.',
         },
         recommended_followup: {
           type: 'string',

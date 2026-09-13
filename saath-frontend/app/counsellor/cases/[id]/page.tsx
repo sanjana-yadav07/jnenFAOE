@@ -129,6 +129,7 @@ export default function CounsellorCaseDetailPage() {
       channel?: string;
       requestCounsellorCall?: boolean;
       signals?: any;
+      analysis?: any;
     }>
   >([]);
   const [loading, setLoading] = useState(true);
@@ -911,6 +912,147 @@ export default function CounsellorCaseDetailPage() {
           </div>
         </Card>
       )}
+
+      {/* ── Voice Check-ins & Acoustic Analysis Indicators ── */}
+      <Card className="p-5 border-deep-teal/20">
+        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <Mic size={18} className="text-deep-teal" /> Voice Check-ins &amp; Acoustic Review ({voiceCheckIns.length})
+            </CardTitle>
+            <p className="text-xs text-text-secondary mt-0.5">
+              Voluntary audio check-ins with objective acoustic indicators. Review signals only; not a diagnostic assessment.
+            </p>
+          </div>
+          {voiceCheckIns.length > 0 && (
+            <Badge tone="teal">
+              {voiceCheckIns.length} Audio Check-in{voiceCheckIns.length === 1 ? "" : "s"}
+            </Badge>
+          )}
+        </div>
+
+        {voiceCheckIns.length === 0 ? (
+          <div className="mt-4 rounded-xl border border-dashed border-border-color bg-[color:var(--surface-subtle)] p-6 text-center">
+            <Mic size={22} className="mx-auto text-text-secondary mb-2 opacity-60" />
+            <p className="text-xs font-semibold text-text-primary">No voice check-ins recorded yet for this case</p>
+            <p className="mt-1 text-[11px] text-text-secondary max-w-md mx-auto">
+              When this survivor submits a voice check-in, the transcript along with objective acoustic signals (speaking pace, pause metrics, pitch statistics, and voice energy) will be displayed here for counsellor review.
+            </p>
+          </div>
+        ) : (
+          <div className="mt-4 space-y-3.5">
+            {voiceCheckIns.map((vc) => {
+              const vf = vc.analysis?.signals?.voiceFeatures || vc.signals?.voiceFeatures;
+              return (
+                <div
+                  key={vc.id}
+                  className="rounded-xl border border-border-color bg-[color:var(--surface)] p-4 shadow-2xs space-y-3"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold text-text-primary">
+                        {formatDate(vc.createdAt)}
+                      </span>
+                      <Badge tone={vc.channel === "ivrs" ? "amber" : "teal"}>
+                        {vc.channel === "ivrs" ? "IVRS Call" : "Voice Check-in"}
+                      </Badge>
+                      {vc.requestCounsellorCall && (
+                        <Badge tone="peach">Call Requested</Badge>
+                      )}
+                    </div>
+                    {vf?.confidence !== undefined && (
+                      <span className="text-[11px] font-medium text-text-secondary">
+                        Signal Reliability: <strong className="text-deep-teal">{Math.round(vf.confidence * 100)}%</strong>
+                      </span>
+                    )}
+                  </div>
+
+                  {vc.transcript && (
+                    <p className="rounded-lg bg-[color:var(--surface-subtle)] p-2.5 text-xs italic text-text-primary border border-border-color/60">
+                      &ldquo;{vc.transcript}&rdquo;
+                    </p>
+                  )}
+
+                  {/* Compact Voice Analysis Indicators Card */}
+                  {vf ? (
+                    <div className="rounded-xl border border-deep-teal/20 bg-[#f5f9f8] p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-deep-teal">
+                          Voice Analysis Indicators (Additional Review Signal)
+                        </span>
+                        <span className="text-[10px] text-text-secondary italic">
+                          Objective acoustic metrics · Non-diagnostic
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 text-xs">
+                        {/* Speaking Pace */}
+                        <div className="rounded-lg bg-white p-2 border border-border-color/60">
+                          <span className="block text-[10px] text-text-secondary uppercase font-medium">Speaking Pace</span>
+                          <span className="font-semibold text-text-primary text-sm">
+                            {vf.speakingPaceWpm !== null && vf.speakingPaceWpm !== undefined
+                              ? `${vf.speakingPaceWpm} WPM`
+                              : "—"}
+                          </span>
+                          <span className="block text-[9px] text-text-secondary">Voiced speech rate</span>
+                        </div>
+
+                        {/* Pause Count */}
+                        <div className="rounded-lg bg-white p-2 border border-border-color/60">
+                          <span className="block text-[10px] text-text-secondary uppercase font-medium">Pause Count</span>
+                          <span className="font-semibold text-text-primary text-sm">
+                            {vf.pauseCount ?? 0}
+                          </span>
+                          <span className="block text-[9px] text-text-secondary">
+                            {vf.pauseFrequencyPerMin ? `${vf.pauseFrequencyPerMin}/min` : "Pauses ≥250ms"}
+                          </span>
+                        </div>
+
+                        {/* Average Pause Duration */}
+                        <div className="rounded-lg bg-white p-2 border border-border-color/60">
+                          <span className="block text-[10px] text-text-secondary uppercase font-medium">Avg Pause Duration</span>
+                          <span className="font-semibold text-text-primary text-sm">
+                            {vf.avgPauseDurationSec !== undefined ? `${vf.avgPauseDurationSec}s` : "—"}
+                          </span>
+                          <span className="block text-[9px] text-text-secondary">Hesitation / silence</span>
+                        </div>
+
+                        {/* Pitch Statistics */}
+                        <div className="rounded-lg bg-white p-2 border border-border-color/60">
+                          <span className="block text-[10px] text-text-secondary uppercase font-medium">Pitch Statistics</span>
+                          <span className="font-semibold text-text-primary text-sm">
+                            {vf.pitchMeanHz ? `${vf.pitchMeanHz} Hz` : "—"}
+                          </span>
+                          <span className="block text-[9px] text-text-secondary">
+                            {vf.pitchVariance ? `Variance: ${vf.pitchVariance}` : "Autocorrelation"}
+                          </span>
+                        </div>
+
+                        {/* Voice Energy (RMS) */}
+                        <div className="rounded-lg bg-white p-2 border border-border-color/60">
+                          <span className="block text-[10px] text-text-secondary uppercase font-medium">Voice Energy (RMS)</span>
+                          <span className="font-semibold text-text-primary text-sm">
+                            {vf.energyRms !== undefined ? vf.energyRms : "—"}
+                          </span>
+                          <span className="block text-[9px] text-text-secondary">Signal amplitude</span>
+                        </div>
+                      </div>
+
+                      <p className="mt-2 text-[10px] text-text-secondary">
+                        * Note: Acoustic metrics are supplementary review indicators. Individual speaking styles, microphone distance, and ambient noise affect values. Longitudinal distress history takes precedence.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="rounded-lg bg-[color:var(--surface-subtle)] px-3 py-2 text-[11px] text-text-secondary italic">
+                      Acoustic feature extraction not available for this entry.
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </Card>
 
       {/* ── Schedule Follow-up Modal ── */}
       {showFollowUpModal && (

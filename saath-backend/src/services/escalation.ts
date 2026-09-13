@@ -55,6 +55,7 @@ export function buildEscalationInput(userId: string, victimToken: string | undef
   const social = latest?.socialConnectedness;
   const fear = latest?.fear;
   const perceivedSafety = latest?.perceivedSafety;
+  const voiceFeatures = latestMl?.signals?.voiceFeatures ?? latest?.ml?.signals?.voiceFeatures;
 
   return {
     case_type: caseRecord?.caseCategory ?? 'not_reported',
@@ -90,6 +91,7 @@ export function buildEscalationInput(userId: string, victimToken: string | undef
     // The product has no expected cadence, so missed check-ins cannot be inferred safely.
     missed_check_ins_last_7_days: 'not_reported',
     sleep_quality: typeof sleep === 'number' ? scaleFiveToPercent(sleep, true) : 'not_reported',
+    ...(voiceFeatures && typeof voiceFeatures === 'object' ? { voice_features: voiceFeatures } : {}),
   };
 }
 
