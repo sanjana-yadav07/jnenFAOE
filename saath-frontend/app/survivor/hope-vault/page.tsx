@@ -106,7 +106,7 @@ export default function HopeVaultPage() {
     setSubmitting(true);
     setError("");
     try {
-      const newItem = await hopeVaultService.createItem({ type: modal.type, title, content });
+      const newItem = (await hopeVaultService.createItem({ type: modal.type, title, content })) as Record<string, any>;
       persist([...items, { created_at: new Date().toISOString(), ...newItem }]);
       setModal({ type: "", isOpen: false });
       setTitle("");
@@ -136,10 +136,9 @@ export default function HopeVaultPage() {
     setSubmitting(true);
     setError("");
     try {
-      let newItem;
       if (type === "photo" && file) {
-        newItem = await hopeVaultService.uploadPhoto(file, "Photo");
-        persist([...items, { created_at: new Date().toISOString(), ...newItem }]);
+        const uploaded = (await hopeVaultService.uploadPhoto(file, "Photo")) as Record<string, any>;
+        persist([...items, { created_at: new Date().toISOString(), ...uploaded }]);
       }
     } catch (e) {
       setError("Failed to save. Please try again.");

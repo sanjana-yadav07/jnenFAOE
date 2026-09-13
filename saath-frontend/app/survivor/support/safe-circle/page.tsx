@@ -60,12 +60,12 @@ export default function SafeCirclePage() {
     setLoading(true);
     setError(null);
     try {
-      const created = await aiService.createSafeCircleItem({
+      const created = (await aiService.createSafeCircleItem({
         name: name.trim(),
         relation: relation.trim(),
         email: email.trim(),
         consentToContact: consent,
-      });
+      })) as SafeCircleContact;
       setContacts((prev) => [...prev, created]);
       setJustAdded(created.name);
       resetForm();
