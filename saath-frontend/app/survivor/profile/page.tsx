@@ -33,7 +33,9 @@ import {
 } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { aiService } from "@/services/ai";
+import { caseService } from "@/services/case";
 import { generateHealthSummaryPdf } from "@/lib/exportPdf";
+import type { CaseRecord } from "@/types";
 
 export default function SurvivorProfilePage() {
   const router = useRouter();
@@ -42,6 +44,7 @@ export default function SurvivorProfilePage() {
     language,
     setLanguage,
     currentCase,
+    victimToken,
     monitoring,
     accessibility,
     setAccessibility,
@@ -54,6 +57,10 @@ export default function SurvivorProfilePage() {
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [confirmSignOut, setConfirmSignOut] = useState(false);
 
+  // Case details state
+  const [caseRecord, setCaseRecord] = useState<CaseRecord | null>(currentCase ?? null);
+  const [caseLoading, setCaseLoading] = useState(false);
+
   // Activity stats
   const [checkInCount, setCheckInCount] = useState<number | null>(null);
   const [lastActiveText, setLastActiveText] = useState<string>("Active today");
@@ -64,9 +71,54 @@ export default function SurvivorProfilePage() {
   const [commChannel, setCommChannel] = useState<"app" | "voice" | "sms">("app");
   const [smsOptIn, setSmsOptIn] = useState(true);
 
+  // Active case resolution
+  const activeCase = caseRecord ?? currentCase;
+
   // Preferred name handling
-  const displayName = survivorName?.trim() || currentCase?.survivorName?.trim() || "Sunita Kumari";
-  const assignedCounsellor = "Pooja Sharma (Assigned)";
+  const displayName = survivorName?.trim() || activeCase?.survivorName?.trim() || "Sunita Kumari";
+
+  // Dynamic assigned counsellor resolution from backend case record
+  const assignedCounsellorName =
+    activeCase?.assignedCounsellor?.name ||
+    (activeCase?.counsellorAssigned && activeCase.counsellorAssigned !== "Not assigned" && activeCase.counsellorAssigned !== "false"
+      ? activeCase.counsellorAssigned
+      : null);
+
+  const isCounsellorAssigned = Boolean(assignedCounsellorName);
+  const assignedCounsellorSpecialisation = activeCase?.assignedCounsellor?.specialisation;
+  const displayedCounsellorName = isCounsellorAssigned
+    ? assignedCounsellorName!
+    : (hindi ? "अभी नियुक्त नहीं" : "Not assigned yet");
+
+  const counsellorInitials = isCounsellorAssigned && assignedCounsellorName
+    ? assignedCounsellorName
+        .split(" ")
+        .map((n) => n[0])
+        .filter(Boolean)
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "--";
+
+  useEffect(() => {
+    if (victimToken) {
+      setCaseLoading(true);
+      caseService
+        .getCase(victimToken)
+        .then((record) => {
+          if (record) setCaseRecord(record);
+          else if (currentCase) setCaseRecord(currentCase);
+        })
+        .catch(() => {
+          if (currentCase) setCaseRecord(currentCase);
+        })
+        .finally(() => {
+          setCaseLoading(false);
+        });
+    } else if (currentCase) {
+      setCaseRecord(currentCase);
+    }
+  }, [victimToken, currentCase]);
 
   useEffect(() => {
     // Fetch truthful activity data
@@ -129,9 +181,9 @@ export default function SurvivorProfilePage() {
       generateHealthSummaryPdf({
         survivorName: displayName,
         victimToken: "CONFIDENTIAL-TOKEN",
-        docket: docket || currentCase?.docket || "NHAA-RJ-2026-004821",
-        currentStage: currentCase?.currentStage || "Investigation",
-        assignedCounsellor: assignedCounsellor,
+        docket: docket || activeCase?.docket || "NHAA-RJ-2026-004821",
+        currentStage: activeCase?.currentStage || "Investigation",
+        assignedCounsellor: displayedCounsellorName,
         monitoringState: monitoring,
         distressScore: 32,
         recoveryScore: 68,
@@ -379,22 +431,37 @@ export default function SurvivorProfilePage() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e5f2ec] text-deep-teal font-bold text-sm">
-                      PS
+                      {counsellorInitials}
                     </span>
                     <div>
                       <p className="text-xs font-semibold text-text-secondary">
                         {hindi ? "निर्दिष्ट परामर्शदाता" : "Assigned counsellor"}
                       </p>
-                      <p className="text-base font-bold text-text-primary">{assignedCounsellor}</p>
+                      <p className="text-base font-bold text-text-primary">
+                        {displayedCounsellorName}
+                      </p>
+                      {assignedCounsellorSpecialisation && (
+                        <p className="text-xs text-text-secondary mt-0.5">
+                          {assignedCounsellorSpecialisation}
+                        </p>
+                      )}
                     </div>
                   </div>
-                  <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">
-                    {hindi ? "उपलब्ध" : "Available"}
-                  </span>
+                  {isCounsellorAssigned ? (
+                    <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">
+                      {hindi ? "नियुक्त" : "Assigned"}
+                    </span>
+                  ) : (
+                    <span className="rounded-full bg-border-color/30 px-2.5 py-0.5 text-[11px] font-medium text-text-secondary">
+                      {hindi ? "प्रक्रियाधीन" : "Pending"}
+                    </span>
+                  )}
                 </div>
                 <div className="mt-4 flex items-center justify-between border-t border-border-color/50 pt-3">
                   <span className="text-xs text-text-secondary">
-                    {hindi ? "व्यक्तिगत सहायता सत्र" : "Confidential support session"}
+                    {isCounsellorAssigned
+                      ? (hindi ? "व्यक्तिगत सहायता सत्र" : "Confidential support session")
+                      : (hindi ? "सहायता अनुरोध उपलब्ध है" : "Support request available")}
                   </span>
                   <Link
                     href="/survivor/support/counsellor"

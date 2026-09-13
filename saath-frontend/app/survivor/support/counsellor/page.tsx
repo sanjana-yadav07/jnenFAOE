@@ -19,12 +19,6 @@ import {
 import { useAppStore } from "@/store/useAppStore";
 import { caseService } from "@/services/case";
 
-const FALLBACK_COUNSELLOR = {
-  name: "Dr. Neha Sharma",
-  specialisation: "Trauma & Rehabilitation Counsellor",
-  phone: "+91 80000 22110",
-};
-
 export default function CounsellorPage() {
   const {
     currentCase,
@@ -39,12 +33,18 @@ export default function CounsellorPage() {
     addCounsellorMessage,
   } = useAppStore();
 
-  const counsellor =
+  const assignedCounsellor =
     currentCase?.assignedCounsellor ??
-    (currentCase?.counsellorAssigned && currentCase.counsellorAssigned !== "Not assigned"
+    (currentCase?.counsellorAssigned && currentCase.counsellorAssigned !== "Not assigned" && currentCase.counsellorAssigned !== "false"
       ? { name: currentCase.counsellorAssigned, specialisation: undefined, phone: undefined }
-      : null) ??
-    FALLBACK_COUNSELLOR;
+      : null);
+
+  const isAssigned = Boolean(assignedCounsellor?.name);
+  const counsellorName = isAssigned
+    ? assignedCounsellor!.name
+    : language === "Hindi"
+    ? "अभी नियुक्त नहीं"
+    : "Not assigned yet";
 
   const hindi = language === "Hindi";
 
@@ -229,10 +229,14 @@ export default function CounsellorPage() {
               <p className="text-xs font-bold uppercase tracking-[.18em] text-[#7e918b]">
                 {hindi ? "आपके नियुक्त काउंसलर" : "Your assigned counsellor"}
               </p>
-              <h2 className="mt-2 font-display text-3xl text-[#263c35]">{counsellor.name}</h2>
-              {counsellor.specialisation && (
-                <p className="mt-1 text-sm text-[#7e918b]">{counsellor.specialisation}</p>
-              )}
+              <h2 className="mt-2 font-display text-3xl text-[#263c35]">{counsellorName}</h2>
+              {assignedCounsellor?.specialisation ? (
+                <p className="mt-1 text-sm text-[#7e918b]">{assignedCounsellor.specialisation}</p>
+              ) : !isAssigned ? (
+                <p className="mt-1 text-sm text-[#7e918b]">
+                  {hindi ? "काउंसलर आवंटन प्रक्रियाधीन है" : "Counsellor allocation in progress"}
+                </p>
+              ) : null}
             </div>
             <div className="hidden sm:flex h-12 w-12 items-center justify-center rounded-full bg-[#f0f6f3] text-deep-teal border border-border-color">
               <HeartHandshake size={24} />
@@ -240,18 +244,31 @@ export default function CounsellorPage() {
           </div>
 
           <p className="mt-5 text-sm leading-relaxed text-[#6b7b75]">
-            {hindi
-              ? "आपके काउंसलर आपकी सहायता के लिए सदैव उपलब्ध हैं। आप सीधे कॉल कर सकते हैं, आगामी फॉलो-अप सत्र का अनुरोध कर सकते हैं या कोई भी संदेश भेज सकते हैं।"
-              : "Your counsellor is here to support your journey. You can request a follow-up call, choose your preferred timing, or send a secure note directly to them."}
+            {isAssigned
+              ? (hindi
+                  ? "आपके काउंसलर आपकी सहायता के लिए सदैव उपलब्ध हैं। आप सीधे कॉल कर सकते हैं, आगामी फॉलो-अप सत्र का अनुरोध कर सकते हैं या कोई भी संदेश भेज सकते हैं।"
+                  : "Your counsellor is here to support your journey. You can request a follow-up call, choose your preferred timing, or send a secure note directly to them.")
+              : (hindi
+                  ? "जैसे ही आपकी सहायता टीम में काउंसलर जुड़ेंगे, उनका विवरण यहाँ उपलब्ध होगा। इस बीच आप आपातकालीन हेल्पलाइन या सपोर्ट टीम से संपर्क कर सकते हैं।"
+                  : "As soon as a dedicated counsellor is assigned to your case, their direct contact and scheduling options will appear here. You can also request follow-ups or reach the helpline anytime.")}
           </p>
 
           <div className="mt-7 flex flex-wrap gap-3">
-            <a
-              href={`tel:${(counsellor.phone ?? FALLBACK_COUNSELLOR.phone).replace(/[^\d+]/g, "")}`}
-              className="flex items-center gap-2 rounded-full bg-[#0f766e] px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#0d655e] transition-colors"
-            >
-              <Phone size={15} /> {hindi ? "कॉल करें" : "Call"} {counsellor.phone ?? FALLBACK_COUNSELLOR.phone}
-            </a>
+            {assignedCounsellor?.phone ? (
+              <a
+                href={`tel:${assignedCounsellor.phone.replace(/[^\d+]/g, "")}`}
+                className="flex items-center gap-2 rounded-full bg-[#0f766e] px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#0d655e] transition-colors"
+              >
+                <Phone size={15} /> {hindi ? "कॉल करें" : "Call"} {assignedCounsellor.phone}
+              </a>
+            ) : (
+              <a
+                href="tel:14566"
+                className="flex items-center gap-2 rounded-full bg-[#0f766e] px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#0d655e] transition-colors"
+              >
+                <Phone size={15} /> {hindi ? "हेल्पलाइन 14566" : "Helpline 14566"}
+              </a>
+            )}
             <button
               type="button"
               onClick={() => setModalMode("follow-up")}

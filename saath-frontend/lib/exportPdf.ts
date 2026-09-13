@@ -258,7 +258,7 @@ export function generateHealthSummaryPdf(data: ExportDataPayload) {
     </div>
     <div class="card">
       <div class="card-label">Primary Assigned Counsellor</div>
-      <div class="card-val">${data.assignedCounsellor ?? "Dr. Neha Sharma (Trauma & Rehab)"}</div>
+      <div class="card-val">${data.assignedCounsellor || "Not assigned yet"}</div>
     </div>
   </div>
 

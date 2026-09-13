@@ -172,9 +172,9 @@ export default function MyCasePage() {
           label: "Assigned counsellor",
           value:
             caseRecord.assignedCounsellor?.name ||
-            (caseRecord.counsellorAssigned && caseRecord.counsellorAssigned !== "Not assigned"
+            (caseRecord.counsellorAssigned && caseRecord.counsellorAssigned !== "Not assigned" && caseRecord.counsellorAssigned !== "true" && caseRecord.counsellorAssigned !== "false"
               ? caseRecord.counsellorAssigned
-              : formatValue(caseRecord.assignedCounsellorId)),
+              : "Not assigned yet"),
         },
         { label: "Follow-up frequency", value: formatValue(caseRecord.followupFrequency) },
         { label: "Legal aid", value: formatValue(caseRecord.legalAidStatus) },

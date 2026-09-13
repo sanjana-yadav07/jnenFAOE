@@ -191,4 +191,28 @@ describe('SAATH Case-Specific Notifications', () => {
     expect(connected.message).toContain('NHAA-RJ-2026-004821');
     expect(connected.message).not.toContain('NHAA-TN-2026-003746');
   });
+
+  it('correctly resolves assigned counsellor for Case A (NHAA-RJ-2026-004821 - Sunita Kumari) as Ravi Kumar and Case B (NHAA-DL-2026-001284 - Ananya Rao) as Anjali Sharma', async () => {
+    // Connect Case A
+    const resA = await request(app)
+      .post('/api/v1/cases/connect')
+      .send({ docket: 'NHAA-RJ-2026-004821' });
+    expect(resA.status).toBe(200);
+    expect(resA.body.data.case.assignedCounsellor.name).toBe('Ravi Kumar');
+    expect(resA.body.data.case.assignedCounsellor.specialisation).toContain('Caste-based violence');
+    expect(resA.body.data.case.assignedCounsellor.phone).toBe('9000000002');
+
+    // Connect Case B
+    const resB = await request(app)
+      .post('/api/v1/cases/connect')
+      .send({ docket: 'NHAA-DL-2026-001284' });
+    expect(resB.status).toBe(200);
+    expect(resB.body.data.case.assignedCounsellor.name).toBe('Anjali Sharma');
+    expect(resB.body.data.case.assignedCounsellor.specialisation).toContain('Trauma and sexual violence');
+    expect(resB.body.data.case.assignedCounsellor.phone).toBe('9000000001');
+
+    // Verify isolation and that neither displays Pooja Sharma
+    expect(resA.body.data.case.assignedCounsellor.name).not.toBe('Pooja Sharma');
+    expect(resB.body.data.case.assignedCounsellor.name).not.toBe('Pooja Sharma');
+  });
 });
