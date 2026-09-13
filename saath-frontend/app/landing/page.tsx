@@ -22,6 +22,48 @@ import {
   HeartHandshake,
 } from "lucide-react";
 
+const PORTALS = [
+  {
+    label: "Survivor Space",
+    badge: "bg-[#0f766e]",
+    badgeText: "text-white",
+    cardBorder: "hover:border-[#0f766e]/70",
+    iconBg: "bg-[#dcebdd]/80 text-[#0f766e]",
+    title: "For survivors",
+    description:
+      "A calm, private space to check in, feel supported, and move at your own pace — with or without a registered case.",
+    cta: "Continue as a survivor",
+    href: "/welcome",
+    icon: HeartHandshake,
+  },
+  {
+    label: "Counsellor Portal",
+    badge: "bg-[#5b8db8]",
+    badgeText: "text-white",
+    cardBorder: "hover:border-[#5b8db8]/70",
+    iconBg: "bg-[#dfeaf4] text-[#4d7ea1]",
+    title: "For counsellors",
+    description:
+      "Actionable, prioritised insight into individuals under care — flagged emotional alerts, recovery trends, and check-in cadence.",
+    cta: "Counsellor sign in",
+    href: "/staff-login",
+    icon: Users,
+  },
+  {
+    label: "District / State Admin",
+    badge: "bg-[#8064a2]",
+    badgeText: "text-white",
+    cardBorder: "hover:border-[#8064a2]/70",
+    iconBg: "bg-[#f2ecf9] text-[#8064a2]",
+    title: "For administrators",
+    description:
+      "Aggregated, anonymised decision intelligence across districts — caseload distribution, response times, and welfare tracking.",
+    cta: "Admin sign in",
+    href: "/staff-login",
+    icon: LineChart,
+  },
+];
+
 const JOURNEY_STAGES = [
   {
     num: "01",
@@ -148,7 +190,7 @@ export default function LandingPage() {
             </span>
             <span className="hidden h-4 w-px bg-[#c8d3d0] sm:inline" />
             <span className="hidden text-[11px] font-semibold tracking-wide text-[#61706d] sm:inline">
-              Support After Trauma & Healing
+              You Don&apos;t Have to Walk Alone
             </span>
           </Link>
 
@@ -177,55 +219,30 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section — Centered Editorial Composition */}
-      <section className="relative z-20 mx-auto max-w-5xl px-5 pt-16 pb-20 sm:px-8 sm:pt-24 sm:pb-28 text-center">
-        {/* Delicate Decorative Organic Accent Behind Hero (SVG) */}
-        <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center overflow-hidden opacity-30" aria-hidden="true">
-          <svg
-            viewBox="0 0 1000 400"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-[1200px] max-w-none transform translate-y-12"
-          >
-            <path
-              d="M 50 220 C 250 120, 450 300, 700 180 C 850 110, 920 200, 980 150"
-              stroke="#0f766e"
-              strokeWidth="2"
-              strokeDasharray="6 6"
-              strokeOpacity="0.4"
-            />
-            <path
-              d="M 20 260 C 220 180, 480 340, 750 220 C 880 160, 940 240, 1000 200"
-              stroke="#d69e2e"
-              strokeWidth="1.5"
-              strokeDasharray="4 4"
-              strokeOpacity="0.3"
-            />
-          </svg>
-        </div>
-
+      <section className="relative z-20 mx-auto max-w-4xl px-5 pt-14 pb-14 sm:px-8 sm:pt-20 sm:pb-16 text-center">
         {/* Reassuring Eyebrow Badge */}
         <div className="inline-flex items-center gap-2 rounded-full border border-[#0f766e]/25 bg-[#dcebdd]/60 px-4 py-1.5 shadow-2xs backdrop-blur-xs">
           <span className="h-2 w-2 rounded-full bg-[#0f766e] animate-pulse" />
-          <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0f766e]">
-            SUPPORT AFTER TRAUMA & HEALING
+          <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0f766e]">
+            SAATH — YOU DON’T HAVE TO WALK ALONE
           </span>
         </div>
 
-        {/* Hero Headline */}
-        <h1 className="mt-8 font-display text-4xl sm:text-6xl md:text-[4.5rem] font-medium tracking-tight text-[#172326] leading-[1.08]">
-          You do not have to <br />
-          <span className="font-editorial italic font-normal text-[#0f766e]">
+        {/* Hero Headline — Charcoal First Line, Deep Teal Italic Second Line, Balanced Scale */}
+        <h1 className="mt-7 font-display text-3xl sm:text-5xl md:text-5xl lg:text-[3.5rem] font-medium tracking-tight leading-[1.12] max-w-3xl mx-auto">
+          <span className="block text-[#172326]">You do not have to</span>
+          <span className="block font-editorial italic font-normal text-[#0f766e] mt-1">
             walk through it alone.
           </span>
         </h1>
 
         {/* Hero Narrative Copy */}
-        <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg md:text-xl leading-relaxed text-[#46565a]">
+        <p className="mx-auto mt-5 max-w-2xl text-base sm:text-lg leading-relaxed text-[#46565a]">
           SAATH gives survivors a private space to check in, understand their wellbeing, stay connected to support, and move forward at their own pace.
         </p>
 
         {/* Centered Primary & Secondary CTAs */}
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="/welcome"
             className="group inline-flex w-full sm:w-auto items-center justify-center gap-2.5 rounded-full bg-[#0f766e] px-8 py-3.5 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:bg-[#0c625c] hover:shadow-lg hover:-translate-y-0.5"
@@ -243,7 +260,7 @@ export default function LandingPage() {
         </div>
 
         {/* Trust Badges Strip */}
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-xs text-[#61706d]">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-xs text-[#61706d]">
           <span className="inline-flex items-center gap-1.5 font-medium">
             <CheckCircle2 size={15} className="text-[#0f766e]" /> 100% Consent-Led
           </span>
@@ -256,6 +273,42 @@ export default function LandingPage() {
           <span className="inline-flex items-center gap-1.5 font-medium">
             <CheckCircle2 size={15} className="text-[#0f766e]" /> End-to-End Privacy
           </span>
+        </div>
+      </section>
+
+      {/* 3 Portal Entrance Cards: Survivor (Teal), Counsellor (Blue), Admin (Purple) */}
+      <section className="relative z-20 mx-auto max-w-7xl px-5 pb-16 sm:px-10">
+        <div className="grid gap-6 md:grid-cols-3">
+          {PORTALS.map(({ label, badge, badgeText, cardBorder, iconBg, title, description, cta, href, icon: Icon }) => (
+            <div
+              key={label}
+              className={`flex flex-col justify-between rounded-3xl border border-[#c8d3d0]/80 bg-white/95 p-7 shadow-xs transition-all duration-200 ${cardBorder} hover:shadow-md hover:-translate-y-0.5`}
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span
+                    className={`inline-flex items-center rounded-full ${badge} px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider ${badgeText}`}
+                  >
+                    {label}
+                  </span>
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${iconBg}`}>
+                    <Icon size={20} />
+                  </div>
+                </div>
+                <h3 className="mt-5 font-display text-2xl font-bold text-[#172326]">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[#46565a]">{description}</p>
+              </div>
+              <div className="mt-7 pt-5 border-t border-[#c8d3d0]/40">
+                <Link
+                  href={href}
+                  className="group inline-flex items-center gap-2 text-sm font-bold text-[#0f766e] transition-all"
+                >
+                  <span>{cta}</span>
+                  <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
