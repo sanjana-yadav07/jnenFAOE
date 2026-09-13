@@ -209,8 +209,92 @@ export async function analyzeText(input:{victimToken:string;text:string;language
   return unavailable(input);
 }
 
-export async function analyzeVoice(input:{victimToken:string;audio:Buffer;mimeType:string;language?:string}):Promise<{transcript:string;analysis:MlResult}> {
-  const form=new FormData(); form.append('file',new Blob([new Uint8Array(input.audio)],{type:input.mimeType}),`voice-check-in.${input.mimeType.split('/')[1]||'webm'}`); if(input.language) form.append('language',input.language); form.append('victim_token',input.victimToken);
-  if(env.ML_SERVICE_URL) { const response=await fetch(`${env.ML_SERVICE_URL}/ml/analyze-voice`,{method:'POST',headers:{'x-api-key':env.ML_API_KEY??''},body:form}); if(!response.ok) throw new Error('ML voice service unavailable'); const result=await response.json() as {transcript?:string;analysis?:MlResult}; if(!result.transcript?.trim()||!result.analysis) throw new Error('ML voice response malformed'); return result as {transcript:string;analysis:MlResult}; }
-  if(env.AI_PROVIDER.toLowerCase()!=='groq'||!env.AI_API_KEY) throw new Error('Voice AI provider is not configured'); form.append('model','whisper-large-v3-turbo'); const response=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',headers:{authorization:`Bearer ${env.AI_API_KEY}`},body:form}); if(!response.ok) throw new Error('Voice transcription failed'); const result=await response.json() as {text?:string}; if(!result.text?.trim()) throw new Error('Voice transcription returned no text'); return {transcript:result.text,analysis:await analyzeText({victimToken:input.victimToken,text:result.text,language:input.language})};
+async function transcribeWithGroq(audio: Buffer, mimeType: string, language?: string): Promise<string> {
+  if (env.AI_PROVIDER.toLowerCase() !== 'groq' || !env.AI_API_KEY) {
+    throw new Error('Voice AI provider is not configured');
+  }
+  const form = new FormData();
+  form.append('file', new Blob([new Uint8Array(audio)], { type: mimeType }), `voice-check-in.${mimeType.split('/')[1] || 'webm'}`);
+  form.append('model', 'whisper-large-v3-turbo');
+  if (language) form.append('language', language);
+  const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+    method: 'POST',
+    headers: { authorization: `Bearer ${env.AI_API_KEY}` },
+    body: form,
+  });
+  if (!response.ok) throw new Error('Voice transcription failed');
+  const result = (await response.json()) as { text?: string };
+  if (!result.text?.trim()) throw new Error('Voice transcription returned no text');
+  return result.text.trim();
+}
+
+export async function analyzeVoice(input: { victimToken: string; audio: Buffer; mimeType: string; language?: string }): Promise<{ transcript: string; analysis: MlResult }> {
+  let pythonResult: { transcript?: string | null; analysis?: MlResult } | null = null;
+
+  if (env.ML_SERVICE_URL) {
+    try {
+      const form = new FormData();
+      form.append('file', new Blob([new Uint8Array(input.audio)], { type: input.mimeType }), `voice-check-in.${input.mimeType.split('/')[1] || 'webm'}`);
+      if (input.language) form.append('language', input.language);
+      form.append('victim_token', input.victimToken);
+
+      const response = await fetch(`${env.ML_SERVICE_URL}/ml/analyze-voice`, {
+        method: 'POST',
+        headers: { 'x-api-key': env.ML_API_KEY ?? '' },
+        body: form,
+      });
+
+      if (response.ok) {
+        pythonResult = (await response.json()) as { transcript?: string | null; analysis?: MlResult };
+      } else {
+        const body = await response.text().catch(() => '');
+        console.warn(`[ML] /ml/analyze-voice returned HTTP ${response.status}:`, body.slice(0, 200));
+      }
+    } catch (err) {
+      console.warn('[ML] /ml/analyze-voice request failed:', err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  // If Python returned a usable transcript and a scored analysis without insufficient evidence:
+  if (
+    pythonResult?.transcript?.trim() &&
+    pythonResult.analysis &&
+    !pythonResult.analysis.insufficientEvidence &&
+    pythonResult.analysis.status !== 'unavailable'
+  ) {
+    return {
+      transcript: pythonResult.transcript.trim(),
+      analysis: pythonResult.analysis,
+    };
+  }
+
+  // When transcript is null/empty or insufficientEvidence is true (or Python STT unavailable),
+  // fall back to Groq Whisper for transcription:
+  const groqTranscript = await transcribeWithGroq(input.audio, input.mimeType, input.language);
+
+  // Resubmit the transcript through analyzeText (which invokes /ml/analyze-text if ML_SERVICE_URL is set):
+  const textAnalysis = await analyzeText({
+    victimToken: input.victimToken,
+    text: groqTranscript,
+    language: input.language,
+  });
+
+  // Preserve acoustic features from the original Python response:
+  const voiceFeatures = pythonResult?.analysis?.signals?.voiceFeatures;
+  if (voiceFeatures && typeof voiceFeatures === 'object') {
+    textAnalysis.signals = {
+      ...textAnalysis.signals,
+      source: 'voice',
+      voiceFeatures,
+    };
+    const voiceConf = (voiceFeatures as Record<string, unknown>).confidence;
+    if (typeof voiceConf === 'number') {
+      textAnalysis.confidence = Math.round(Math.min(textAnalysis.confidence, voiceConf) * 1000) / 1000;
+    }
+  }
+
+  return {
+    transcript: groqTranscript,
+    analysis: textAnalysis,
+  };
 }
