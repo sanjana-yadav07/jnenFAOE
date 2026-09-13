@@ -97,8 +97,15 @@ export function computeOperationalMetrics(alerts: AlertLike[]) {
   };
 }
 
-/** P15 — Report generation: bundles the above into a single downloadable, aggregated-only report. */
-export function generateAdminReport(params: { cases: CaseLike[]; alerts: AlertLike[]; followUps?: FollowUpLike[]; scope: string }) {
+export function generateAdminReport(params: {
+  cases: CaseLike[];
+  alerts: AlertLike[];
+  followUps?: FollowUpLike[];
+  scope: string;
+  scopeTitle?: string;
+  scopeDistrict?: string;
+  scopeState?: string;
+}) {
   const followUps = params.followUps || [];
   const districtCounts = params.cases.reduce((acc: Record<string, number>, c) => {
     const district = c.district || 'Unassigned';
@@ -115,6 +122,9 @@ export function generateAdminReport(params: { cases: CaseLike[]; alerts: AlertLi
   return {
     generatedAt: new Date().toISOString(),
     scope: params.scope,
+    scopeTitle: params.scopeTitle,
+    scopeDistrict: params.scopeDistrict,
+    scopeState: params.scopeState,
     privacyBoundary: 'aggregated_only',
     caseStats: {
       caseCount: params.cases.length,

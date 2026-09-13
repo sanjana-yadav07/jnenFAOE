@@ -226,20 +226,25 @@ export default function AdminReportsPage() {
             <div className="mt-6 rounded-xl border border-border-color/60 bg-[color:var(--surface-subtle)] p-4">
               <div className="flex items-center gap-2 mb-3">
                 <MapPin size={16} className="text-deep-teal" />
-                <h3 className="font-semibold text-sm text-text-primary">District Jurisdictional Breakdown</h3>
+                <h3 className="font-semibold text-sm text-text-primary">
+                  {report.scope.startsWith("district:")
+                    ? `Authorized District Jurisdiction: ${report.scopeTitle || report.scopeDistrict}`
+                    : report.scope.startsWith("state:")
+                    ? `State Jurisdictional Breakdown (${report.scopeState || "State"})`
+                    : "National Geographic Coverage by District"}
+                </h3>
               </div>
               <div className="grid gap-3 sm:grid-cols-3">
-                {(report.caseStats.districtStats || [
-                  { district: "Jaipur", count: 2 },
-                  { district: "Pune", count: 2 },
-                  { district: "Central Delhi", count: 1 },
-                ]).map((d) => {
+                {(report.caseStats.districtStats && report.caseStats.districtStats.length > 0
+                  ? report.caseStats.districtStats
+                  : [{ district: report.scopeDistrict || "Authorized District", count: totalCases }]
+                ).map((d) => {
                   const pct = totalCases ? Math.round((d.count / totalCases) * 100) : 0;
                   return (
                     <div key={d.district} className="rounded-lg border border-border-color/50 bg-[color:var(--surface)] p-3 text-center">
                       <p className="font-semibold text-sm text-text-primary">{d.district}</p>
                       <p className="mt-1 text-xl font-bold text-deep-teal">{d.count}</p>
-                      <p className="text-[10px] text-text-secondary">{pct}% of total cases</p>
+                      <p className="text-[10px] text-text-secondary">{pct}% of caseload</p>
                     </div>
                   );
                 })}

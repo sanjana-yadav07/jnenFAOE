@@ -1321,6 +1321,52 @@ app.get('/api/v1/admin/counsellors', requireAuth, requireRoles('DISTRICT_ADMIN',
   return ok(res, summaries);
 }));
 
+// ADM-05 — GET /admin/reports: comprehensive scoped report for Overview / Cases / Reports pages.
+app.get('/api/v1/admin/reports', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
+  const { scope, cases, alerts, followUps } = getScopedAdminDataset(req.user!);
+  const report = generateAdminReport({
+    cases,
+    alerts,
+    followUps,
+    scope: scope.scopeName,
+    scopeTitle: scope.scopeTitle,
+    scopeDistrict: scope.district,
+    scopeState: scope.state,
+  });
+  return res.status(200).json(report);
+}));
+
+// ADM-06 — GET /admin/trends: scoped trend statistics.
+app.get('/api/v1/admin/trends', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
+  const { cases, alerts } = getScopedAdminDataset(req.user!);
+  const distress = computeDistressStatistics(cases);
+  const recovery = computeRecoveryStatistics(cases);
+  const operational = computeOperationalMetrics(alerts);
+  return ok(res, {
+    distressDistribution: distress.distressDistribution,
+    recoveryTrend: recovery.recoveryTrend,
+    avgResolutionTimeMs: operational.avgResolutionTimeMs,
+  });
+}));
+
+// ADM-07 — GET /admin/distress-stats: scoped distress breakdown.
+app.get('/api/v1/admin/distress-stats', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
+  const { cases } = getScopedAdminDataset(req.user!);
+  return ok(res, computeDistressStatistics(cases));
+}));
+
+// ADM-08 — GET /admin/recovery-stats: scoped recovery breakdown.
+app.get('/api/v1/admin/recovery-stats', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
+  const { cases } = getScopedAdminDataset(req.user!);
+  return ok(res, computeRecoveryStatistics(cases));
+}));
+
+// ADM-09 — GET /admin/operational-metrics: scoped alert & response metrics.
+app.get('/api/v1/admin/operational-metrics', requireAuth, requireRoles('DISTRICT_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN'), asyncRoute(async (req: AuthedRequest, res) => {
+  const { alerts } = getScopedAdminDataset(req.user!);
+  return ok(res, computeOperationalMetrics(alerts));
+}));
+
 // Generic fallback — strictly scoped according to user role and prevents tampering
 app.get('/api/v1/admin/:scope',requireAuth,requireRoles('DISTRICT_ADMIN','STATE_ADMIN','NATIONAL_ADMIN'),asyncRoute(async(req: AuthedRequest,res)=>{
   const { scope, cases, alerts } = getScopedAdminDataset(req.user!);

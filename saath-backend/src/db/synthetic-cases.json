@@ -704,7 +704,7 @@
     "current_distress_score": 64,
     "predicted_7d_score": 67,
     "risk_level": "MODERATE",
-    "assigned_counsellor_id": "C007",
+    "assigned_counsellor_id": "C001",
     "followup_frequency": "every_3_days"
   },
   {

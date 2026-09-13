@@ -185,6 +185,7 @@ export const staffService = {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
     if (!response.ok) throw new Error(`Unable to load report (status ${response.status})`);
-    return response.json() as Promise<AdminReport>;
+    const json = await response.json();
+    return ((json && typeof json === "object" && "data" in json && json.data) ? json.data : json) as AdminReport;
   },
 };

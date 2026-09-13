@@ -394,7 +394,7 @@ export default function AdminOverviewPage() {
               </div>
             </Card>
 
-            {/* District Comparison Breakdown */}
+            {/* District / Geographic Comparison Breakdown */}
             <Card className="p-5">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -402,25 +402,28 @@ export default function AdminOverviewPage() {
                     <MapPin size={16} className="text-deep-teal" /> Geographic Caseload Distribution
                   </CardTitle>
                   <p className="text-xs text-text-secondary mt-0.5">
-                    District breakdown within authorized jurisdiction
+                    {report.scope.startsWith("district:")
+                      ? `Single-district jurisdiction: ${report.scopeTitle || "Assigned District"}`
+                      : report.scope.startsWith("state:")
+                      ? `State-wide breakdown across districts in ${report.scopeState || "State"}`
+                      : "National distribution across state jurisdictions"}
                   </p>
                 </div>
               </div>
-              <div className="space-y-3">
-                {(report.caseStats.districtStats || [
-                  { district: "Jaipur", count: 2 },
-                  { district: "Pune", count: 2 },
-                  { district: "Central Delhi", count: 1 },
-                ]).map((d) => {
+              <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
+                {(report.caseStats.districtStats && report.caseStats.districtStats.length > 0
+                  ? report.caseStats.districtStats
+                  : [{ district: report.scopeDistrict || "Authorized District", count: totalCases }]
+                ).map((d) => {
                   const pct = totalCases ? Math.round((d.count / totalCases) * 100) : 0;
                   return (
                     <div key={d.district}>
                       <div className="flex justify-between text-xs font-medium">
                         <span className="text-text-primary">{d.district}</span>
-                        <span className="text-text-secondary">{d.count} cases ({pct}%)</span>
+                        <span className="text-text-secondary font-semibold">{d.count} cases ({pct}%)</span>
                       </div>
                       <div className="mt-1 h-2 rounded-full bg-pale-sage/40">
-                        <div className="h-2 rounded-full bg-deep-teal transition-all" style={{ width: `${pct}%` }} />
+                        <div className="h-2 rounded-full bg-deep-teal transition-all" style={{ width: `${Math.max(pct, 4)}%` }} />
                       </div>
                     </div>
                   );
