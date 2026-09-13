@@ -126,7 +126,7 @@ export default function KnowYourRightsPage() {
       </div>
 
       {/* Official Disclaimer Banner */}
-      <div className="rounded-2xl border border-border-color/70 bg-[color:var(--surface-subtle)] p-4 text-xs text-text-secondary leading-relaxed flex items-start gap-3 shadow-xs">
+      <div className="rounded-2xl border border-border-color/70 bg-(--surface-subtle) p-4 text-xs text-text-secondary leading-relaxed flex items-start gap-3 shadow-xs">
         <Info size={18} className="text-deep-teal shrink-0 mt-0.5" />
         <div>
           <p className="font-semibold text-text-primary">
@@ -141,7 +141,7 @@ export default function KnowYourRightsPage() {
 
       {/* Active Case Context Banner */}
       {context && (
-        <Card className="p-5 border-l-4 border-l-deep-teal bg-[color:var(--surface)]">
+        <Card className="p-5 border-l-4 border-l-deep-teal bg-(--surface)">
           <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-wider text-deep-teal">
@@ -203,7 +203,7 @@ export default function KnowYourRightsPage() {
 
         {/* Search Results Display */}
         {searchResults && (
-          <div className="mt-4 rounded-xl border border-border-color/80 bg-[color:var(--surface-subtle)] p-4 space-y-3">
+          <div className="mt-4 rounded-xl border border-border-color/80 bg-(--surface-subtle) p-4 space-y-3">
             <p className="text-xs font-bold uppercase tracking-wider text-deep-teal">
               {hindi ? "सत्यापित ज्ञानकोष परिणाम" : "Verified Knowledge Base Match"}
             </p>
@@ -288,7 +288,7 @@ export default function KnowYourRightsPage() {
                 </p>
 
                 {act.key_provisions && act.key_provisions.length > 0 && (
-                  <div className="mt-3 space-y-1.5 rounded-xl bg-[color:var(--surface-subtle)] p-3">
+                  <div className="mt-3 space-y-1.5 rounded-xl bg-(--surface-subtle) p-3">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                       {hindi ? "मुख्य प्रावधान" : "Key Provisions"}
                     </p>
@@ -371,7 +371,7 @@ export default function KnowYourRightsPage() {
 
       {/* 3. Free Legal Aid & NALSA Section */}
       {legalData?.legalAidFramework && (
-        <Card className="p-6 bg-gradient-to-br from-white to-[color:var(--surface-subtle)]">
+        <Card className="p-6 bg-gradient-to-br from-white to-(--surface-subtle)">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
@@ -434,7 +434,7 @@ export default function KnowYourRightsPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-border-color/70 bg-[color:var(--surface-subtle)] p-4">
+          <div className="rounded-xl border border-border-color/70 bg-(--surface-subtle) p-4">
             <p className="text-sm font-semibold text-text-primary">{activeStage.title}</p>
             <p className="mt-1 text-xs text-text-secondary leading-relaxed">{activeStage.general_overview}</p>
 
@@ -544,7 +544,7 @@ export default function KnowYourRightsPage() {
                 <button
                   type="button"
                   onClick={() => setExpandedFaq(isOpen ? null : faq.id)}
-                  className="w-full flex items-center justify-between p-4 text-left font-bold text-sm text-text-primary hover:bg-[color:var(--surface-subtle)] transition-colors"
+                  className="w-full flex items-center justify-between p-4 text-left font-bold text-sm text-text-primary hover:bg-(--surface-subtle) transition-colors"
                 >
                   <span>{faq.question}</span>
                   <ChevronDown
@@ -553,7 +553,7 @@ export default function KnowYourRightsPage() {
                   />
                 </button>
                 {isOpen && (
-                  <div className="p-4 pt-0 text-xs text-text-secondary leading-relaxed border-t border-border-color/40 bg-[color:var(--surface-subtle)]/50">
+                  <div className="p-4 pt-0 text-xs text-text-secondary leading-relaxed border-t border-border-color/40 bg-(--surface-subtle)/50">
                     <p>{faq.answer}</p>
                     <div className="mt-3 flex items-center justify-between text-[11px] pt-2 border-t border-border-color/40">
                       <span><strong>Source:</strong> {faq.official_source}</span>

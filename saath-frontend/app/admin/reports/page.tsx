@@ -127,7 +127,7 @@ export default function AdminReportsPage() {
       </div>
 
       {loading && (
-        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-border-color bg-[color:var(--surface)] p-8 text-center shadow-sm">
+        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-border-color bg-(--surface) p-8 text-center shadow-sm">
           <RefreshCw size={24} className="animate-spin text-deep-teal" />
           <p className="mt-3 text-sm font-medium text-text-secondary">Generating live caseload audit and report metrics...</p>
         </div>
@@ -154,7 +154,7 @@ export default function AdminReportsPage() {
 
             {/* KPI Overview Grid inside Report */}
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <div className="rounded-xl border border-border-color/60 bg-[color:var(--surface-subtle)] p-3.5">
+              <div className="rounded-xl border border-border-color/60 bg-(--surface-subtle) p-3.5">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">Total Caseload</p>
                 <p className="mt-1 text-2xl font-bold text-text-primary">{totalCases}</p>
                 <p className="text-[10px] text-text-secondary">Active survivor cases</p>
@@ -174,7 +174,7 @@ export default function AdminReportsPage() {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-border-color/60 bg-[color:var(--surface-subtle)] p-3.5">
+              <div className="rounded-xl border border-border-color/60 bg-(--surface-subtle) p-3.5">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">Resolved Alerts</p>
                 <p className="mt-1 text-2xl font-bold text-deep-teal">{report.operationalMetrics.resolvedAlerts}</p>
                 <p className="text-[10px] text-text-secondary">Successfully addressed</p>
@@ -184,7 +184,7 @@ export default function AdminReportsPage() {
             {/* Section Breakdown Tables inside Report */}
             <div className="mt-6 grid gap-6 md:grid-cols-2">
               {/* Stage Progression Table */}
-              <div className="rounded-xl border border-border-color/60 bg-[color:var(--surface-subtle)] p-4">
+              <div className="rounded-xl border border-border-color/60 bg-(--surface-subtle) p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <Scale size={16} className="text-deep-teal" />
                   <h3 className="font-semibold text-sm text-text-primary">Legal Stage Progression</h3>
@@ -203,7 +203,7 @@ export default function AdminReportsPage() {
               </div>
 
               {/* Clinical Risk Tier Table */}
-              <div className="rounded-xl border border-border-color/60 bg-[color:var(--surface-subtle)] p-4">
+              <div className="rounded-xl border border-border-color/60 bg-(--surface-subtle) p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <ShieldAlert size={16} className="text-warm-peach" />
                   <h3 className="font-semibold text-sm text-text-primary">Clinical Risk Distribution</h3>
@@ -223,7 +223,7 @@ export default function AdminReportsPage() {
             </div>
 
             {/* Geographic Coverage Table */}
-            <div className="mt-6 rounded-xl border border-border-color/60 bg-[color:var(--surface-subtle)] p-4">
+            <div className="mt-6 rounded-xl border border-border-color/60 bg-(--surface-subtle) p-4">
               <div className="flex items-center gap-2 mb-3">
                 <MapPin size={16} className="text-deep-teal" />
                 <h3 className="font-semibold text-sm text-text-primary">
@@ -241,7 +241,7 @@ export default function AdminReportsPage() {
                 ).map((d) => {
                   const pct = totalCases ? Math.round((d.count / totalCases) * 100) : 0;
                   return (
-                    <div key={d.district} className="rounded-lg border border-border-color/50 bg-[color:var(--surface)] p-3 text-center">
+                    <div key={d.district} className="rounded-lg border border-border-color/50 bg-(--surface) p-3 text-center">
                       <p className="font-semibold text-sm text-text-primary">{d.district}</p>
                       <p className="mt-1 text-xl font-bold text-deep-teal">{d.count}</p>
                       <p className="text-[10px] text-text-secondary">{pct}% of caseload</p>
@@ -270,7 +270,7 @@ export default function AdminReportsPage() {
           </Card>
 
           {/* Compliance & Privacy Guarantee */}
-          <Card className="bg-[color:var(--surface)] p-5">
+          <Card className="bg-(--surface) p-5">
             <div className="flex items-center gap-2 text-deep-teal font-semibold text-xs mb-1">
               <ShieldCheck size={16} /> Strict Privacy &amp; Anonymization Guarantee
             </div>

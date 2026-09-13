@@ -10,10 +10,10 @@ import { formatDate } from "@/lib/utils";
 import { Sahayak } from "@/components/Sahayak";
 
 const moods = [
-  { key: "light", icon: CloudDrizzle, tone: "bg-[color:var(--success-bg)] text-[color:var(--success)]" },
-  { key: "heavy", icon: CloudRain, tone: "bg-[color:var(--warning-bg)] text-[color:var(--warning)]" },
-  { key: "veryHeavy", icon: CloudSun, tone: "bg-[color:var(--error-bg)] text-[color:var(--error)]" },
-  { key: "okay", icon: Sun, tone: "bg-[color:var(--surface-subtle)] text-[color:var(--primary-teal-light)]" },
+  { key: "light", icon: CloudDrizzle, tone: "bg-(--success-bg) text-(--success)" },
+  { key: "heavy", icon: CloudRain, tone: "bg-(--warning-bg) text-(--warning)" },
+  { key: "veryHeavy", icon: CloudSun, tone: "bg-(--error-bg) text-(--error)" },
+  { key: "okay", icon: Sun, tone: "bg-(--surface-subtle) text-(--primary-teal-light)" },
 ] as const;
 const moodScores = { light: 2, heavy: 3, veryHeavy: 4, okay: 5 };
 
@@ -74,9 +74,9 @@ export default function SurvivorHomePage() {
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.25fr)_minmax(330px,.75fr)]">
         <section className="space-y-6">
           {/* Quick Check-in Card */}
-          <div className="surface overflow-hidden rounded-[28px] p-6 md:p-8 transition-all hover:border-[color:var(--primary-teal-light)]/40">
+          <div className="surface overflow-hidden rounded-[28px] p-6 md:p-8 transition-all hover:border-(--primary-teal-light)/40">
             <div className="space-y-3">
-              <div className="inline-flex w-fit items-center rounded-full border border-border-color/70 bg-[color:var(--surface-subtle)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-text-secondary">
+              <div className="inline-flex w-fit items-center rounded-full border border-border-color/70 bg-(--surface-subtle) px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-text-secondary">
                 Quick check-in
               </div>
               <h2 className="font-editorial text-2xl text-text-primary md:text-[34px] leading-tight">
@@ -98,8 +98,8 @@ export default function SurvivorHomePage() {
                   onClick={() => setSelectedMood(key)}
                   className={`group flex min-h-[124px] flex-col items-start justify-between rounded-2xl border p-4 text-left transition-all duration-200 ${
                     selectedMood === key
-                      ? "border-[color:var(--primary-teal)] bg-[color:var(--primary-teal-dark)] ring-3 ring-[color:var(--primary-teal)]/15 shadow-sm"
-                      : "border-border-color bg-[color:var(--surface)] hover:-translate-y-0.5 hover:border-[color:var(--primary-teal-light)] hover:shadow-sm"
+                      ? "border-(--primary-teal) bg-(--primary-teal-dark) ring-3 ring-(--primary-teal)/15 shadow-sm"
+                      : "border-border-color bg-(--surface) hover:-translate-y-0.5 hover:border-(--primary-teal-light) hover:shadow-sm"
                   }`}
                 >
                   <span className={`inline-flex h-10 w-10 items-center justify-center rounded-full ${tone} transition-transform group-hover:scale-105`}>
@@ -109,7 +109,7 @@ export default function SurvivorHomePage() {
                     {copy.moods[key]}
                   </span>
                   {selectedMood === key && (
-                    <span className="flex items-center gap-1 text-[11px] font-bold text-[color:var(--primary-teal)]">
+                    <span className="flex items-center gap-1 text-[11px] font-bold text-(--primary-teal)">
                       <Check size={13} /> {copy.selected}
                     </span>
                   )}
@@ -118,7 +118,7 @@ export default function SurvivorHomePage() {
             </div>
 
             {selectedMood && (
-              <div className="mt-5 flex items-center justify-between rounded-2xl bg-[color:var(--surface-subtle)] px-4 py-3.5 text-sm text-text-secondary border border-border-color/50">
+              <div className="mt-5 flex items-center justify-between rounded-2xl bg-(--surface-subtle) px-4 py-3.5 text-sm text-text-secondary border border-border-color/50">
                 <span>{copy.noWrong}</span>
                 <Link
                   href="/survivor/check-in"
@@ -138,7 +138,7 @@ export default function SurvivorHomePage() {
               className="surface-soft group rounded-[26px] p-6 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
             >
               <div className="flex items-center justify-between">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[color:var(--surface)] text-deep-teal shadow-xs">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-(--surface) text-deep-teal shadow-xs">
                   <Wind size={19} />
                 </div>
                 <ArrowRight size={18} className="text-text-secondary transition-all duration-200 group-hover:translate-x-1 group-hover:text-deep-teal" />
@@ -160,7 +160,7 @@ export default function SurvivorHomePage() {
               className="surface-soft group rounded-[26px] p-6 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
             >
               <div className="flex items-center justify-between">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[color:var(--surface)] text-warm-peach shadow-xs">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-(--surface) text-warm-peach shadow-xs">
                   <Mic2 size={19} />
                 </div>
                 <ArrowRight size={18} className="text-text-secondary transition-all duration-200 group-hover:translate-x-1 group-hover:text-deep-teal" />
@@ -184,7 +184,7 @@ export default function SurvivorHomePage() {
           <Sahayak />
 
           {/* Case Card */}
-          <div className="surface rounded-[26px] p-6 transition-all hover:border-[color:var(--primary-teal-light)]/40">
+          <div className="surface rounded-[26px] p-6 transition-all hover:border-(--primary-teal-light)/40">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-text-secondary">
@@ -201,7 +201,7 @@ export default function SurvivorHomePage() {
               <Link
                 href={activeCase ? "/survivor/case" : "/connect-case"}
                 aria-label={copy.case}
-                className="group rounded-full p-2 text-text-secondary hover:bg-[color:var(--surface-subtle)] hover:text-deep-teal transition-colors"
+                className="group rounded-full p-2 text-text-secondary hover:bg-(--surface-subtle) hover:text-deep-teal transition-colors"
               >
                 <ArrowRight size={18} className="transition-transform duration-200 group-hover:translate-x-0.5" />
               </Link>
@@ -209,12 +209,12 @@ export default function SurvivorHomePage() {
 
             {activeCase && (
               <>
-                <div className="mt-5 flex items-center gap-3 rounded-2xl bg-[color:var(--success-bg)] p-3.5">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[color:var(--surface)] text-[color:var(--success)] shadow-xs">
+                <div className="mt-5 flex items-center gap-3 rounded-2xl bg-(--success-bg) p-3.5">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-(--surface) text-(--success) shadow-xs">
                     <Leaf size={17} />
                   </span>
                   <div>
-                    <p className="text-sm font-semibold text-[color:var(--success)]">
+                    <p className="text-sm font-semibold text-(--success)">
                       {activeCase.currentStage ?? "Investigation"}
                     </p>
                     <p className="mt-0.5 text-xs text-text-secondary">{copy.support}</p>

@@ -100,7 +100,7 @@ function CaseFoundInner() {
       <div className="flex-1 flex flex-col justify-center px-6 py-12 md:px-14 xl:px-20">
         {/* Mobile logo */}
         <div className="flex items-center gap-2 mb-8 md:hidden">
-          <span className="text-xl text-[color:var(--accent-gold)]">✦</span>
+          <span className="text-xl text-(--accent-gold)">✦</span>
           <span className="font-editorial text-[22px] font-bold text-deep-teal">SAATH</span>
         </div>
 
@@ -114,14 +114,14 @@ function CaseFoundInner() {
                 Case found
               </h1>
             </div>
-            <span className="inline-flex items-center rounded-full bg-[color:var(--warning-bg)] border border-[color:var(--amber)]/30 px-3 py-1 text-[11px] font-semibold text-[color:var(--amber)] uppercase tracking-[0.12em]">
+            <span className="inline-flex items-center rounded-full bg-(--warning-bg) border border-(--amber)/30 px-3 py-1 text-[11px] font-semibold text-(--amber) uppercase tracking-[0.12em]">
               Synthetic NHAA Demo Data
             </span>
           </div>
 
           {/* Case detail card */}
-          <div className="rounded-2xl border border-border-color bg-[color:var(--surface)] shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-border-color/60 bg-[color:var(--surface-subtle)]">
+          <div className="rounded-2xl border border-border-color bg-(--surface) shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-border-color/60 bg-(--surface-subtle)">
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-text-secondary">Case Details</p>
             </div>
             <div className="px-5 py-2">

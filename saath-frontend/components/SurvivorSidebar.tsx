@@ -15,8 +15,8 @@ const NAV_ITEMS = [
 ] as const;
 
 const ITEM_BASE = "group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition-colors";
-const ITEM_ACTIVE = "bg-[color:var(--primary-teal-dark)] text-[color:var(--primary-teal)] shadow-sm";
-const ITEM_INACTIVE = "text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-subtle)] hover:text-[color:var(--primary-teal)]";
+const ITEM_ACTIVE = "bg-(--primary-teal-dark) text-(--primary-teal) shadow-sm";
+const ITEM_INACTIVE = "text-(--text-secondary) hover:bg-(--surface-subtle) hover:text-(--primary-teal)";
 
 export function SurvivorSidebar() {
   const pathname = usePathname();
@@ -28,9 +28,9 @@ export function SurvivorSidebar() {
   const isActive = (href: string) => (href === "/survivor" ? pathname === href : pathname.startsWith(href));
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-63 flex-col border-r border-border-color/65 bg-[color:var(--sidebar-background)]/90 px-5 py-7 backdrop-blur-xl md:flex xl:w-68">
+    <aside className="fixed inset-y-0 left-0 z-30 hidden w-63 flex-col border-r border-border-color/65 bg-(--sidebar-background)/90 px-5 py-7 backdrop-blur-xl md:flex xl:w-68">
       <Link href="/survivor" className="flex items-center gap-3 px-2 group">
-        <span className="text-2xl text-[color:var(--accent-gold)] transition-transform duration-300 group-hover:rotate-12">✦</span>
+        <span className="text-2xl text-(--accent-gold) transition-transform duration-300 group-hover:rotate-12">✦</span>
         <div>
           <div className="font-editorial text-[27px] font-bold leading-none tracking-tight text-deep-teal">SAATH</div>
           <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-text-secondary">
@@ -39,9 +39,9 @@ export function SurvivorSidebar() {
         </div>
       </Link>
 
-      <div className="my-9 h-px bg-[color:var(--border)]/55" />
+      <div className="my-9 h-px bg-(--border)/55" />
 
-      <p className="px-3 text-[10px] font-bold uppercase tracking-[.2em] text-[color:var(--text-secondary)]">
+      <p className="px-3 text-[10px] font-bold uppercase tracking-[.2em] text-(--text-secondary)">
         {hindi ? "आपकी जगह" : "Your space"}
       </p>
       <nav className="mt-3 space-y-1">

@@ -260,7 +260,7 @@ export default function CounsellorAlertsPage() {
 
       {/* Top 4 Operational Metric Cards */}
       <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-4">
-        <div className="rounded-2xl border border-border-color bg-[color:var(--surface)] p-4 shadow-sm">
+        <div className="rounded-2xl border border-border-color bg-(--surface) p-4 shadow-sm">
           <p className="text-xs font-medium text-text-secondary">Open Caseload Alerts</p>
           <p className="mt-2 text-2xl font-bold tracking-tight text-text-primary">{openCount}</p>
           <p className="mt-1 text-[11px] text-text-secondary">Requires attention</p>
@@ -275,7 +275,7 @@ export default function CounsellorAlertsPage() {
           <p className="mt-2 text-2xl font-bold tracking-tight text-[#b67926]">{newCount}</p>
           <p className="mt-1 text-[11px] text-text-secondary">Unacknowledged</p>
         </div>
-        <div className="rounded-2xl border border-pale-sage/60 bg-[color:var(--surface)] p-4 shadow-sm">
+        <div className="rounded-2xl border border-pale-sage/60 bg-(--surface) p-4 shadow-sm">
           <p className="text-xs font-medium text-text-secondary">Resolved Alerts</p>
           <p className="mt-2 text-2xl font-bold tracking-tight text-deep-teal">{resolvedCount}</p>
           <p className="mt-1 text-[11px] text-text-secondary">Review completed</p>
@@ -284,7 +284,7 @@ export default function CounsellorAlertsPage() {
 
       {/* Sahayak Assessments Preview */}
       {assessments.length > 0 && (
-        <section className="rounded-2xl border border-border-color bg-[color:var(--surface)] p-5 shadow-sm">
+        <section className="rounded-2xl border border-border-color bg-(--surface) p-5 shadow-sm">
           <div className="flex items-center justify-between gap-2 mb-3">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-deep-teal flex items-center gap-1.5">
               <Sparkles size={14} /> Sahayak NLP Escalation Forecasts
@@ -293,7 +293,7 @@ export default function CounsellorAlertsPage() {
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {assessments.slice(-4).reverse().map((assessment) => (
-              <div key={assessment.id} className="rounded-xl bg-[color:var(--surface-subtle)] p-3.5 text-xs border border-border-color/60">
+              <div key={assessment.id} className="rounded-xl bg-(--surface-subtle) p-3.5 text-xs border border-border-color/60">
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-semibold text-text-primary">
                     Case: {assessment.caseId ?? assessment.victimToken ?? "Assigned"}
@@ -339,7 +339,7 @@ export default function CounsellorAlertsPage() {
                 className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all ${
                   tab === name
                     ? "bg-deep-teal text-white shadow-sm"
-                    : "bg-[color:var(--surface-subtle)] text-text-secondary hover:text-text-primary"
+                    : "bg-(--surface-subtle) text-text-secondary hover:text-text-primary"
                 }`}
               >
                 <span>{name}</span>
@@ -366,8 +366,8 @@ export default function CounsellorAlertsPage() {
               onClick={() => setPriorityFilter(p)}
               className={`rounded-lg px-2.5 py-1 text-xs font-bold transition-all ${
                 priorityFilter === p
-                  ? "bg-[color:var(--text-primary)] text-[color:var(--surface)]"
-                  : "border border-border-color bg-[color:var(--surface)] text-text-secondary hover:text-text-primary"
+                  ? "bg-(--text-primary) text-(--surface)"
+                  : "border border-border-color bg-(--surface) text-text-secondary hover:text-text-primary"
               }`}
             >
               {p}
@@ -379,7 +379,7 @@ export default function CounsellorAlertsPage() {
       {loading && <p className="text-sm text-text-secondary">Loading caseload alerts…</p>}
 
       {!loading && filteredAlerts.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-border-color bg-[color:var(--surface-subtle)] p-12 text-center text-sm text-text-secondary">
+        <div className="rounded-2xl border border-dashed border-border-color bg-(--surface-subtle) p-12 text-center text-sm text-text-secondary">
           No alerts found matching the current filters.
         </div>
       )}
@@ -403,10 +403,10 @@ export default function CounsellorAlertsPage() {
               key={alert.id}
               className={`rounded-2xl border p-5 shadow-sm transition-all ${
                 isP1
-                  ? "border-warm-peach/50 bg-[color:var(--surface)]"
+                  ? "border-warm-peach/50 bg-(--surface)"
                   : isP2
-                  ? "border-amber/40 bg-[color:var(--surface)]"
-                  : "border-border-color bg-[color:var(--surface)]"
+                  ? "border-amber/40 bg-(--surface)"
+                  : "border-border-color bg-(--surface)"
               }`}
             >
               <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
@@ -460,7 +460,7 @@ export default function CounsellorAlertsPage() {
                           <span>·</span>
                           <span className="font-mono text-text-secondary">{matchedCase.docket}</span>
                           <span>·</span>
-                          <span className="rounded-md bg-[color:var(--surface-subtle)] px-2 py-0.5 font-medium text-text-primary">
+                          <span className="rounded-md bg-(--surface-subtle) px-2 py-0.5 font-medium text-text-primary">
                             Stage: {matchedCase.currentStage}
                           </span>
                           <span>·</span>
@@ -511,7 +511,7 @@ export default function CounsellorAlertsPage() {
               </div>
 
               {/* Audit & Timing Metadata */}
-              <div className="mt-4 grid gap-3 rounded-xl bg-[color:var(--surface-subtle)] p-3 text-xs sm:grid-cols-4 border border-border-color/50">
+              <div className="mt-4 grid gap-3 rounded-xl bg-(--surface-subtle) p-3 text-xs sm:grid-cols-4 border border-border-color/50">
                 <div>
                   <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Triggered</p>
                   <p className="mt-0.5 font-medium text-text-primary">{formatDate(alert.createdAt)}</p>
@@ -555,7 +555,7 @@ export default function CounsellorAlertsPage() {
       {/* Resolve Note Modal */}
       {resolvingAlertId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl border border-border-color bg-[color:var(--surface)] p-6 shadow-xl">
+          <div className="w-full max-w-md rounded-2xl border border-border-color bg-(--surface) p-6 shadow-xl">
             <h3 className="font-editorial text-xl font-bold text-text-primary">Resolve Alert</h3>
             <p className="mt-1 text-xs text-text-secondary">
               Record a clinical resolution note for the permanent audit trail.
@@ -569,7 +569,7 @@ export default function CounsellorAlertsPage() {
                 placeholder="e.g. Conducted grounding phone session with survivor; verified immediate safety."
                 value={resolveNote}
                 onChange={(e) => setResolveNote(e.target.value)}
-                className="w-full rounded-xl border border-border-color bg-[color:var(--surface-subtle)] p-3 text-xs text-text-primary outline-none focus:border-deep-teal resize-none"
+                className="w-full rounded-xl border border-border-color bg-(--surface-subtle) p-3 text-xs text-text-primary outline-none focus:border-deep-teal resize-none"
               />
             </div>
             <div className="mt-5 flex justify-end gap-2">

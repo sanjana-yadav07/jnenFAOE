@@ -23,14 +23,14 @@ type ChoicePillProps = {
 
 function ToggleRow({ label, description, checked, onChange }: ToggleRowProps) {
   return (
-    <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-border-color bg-[color:var(--surface-subtle)] p-2.5 text-left">
+    <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-border-color bg-(--surface-subtle) p-2.5 text-left">
       <div className="min-w-0">
-        <p className="text-sm font-semibold text-[color:var(--text-primary)]">{label}</p>
-        {description && <p className="mt-0.5 text-[11px] leading-4 text-[color:var(--text-secondary)]">{description}</p>}
+        <p className="text-sm font-semibold text-(--text-primary)">{label}</p>
+        {description && <p className="mt-0.5 text-[11px] leading-4 text-(--text-secondary)">{description}</p>}
       </div>
-      <span className="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border border-border-color transition-colors duration-150 focus-within:ring-2 focus-within:ring-[color:var(--focus-ring)] focus-within:ring-offset-2">
+      <span className="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border border-border-color transition-colors duration-150 focus-within:ring-2 focus-within:ring-(--focus-ring) focus-within:ring-offset-2">
         <input type="checkbox" checked={checked} onChange={onChange} className="peer sr-only" aria-label={label} />
-        <span className={`absolute inset-0 rounded-full transition-colors ${checked ? "bg-[color:var(--primary-teal)]" : "bg-[color:var(--border)]"}`} />
+        <span className={`absolute inset-0 rounded-full transition-colors ${checked ? "bg-(--primary-teal)" : "bg-(--border)"}`} />
         <span className={`relative ml-1 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${checked ? "translate-x-5" : "translate-x-0"}`} />
       </span>
     </label>
@@ -39,7 +39,7 @@ function ToggleRow({ label, description, checked, onChange }: ToggleRowProps) {
 
 function ChoicePill({ label, selected, onClick }: ChoicePillProps) {
   return (
-    <button type="button" aria-pressed={selected} onClick={onClick} className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition-colors ${selected ? "border-[color:var(--primary-teal)] bg-[color:var(--primary-teal)] text-white" : "border-border-color bg-[color:var(--surface-subtle)] text-[color:var(--text-secondary)] hover:border-[color:var(--primary-teal-light)]"}`}>
+    <button type="button" aria-pressed={selected} onClick={onClick} className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition-colors ${selected ? "border-(--primary-teal) bg-(--primary-teal) text-white" : "border-border-color bg-(--surface-subtle) text-(--text-secondary) hover:border-(--primary-teal-light)"}`}>
       {label}
     </button>
   );
@@ -47,8 +47,8 @@ function ChoicePill({ label, selected, onClick }: ChoicePillProps) {
 
 function SectionGroup({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="space-y-3 rounded-2xl border border-border-color bg-[color:var(--surface-subtle)] p-3.5">
-      <h3 className="text-[11px] font-bold uppercase tracking-[0.16em] text-[color:var(--text-secondary)]">{title}</h3>
+    <section className="space-y-3 rounded-2xl border border-border-color bg-(--surface-subtle) p-3.5">
+      <h3 className="text-[11px] font-bold uppercase tracking-[0.16em] text-(--text-secondary)">{title}</h3>
       {children}
     </section>
   );
@@ -178,7 +178,7 @@ export function SurvivorHeader() {
             aria-expanded={isProfileMenuOpen}
             aria-label={hindi ? "प्रोफ़ाइल मेनू" : "Profile menu"}
             onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-border-color/70 bg-white/80 text-xs font-bold text-deep-teal shadow-xs transition-all hover:border-[color:var(--primary-teal)] hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0f766e] focus-visible:ring-offset-2"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-border-color/70 bg-white/80 text-xs font-bold text-deep-teal shadow-xs transition-all hover:border-(--primary-teal) hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0f766e] focus-visible:ring-offset-2"
             title={displayName || (hindi ? "प्रोफ़ाइल" : "Profile")}
           >
             {userInitials}
@@ -187,7 +187,7 @@ export function SurvivorHeader() {
           {isProfileMenuOpen && (
             <div
               role="menu"
-              className="absolute right-0 top-[calc(100%+0.6rem)] z-50 w-56 rounded-2xl border border-border-color bg-[color:var(--surface)] p-2 shadow-[0_18px_40px_rgba(23,35,38,0.12)] backdrop-blur-md animate-in fade-in zoom-in-95 duration-150"
+              className="absolute right-0 top-[calc(100%+0.6rem)] z-50 w-56 rounded-2xl border border-border-color bg-(--surface) p-2 shadow-[0_18px_40px_rgba(23,35,38,0.12)] backdrop-blur-md animate-in fade-in zoom-in-95 duration-150"
             >
               <div className="border-b border-border-color/60 px-3 py-2.5">
                 <p className="truncate text-xs font-bold text-text-primary">{displayName}</p>
@@ -198,7 +198,7 @@ export function SurvivorHeader() {
                 <Link
                   href="/survivor/profile"
                   onClick={() => setIsProfileMenuOpen(false)}
-                  className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-text-primary hover:bg-[color:var(--surface-subtle)] hover:text-deep-teal transition-colors"
+                  className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-text-primary hover:bg-(--surface-subtle) hover:text-deep-teal transition-colors"
                   role="menuitem"
                 >
                   <User size={15} />
@@ -208,7 +208,7 @@ export function SurvivorHeader() {
                 <Link
                   href="/survivor/privacy"
                   onClick={() => setIsProfileMenuOpen(false)}
-                  className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-text-primary hover:bg-[color:var(--surface-subtle)] hover:text-deep-teal transition-colors"
+                  className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-text-primary hover:bg-(--surface-subtle) hover:text-deep-teal transition-colors"
                   role="menuitem"
                 >
                   <Settings size={15} />
@@ -236,13 +236,13 @@ export function SurvivorHeader() {
         </div>
 
         {isAccessibilityOpen && (
-          <div id="saath-accessibility-panel" ref={panelRef} role="dialog" aria-modal="false" aria-label="Accessibility" className="absolute right-0 top-[calc(100%+0.75rem)] z-50 w-[min(25rem,calc(100vw-1.25rem))] overflow-hidden rounded-[1.5rem] border border-border-color bg-[color:var(--surface)] shadow-[0_18px_50px_rgba(23,35,38,0.14)] backdrop-blur-sm">
+          <div id="saath-accessibility-panel" ref={panelRef} role="dialog" aria-modal="false" aria-label="Accessibility" className="absolute right-0 top-[calc(100%+0.75rem)] z-50 w-[min(25rem,calc(100vw-1.25rem))] overflow-hidden rounded-[1.5rem] border border-border-color bg-(--surface) shadow-[0_18px_50px_rgba(23,35,38,0.14)] backdrop-blur-sm">
             <div className="flex items-start justify-between border-b border-border-color px-4 py-3.5">
               <div>
-                <h2 className="font-display text-[1.45rem] leading-none text-[color:var(--text-primary)]">Accessibility</h2>
-                <p className="mt-1 text-xs text-[color:var(--text-secondary)]">Choose the settings that make SAATH easier to use.</p>
+                <h2 className="font-display text-[1.45rem] leading-none text-(--text-primary)">Accessibility</h2>
+                <p className="mt-1 text-xs text-(--text-secondary)">Choose the settings that make SAATH easier to use.</p>
               </div>
-              <button type="button" aria-label="Close accessibility panel" onClick={() => setIsAccessibilityOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-full border border-border-color bg-[color:var(--surface-subtle)] text-[color:var(--text-primary)] hover:bg-[color:var(--surface-raised)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)] focus-visible:ring-offset-2">
+              <button type="button" aria-label="Close accessibility panel" onClick={() => setIsAccessibilityOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-full border border-border-color bg-(--surface-subtle) text-(--text-primary) hover:bg-(--surface-raised) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--focus-ring) focus-visible:ring-offset-2">
                 <X size={15} />
               </button>
             </div>
@@ -259,9 +259,9 @@ export function SurvivorHeader() {
 
                 <SectionGroup title="Page Zoom">
                   <div className="flex flex-wrap items-center gap-2">
-                    <button type="button" aria-label="Decrease zoom" onClick={() => setAccessibility({ pageZoom: Math.max(80, accessibility.pageZoom - 10) })} className="rounded-lg border border-border-color bg-[color:var(--surface-subtle)] px-2.5 py-1.5 text-xs font-semibold text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-raised)] transition-colors">−</button>
+                    <button type="button" aria-label="Decrease zoom" onClick={() => setAccessibility({ pageZoom: Math.max(80, accessibility.pageZoom - 10) })} className="rounded-lg border border-border-color bg-(--surface-subtle) px-2.5 py-1.5 text-xs font-semibold text-(--text-secondary) hover:bg-(--surface-raised) transition-colors">−</button>
                     <ChoicePill label={`${accessibility.pageZoom}%`} selected={accessibility.pageZoom === 100} onClick={() => setAccessibility({ pageZoom: 100 })} />
-                    <button type="button" aria-label="Increase zoom" onClick={() => setAccessibility({ pageZoom: Math.min(150, accessibility.pageZoom + 10) })} className="rounded-lg border border-border-color bg-[color:var(--surface-subtle)] px-2.5 py-1.5 text-xs font-semibold text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-raised)] transition-colors">+</button>
+                    <button type="button" aria-label="Increase zoom" onClick={() => setAccessibility({ pageZoom: Math.min(150, accessibility.pageZoom + 10) })} className="rounded-lg border border-border-color bg-(--surface-subtle) px-2.5 py-1.5 text-xs font-semibold text-(--text-secondary) hover:bg-(--surface-raised) transition-colors">+</button>
                   </div>
                 </SectionGroup>
 
@@ -307,7 +307,7 @@ export function SurvivorHeader() {
             </div>
 
             <div className="border-t border-border-color px-4 py-3">
-              <button type="button" onClick={() => { resetAccessibility(); setIsAccessibilityOpen(false); }} className="w-full rounded-xl border border-border-color bg-[color:var(--surface-subtle)] px-3 py-2 text-sm font-semibold text-[color:var(--text-primary)] hover:bg-[color:var(--surface-raised)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)] focus-visible:ring-offset-2">
+              <button type="button" onClick={() => { resetAccessibility(); setIsAccessibilityOpen(false); }} className="w-full rounded-xl border border-border-color bg-(--surface-subtle) px-3 py-2 text-sm font-semibold text-(--text-primary) hover:bg-(--surface-raised) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--focus-ring) focus-visible:ring-offset-2">
                 Reset all settings
               </button>
             </div>

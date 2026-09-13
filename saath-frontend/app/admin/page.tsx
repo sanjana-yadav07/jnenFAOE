@@ -172,7 +172,7 @@ export default function AdminOverviewPage() {
       </div>
 
       {loading && (
-        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-border-color bg-[color:var(--surface)] p-8 text-center shadow-sm">
+        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-border-color bg-(--surface) p-8 text-center shadow-sm">
           <RefreshCw size={24} className="animate-spin text-deep-teal" />
           <p className="mt-3 text-sm font-medium text-text-secondary">Synthesizing aggregate telemetry and operational stats...</p>
         </div>
@@ -189,7 +189,7 @@ export default function AdminOverviewPage() {
         <>
           {/* Top 8 Operational KPI Cards */}
           <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-4 lg:grid-cols-8">
-            <div className="rounded-2xl border border-border-color bg-[color:var(--surface)] p-3.5 shadow-sm col-span-2 sm:col-span-2 lg:col-span-2">
+            <div className="rounded-2xl border border-border-color bg-(--surface) p-3.5 shadow-sm col-span-2 sm:col-span-2 lg:col-span-2">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">Total Caseload</span>
                 <Users size={16} className="text-deep-teal" />
@@ -222,7 +222,7 @@ export default function AdminOverviewPage() {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-border-color bg-[color:var(--surface)] p-3.5 shadow-sm col-span-2 sm:col-span-2 lg:col-span-2">
+            <div className="rounded-2xl border border-border-color bg-(--surface) p-3.5 shadow-sm col-span-2 sm:col-span-2 lg:col-span-2">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">Avg Resolution</span>
                 <Clock size={16} className="text-deep-teal" />
@@ -238,7 +238,7 @@ export default function AdminOverviewPage() {
 
           {/* Secondary 4 KPI Cards */}
           <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-4">
-            <div className="rounded-2xl border border-pale-sage/60 bg-[color:var(--surface)] p-3.5 shadow-sm">
+            <div className="rounded-2xl border border-pale-sage/60 bg-(--surface) p-3.5 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-text-secondary">Improving SVI</span>
                 <TrendingDown size={15} className="text-[#16a34a]" />
@@ -249,7 +249,7 @@ export default function AdminOverviewPage() {
               <p className="text-[10px] text-text-secondary">&Delta; &le; -8 pts SVI reduction</p>
             </div>
 
-            <div className="rounded-2xl border border-border-color bg-[color:var(--surface)] p-3.5 shadow-sm">
+            <div className="rounded-2xl border border-border-color bg-(--surface) p-3.5 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-text-secondary">Stable SVI</span>
                 <Activity size={15} className="text-deep-teal" />
@@ -260,7 +260,7 @@ export default function AdminOverviewPage() {
               <p className="text-[10px] text-text-secondary">Longitudinal equilibrium</p>
             </div>
 
-            <div className="rounded-2xl border border-warm-peach/30 bg-[color:var(--surface)] p-3.5 shadow-sm">
+            <div className="rounded-2xl border border-warm-peach/30 bg-(--surface) p-3.5 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-text-secondary">Rising SVI</span>
                 <TrendingUp size={15} className="text-warm-peach" />
@@ -271,7 +271,7 @@ export default function AdminOverviewPage() {
               <p className="text-[10px] text-text-secondary">&Delta; &ge; +8 pts clinical drift</p>
             </div>
 
-            <div className="rounded-2xl border border-border-color bg-[color:var(--surface)] p-3.5 shadow-sm">
+            <div className="rounded-2xl border border-border-color bg-(--surface) p-3.5 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-text-secondary">Follow-Up Coverage</span>
                 <CalendarCheck size={15} className="text-deep-teal" />
@@ -433,7 +433,7 @@ export default function AdminOverviewPage() {
           </div>
 
           {/* Privacy and Compliance Notice */}
-          <Card className="bg-[color:var(--surface)] p-5">
+          <Card className="bg-(--surface) p-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2 text-deep-teal">

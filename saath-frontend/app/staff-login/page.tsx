@@ -160,7 +160,7 @@ export default function StaffLoginPage() {
                 className={`rounded-xl px-2.5 py-2 text-xs font-semibold border transition-all ${
                   adminTier === "DISTRICT_ADMIN"
                     ? "bg-deep-teal text-white border-deep-teal shadow-sm"
-                    : "bg-[color:var(--surface)] text-text-secondary border-border-color hover:border-deep-teal/50"
+                    : "bg-(--surface) text-text-secondary border-border-color hover:border-deep-teal/50"
                 }`}
               >
                 District Admin
@@ -171,7 +171,7 @@ export default function StaffLoginPage() {
                 className={`rounded-xl px-2.5 py-2 text-xs font-semibold border transition-all ${
                   adminTier === "STATE_ADMIN"
                     ? "bg-deep-teal text-white border-deep-teal shadow-sm"
-                    : "bg-[color:var(--surface)] text-text-secondary border-border-color hover:border-deep-teal/50"
+                    : "bg-(--surface) text-text-secondary border-border-color hover:border-deep-teal/50"
                 }`}
               >
                 State Admin
@@ -182,7 +182,7 @@ export default function StaffLoginPage() {
                 className={`rounded-xl px-2.5 py-2 text-xs font-semibold border transition-all ${
                   adminTier === "NATIONAL_ADMIN"
                     ? "bg-deep-teal text-white border-deep-teal shadow-sm"
-                    : "bg-[color:var(--surface)] text-text-secondary border-border-color hover:border-deep-teal/50"
+                    : "bg-(--surface) text-text-secondary border-border-color hover:border-deep-teal/50"
                 }`}
               >
                 National Admin
@@ -192,7 +192,7 @@ export default function StaffLoginPage() {
 
           {/* Dynamic Geographic Jurisdiction Selection */}
           {adminTier !== "NATIONAL_ADMIN" && (
-            <div className="space-y-3 rounded-2xl border border-border-color bg-[color:var(--surface-subtle)] p-3.5">
+            <div className="space-y-3 rounded-2xl border border-border-color bg-(--surface-subtle) p-3.5">
               <div>
                 <label className="block text-xs font-semibold text-text-secondary mb-1">
                   Assigned State
@@ -200,7 +200,7 @@ export default function StaffLoginPage() {
                 <select
                   value={selectedState}
                   onChange={(e) => handleStateChange(e.target.value)}
-                  className="w-full rounded-xl border border-border-color bg-[color:var(--surface)] px-3 py-2 text-sm font-medium text-text-primary focus:border-deep-teal focus:outline-none"
+                  className="w-full rounded-xl border border-border-color bg-(--surface) px-3 py-2 text-sm font-medium text-text-primary focus:border-deep-teal focus:outline-none"
                 >
                   {Object.keys(STATE_DISTRICT_MAP).map((st) => (
                     <option key={st} value={st}>
@@ -218,7 +218,7 @@ export default function StaffLoginPage() {
                   <select
                     value={selectedDistrict}
                     onChange={(e) => setSelectedDistrict(e.target.value)}
-                    className="w-full rounded-xl border border-border-color bg-[color:var(--surface)] px-3 py-2 text-sm font-medium text-text-primary focus:border-deep-teal focus:outline-none"
+                    className="w-full rounded-xl border border-border-color bg-(--surface) px-3 py-2 text-sm font-medium text-text-primary focus:border-deep-teal focus:outline-none"
                   >
                     {(STATE_DISTRICT_MAP[selectedState] || []).map((dist) => (
                       <option key={dist} value={dist}>
@@ -232,7 +232,7 @@ export default function StaffLoginPage() {
           )}
 
           {adminTier === "NATIONAL_ADMIN" && (
-            <div className="rounded-2xl border border-border-color bg-[color:var(--surface-subtle)] p-3.5 text-xs text-text-secondary">
+            <div className="rounded-2xl border border-border-color bg-(--surface-subtle) p-3.5 text-xs text-text-secondary">
               <span className="font-semibold text-deep-teal">National Scope:</span> Authorised across all states and districts nationwide with full anonymized statistical aggregation.
             </div>
           )}

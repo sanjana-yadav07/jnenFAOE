@@ -351,7 +351,7 @@ export default function CounsellorCaseDetailPage() {
   if (error || !caseRecord) {
     return (
       <div className="mx-auto max-w-2xl py-12 text-center">
-        <div className="rounded-2xl border border-warm-peach/40 bg-[color:var(--error-bg)] p-8">
+        <div className="rounded-2xl border border-warm-peach/40 bg-(--error-bg) p-8">
           <ShieldAlert size={32} className="mx-auto text-warm-peach mb-3" />
           <h2 className="font-editorial text-2xl font-bold text-text-primary">Access Restricted</h2>
           <p className="mt-2 text-sm text-text-secondary">
@@ -392,10 +392,10 @@ export default function CounsellorCaseDetailPage() {
               <h1 className="font-editorial text-3xl font-bold text-text-primary md:text-4xl">
                 {caseRecord.survivorName}
               </h1>
-              <span className="font-mono text-xs text-text-secondary bg-[color:var(--surface-subtle)] px-2.5 py-1 rounded-lg border border-border-color/60 font-semibold">
+              <span className="font-mono text-xs text-text-secondary bg-(--surface-subtle) px-2.5 py-1 rounded-lg border border-border-color/60 font-semibold">
                 {caseRecord.docket}
               </span>
-              <span className="rounded-full bg-[color:var(--pale-sage)] px-3 py-1 text-xs font-bold text-deep-teal border border-deep-teal/30">
+              <span className="rounded-full bg-(--pale-sage) px-3 py-1 text-xs font-bold text-deep-teal border border-deep-teal/30">
                 {caseRecord.currentStage}
               </span>
               {caseRecord.riskLevel && (
@@ -443,7 +443,7 @@ export default function CounsellorCaseDetailPage() {
       </div>
 
       {/* ── Case Stage Progression Timeline ── */}
-      <section className="rounded-2xl border border-border-color bg-[color:var(--surface)] p-5 shadow-sm">
+      <section className="rounded-2xl border border-border-color bg-(--surface) p-5 shadow-sm">
         <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-text-secondary mb-4 flex items-center gap-2">
           <Layers size={14} className="text-deep-teal" /> Legal &amp; Support Progression Pipeline
         </p>
@@ -458,8 +458,8 @@ export default function CounsellorCaseDetailPage() {
                   isCurrent
                     ? "bg-deep-teal text-white border-deep-teal shadow-sm font-bold"
                     : isCompleted
-                    ? "bg-[color:var(--pale-sage)] text-deep-teal border-deep-teal/20 font-semibold"
-                    : "bg-[color:var(--surface-subtle)] text-text-secondary border-border-color/50"
+                    ? "bg-(--pale-sage) text-deep-teal border-deep-teal/20 font-semibold"
+                    : "bg-(--surface-subtle) text-text-secondary border-border-color/50"
                 }`}
               >
                 <div className="text-[10px] uppercase tracking-wider opacity-80">Step {idx + 1}</div>
@@ -586,14 +586,14 @@ export default function CounsellorCaseDetailPage() {
             </p>
           </div>
           {baselineDistressAvg !== null && (
-            <span className="text-xs font-semibold text-text-secondary bg-[color:var(--surface-subtle)] px-2.5 py-1 rounded-lg border border-border-color/60">
+            <span className="text-xs font-semibold text-text-secondary bg-(--surface-subtle) px-2.5 py-1 rounded-lg border border-border-color/60">
               Personal baseline SVI: {baselineDistressAvg}
             </span>
           )}
         </div>
 
         {chartData.length < 2 ? (
-          <div className="mt-6 rounded-xl border border-dashed border-border-color bg-[color:var(--surface-subtle)] p-8 text-center">
+          <div className="mt-6 rounded-xl border border-dashed border-border-color bg-(--surface-subtle) p-8 text-center">
             <Clock size={24} className="mx-auto text-text-secondary mb-2" />
             <p className="text-sm font-semibold text-text-primary">Insufficient evidence for longitudinal trend</p>
             <p className="mt-1 text-xs text-text-secondary max-w-md mx-auto">
@@ -653,7 +653,7 @@ export default function CounsellorCaseDetailPage() {
             {caseAlerts.map((alt) => (
               <div
                 key={alt.id}
-                className="flex flex-col justify-between gap-3 rounded-xl border border-border-color bg-[color:var(--surface)] p-3.5 sm:flex-row sm:items-center"
+                className="flex flex-col justify-between gap-3 rounded-xl border border-border-color bg-(--surface) p-3.5 sm:flex-row sm:items-center"
               >
                 <div>
                   <div className="flex items-center gap-2">
@@ -744,7 +744,7 @@ export default function CounsellorCaseDetailPage() {
             {interventions.map((int) => (
               <div
                 key={int.id}
-                className="rounded-xl border border-border-color bg-[color:var(--surface-subtle)] p-3 text-xs flex justify-between items-start"
+                className="rounded-xl border border-border-color bg-(--surface-subtle) p-3 text-xs flex justify-between items-start"
               >
                 <div>
                   <p className="font-semibold text-text-primary">{int.label}</p>
@@ -767,7 +767,7 @@ export default function CounsellorCaseDetailPage() {
           </CardTitle>
           <div className="mt-3 space-y-3">
             {caseMessages.map((m) => (
-              <div key={m.id} className="rounded-xl border border-border-color bg-white p-3.5 text-xs shadow-2xs">
+              <div key={m.id} className="rounded-xl border border-border-color bg-white p-3.5 text-xs shadow-xs">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-text-primary">{m.subject || "Message"}</span>
@@ -776,7 +776,7 @@ export default function CounsellorCaseDetailPage() {
                   </div>
                   <span className="text-[11px] text-text-secondary">{formatDate(m.createdAt)}</span>
                 </div>
-                <p className="mt-2 rounded-lg bg-[color:var(--surface-subtle)] p-2.5 italic text-text-primary">
+                <p className="mt-2 rounded-lg bg-(--surface-subtle) p-2.5 italic text-text-primary">
                   &ldquo;{m.message}&rdquo;
                 </p>
 
@@ -850,7 +850,7 @@ export default function CounsellorCaseDetailPage() {
           {caseFollowUps.map((f) => (
             <div
               key={f.id}
-              className="flex items-center justify-between rounded-xl border border-border-color bg-[color:var(--surface)] p-3 text-xs"
+              className="flex items-center justify-between rounded-xl border border-border-color bg-(--surface) p-3 text-xs"
             >
               <div>
                 <div className="flex items-center gap-2">
@@ -895,7 +895,7 @@ export default function CounsellorCaseDetailPage() {
               </thead>
               <tbody className="divide-y divide-border-color/50">
                 {checkIns.slice(-6).reverse().map((c, i) => (
-                  <tr key={i} className="hover:bg-[color:var(--surface-subtle)] transition-colors">
+                  <tr key={i} className="hover:bg-(--surface-subtle) transition-colors">
                     <td className="py-2.5 pr-3 font-medium">{formatDate(c.timestamp)}</td>
                     <td className="py-2.5 px-2 capitalize">{c.type || "Check-in"}</td>
                     <td className="py-2.5 px-2">{c.sleep !== undefined ? `${c.sleep}/5` : "—"}</td>
@@ -932,7 +932,7 @@ export default function CounsellorCaseDetailPage() {
         </div>
 
         {voiceCheckIns.length === 0 ? (
-          <div className="mt-4 rounded-xl border border-dashed border-border-color bg-[color:var(--surface-subtle)] p-6 text-center">
+          <div className="mt-4 rounded-xl border border-dashed border-border-color bg-(--surface-subtle) p-6 text-center">
             <Mic size={22} className="mx-auto text-text-secondary mb-2 opacity-60" />
             <p className="text-xs font-semibold text-text-primary">No voice check-ins recorded yet for this case</p>
             <p className="mt-1 text-[11px] text-text-secondary max-w-md mx-auto">
@@ -946,7 +946,7 @@ export default function CounsellorCaseDetailPage() {
               return (
                 <div
                   key={vc.id}
-                  className="rounded-xl border border-border-color bg-[color:var(--surface)] p-4 shadow-2xs space-y-3"
+                  className="rounded-xl border border-border-color bg-(--surface) p-4 shadow-xs space-y-3"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
@@ -968,7 +968,7 @@ export default function CounsellorCaseDetailPage() {
                   </div>
 
                   {vc.transcript && (
-                    <p className="rounded-lg bg-[color:var(--surface-subtle)] p-2.5 text-xs italic text-text-primary border border-border-color/60">
+                    <p className="rounded-lg bg-(--surface-subtle) p-2.5 text-xs italic text-text-primary border border-border-color/60">
                       &ldquo;{vc.transcript}&rdquo;
                     </p>
                   )}
@@ -1043,7 +1043,7 @@ export default function CounsellorCaseDetailPage() {
                       </p>
                     </div>
                   ) : (
-                    <div className="rounded-lg bg-[color:var(--surface-subtle)] px-3 py-2 text-[11px] text-text-secondary italic">
+                    <div className="rounded-lg bg-(--surface-subtle) px-3 py-2 text-[11px] text-text-secondary italic">
                       Acoustic feature extraction not available for this entry.
                     </div>
                   )}
@@ -1057,7 +1057,7 @@ export default function CounsellorCaseDetailPage() {
       {/* ── Schedule Follow-up Modal ── */}
       {showFollowUpModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-2xl border border-border-color bg-[color:var(--surface)] p-6 shadow-xl">
+          <div className="w-full max-w-md rounded-2xl border border-border-color bg-(--surface) p-6 shadow-xl">
             <h3 className="font-editorial text-xl font-bold text-text-primary">
               Schedule Follow-up with {caseRecord.survivorName}
             </h3>
@@ -1123,7 +1123,7 @@ export default function CounsellorCaseDetailPage() {
       {/* ── Recommend Intervention Modal ── */}
       {showInterventionModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-2xl border border-border-color bg-[color:var(--surface)] p-6 shadow-xl">
+          <div className="w-full max-w-md rounded-2xl border border-border-color bg-(--surface) p-6 shadow-xl">
             <h3 className="font-editorial text-xl font-bold text-text-primary">
               Recommend Support Intervention
             </h3>

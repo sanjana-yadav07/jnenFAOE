@@ -71,7 +71,7 @@ export default function ConnectCasePage() {
       <div className="flex-1 flex flex-col justify-center px-6 py-12 md:px-14 xl:px-20">
         {/* Mobile logo */}
         <div className="flex items-center gap-2 mb-8 md:hidden">
-          <span className="text-xl text-[color:var(--accent-gold)]">✦</span>
+          <span className="text-xl text-(--accent-gold)">✦</span>
           <span className="font-editorial text-[22px] font-bold text-deep-teal">SAATH</span>
         </div>
 
@@ -102,12 +102,12 @@ export default function ConnectCasePage() {
             </div>
 
             {error && (
-              <p role="alert" className="text-sm text-warm-peach bg-[color:var(--error-bg)] rounded-xl px-4 py-3">
+              <p role="alert" className="text-sm text-warm-peach bg-(--error-bg) rounded-xl px-4 py-3">
                 {error}
               </p>
             )}
 
-            <div className="flex items-start gap-2.5 rounded-xl bg-[color:var(--surface-subtle)] border border-border-color/60 px-4 py-3.5">
+            <div className="flex items-start gap-2.5 rounded-xl bg-(--surface-subtle) border border-border-color/60 px-4 py-3.5">
               <ShieldCheck size={14} className="text-deep-teal mt-0.5 shrink-0" />
               <p className="text-[12px] text-text-secondary leading-relaxed">
                 Your case information will be fetched securely after verification. This demo uses a synthetic NHAA case registry — no real government systems are accessed.

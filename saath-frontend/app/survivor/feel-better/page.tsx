@@ -64,7 +64,7 @@ export default function FeelBetterPage() {
                   <span className={`flex h-12 w-12 items-center justify-center rounded-2xl ${exercise.tone}`}>
                     <Icon size={22} />
                   </span>
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--surface-subtle)] text-[#7e918b] transition-transform group-hover:translate-x-0.5 group-hover:text-deep-teal">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-(--surface-subtle) text-[#7e918b] transition-transform group-hover:translate-x-0.5 group-hover:text-deep-teal">
                     <ArrowRight size={16} />
                   </span>
                 </div>
@@ -72,7 +72,7 @@ export default function FeelBetterPage() {
                   {hindi ? exercise.titleHi || exercise.title : exercise.title}
                 </h2>
                 {isRecommended && (
-                  <p className="mt-1 inline-block rounded-md bg-[color:var(--primary-teal-dark)]/15 px-2 py-0.5 text-xs font-bold text-deep-teal">
+                  <p className="mt-1 inline-block rounded-md bg-(--primary-teal-dark)/15 px-2 py-0.5 text-xs font-bold text-deep-teal">
                     {hindi ? "आपके लिए अनुशंसित" : (exercise.reason || "Recommended for you")}
                   </p>
                 )}

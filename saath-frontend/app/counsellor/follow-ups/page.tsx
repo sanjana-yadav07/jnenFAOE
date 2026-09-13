@@ -299,12 +299,12 @@ export default function FollowUpsPage() {
           <p className="mt-2 text-2xl font-bold tracking-tight text-deep-teal">{confirmedCount}</p>
           <p className="mt-1 text-[11px] text-text-secondary">Scheduled sessions</p>
         </div>
-        <div className="rounded-2xl border border-border-color bg-[color:var(--surface)] p-4 shadow-sm">
+        <div className="rounded-2xl border border-border-color bg-(--surface) p-4 shadow-sm">
           <p className="text-xs font-medium text-text-secondary">Awaiting Survivor Action</p>
           <p className="mt-2 text-2xl font-bold tracking-tight text-text-primary">{proposedCount}</p>
           <p className="mt-1 text-[11px] text-text-secondary">Notification sent</p>
         </div>
-        <div className="rounded-2xl border border-border-color bg-[color:var(--surface)] p-4 shadow-sm">
+        <div className="rounded-2xl border border-border-color bg-(--surface) p-4 shadow-sm">
           <p className="text-xs font-medium text-text-secondary">Sessions Completed</p>
           <p className="mt-2 text-2xl font-bold tracking-tight text-text-primary">{completedCount}</p>
           <p className="mt-1 text-[11px] text-text-secondary">Logged in record</p>
@@ -324,7 +324,7 @@ export default function FollowUpsPage() {
               <Card
                 key={msg.id}
                 className={`transition-all ${
-                  !msg.read ? "border-deep-teal/40 bg-[#f4f9f7]/60" : "bg-[color:var(--surface)]"
+                  !msg.read ? "border-deep-teal/40 bg-[#f4f9f7]/60" : "bg-(--surface)"
                 }`}
               >
                 <div className="flex items-start justify-between gap-4">
@@ -339,7 +339,7 @@ export default function FollowUpsPage() {
                     {msg.subject && (
                       <p className="mt-1 text-xs font-semibold text-deep-teal">{msg.subject}</p>
                     )}
-                    <p className="mt-2 rounded-xl bg-[color:var(--surface-subtle)] p-3 text-sm italic text-text-primary">
+                    <p className="mt-2 rounded-xl bg-(--surface-subtle) p-3 text-sm italic text-text-primary">
                       &ldquo;{msg.message}&rdquo;
                     </p>
                     <p className="mt-2 text-xs text-text-secondary">
@@ -432,7 +432,7 @@ export default function FollowUpsPage() {
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all ${
               tab === t.key
                 ? "bg-deep-teal text-white shadow-sm"
-                : "bg-[color:var(--surface-subtle)] text-text-secondary hover:text-text-primary"
+                : "bg-(--surface-subtle) text-text-secondary hover:text-text-primary"
             }`}
           >
             <span>{t.label}</span>
@@ -450,7 +450,7 @@ export default function FollowUpsPage() {
       {loading && <p className="text-sm text-text-secondary">Loading follow-ups…</p>}
 
       {!loading && filteredFollowUps.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-border-color bg-[color:var(--surface-subtle)] p-12 text-center text-sm text-text-secondary">
+        <div className="rounded-2xl border border-dashed border-border-color bg-(--surface-subtle) p-12 text-center text-sm text-text-secondary">
           No follow-ups found in this view.
         </div>
       )}
@@ -470,8 +470,8 @@ export default function FollowUpsPage() {
                 isRescheduleRequested
                   ? "border-amber/50 bg-amber/5"
                   : isConfirmed
-                  ? "border-deep-teal/30 bg-[color:var(--surface)]"
-                  : "border-border-color bg-[color:var(--surface)]"
+                  ? "border-deep-teal/30 bg-(--surface)"
+                  : "border-border-color bg-(--surface)"
               }`}
             >
               <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
@@ -484,7 +484,7 @@ export default function FollowUpsPage() {
                         ? "bg-deep-teal/15 text-deep-teal"
                         : isCompleted
                         ? "bg-pale-sage/40 text-deep-teal"
-                        : "bg-[color:var(--surface-subtle)] text-text-secondary"
+                        : "bg-(--surface-subtle) text-text-secondary"
                     }`}
                   >
                     {isRescheduleRequested ? (
@@ -550,7 +550,7 @@ export default function FollowUpsPage() {
                 <div className="flex flex-wrap items-center gap-2 shrink-0 md:self-start">
                   <Link
                     href={`/counsellor/cases/${f.victimToken}`}
-                    className="inline-flex items-center gap-1 rounded-xl border border-border-color bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-text-primary hover:bg-[color:var(--surface-subtle)] transition-all"
+                    className="inline-flex items-center gap-1 rounded-xl border border-border-color bg-(--surface) px-3 py-1.5 text-xs font-semibold text-text-primary hover:bg-(--surface-subtle) transition-all"
                   >
                     View Case
                   </Link>
@@ -605,7 +605,7 @@ export default function FollowUpsPage() {
               {/* Dual Notes Section */}
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {/* Survivor Visible Notes */}
-                <div className="rounded-xl bg-[color:var(--surface-subtle)] p-3 text-xs border border-border-color/60">
+                <div className="rounded-xl bg-(--surface-subtle) p-3 text-xs border border-border-color/60">
                   <p className="font-semibold text-deep-teal flex items-center gap-1">
                     <MessageSquare size={13} /> Shared Agenda (Survivor Visible)
                   </p>
@@ -615,7 +615,7 @@ export default function FollowUpsPage() {
                 </div>
 
                 {/* Private Clinical Notes */}
-                <div className="rounded-xl bg-[color:var(--surface-subtle)] p-3 text-xs border border-border-color/60">
+                <div className="rounded-xl bg-(--surface-subtle) p-3 text-xs border border-border-color/60">
                   <p className="font-semibold text-text-secondary flex items-center gap-1">
                     <Lock size={13} /> Private Clinical Preparation Note
                   </p>
@@ -632,14 +632,14 @@ export default function FollowUpsPage() {
       {/* Schedule Follow-up Modal */}
       {showScheduleModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl border border-border-color bg-[color:var(--surface)] p-6 shadow-2xl">
+          <div className="w-full max-w-lg rounded-2xl border border-border-color bg-(--surface) p-6 shadow-2xl">
             <div className="flex items-center justify-between">
               <h3 className="font-editorial text-2xl font-bold text-text-primary">
                 Schedule Follow-up Session
               </h3>
               <button
                 onClick={() => setShowScheduleModal(false)}
-                className="rounded-lg p-1 text-text-secondary hover:bg-[color:var(--surface-subtle)]"
+                className="rounded-lg p-1 text-text-secondary hover:bg-(--surface-subtle)"
               >
                 <X size={18} />
               </button>
@@ -656,7 +656,7 @@ export default function FollowUpsPage() {
                 <select
                   value={caseId}
                   onChange={(e) => setCaseId(e.target.value)}
-                  className="w-full rounded-xl border border-border-color bg-[color:var(--surface-subtle)] px-3 py-2.5 text-xs text-text-primary outline-none focus:border-deep-teal"
+                  className="w-full rounded-xl border border-border-color bg-(--surface-subtle) px-3 py-2.5 text-xs text-text-primary outline-none focus:border-deep-teal"
                   required
                 >
                   <option value="">Select a survivor from your caseload...</option>
@@ -698,7 +698,7 @@ export default function FollowUpsPage() {
                   placeholder="e.g. Discuss your interim compensation claim status and sleep grounding exercises."
                   value={survivorNotes}
                   onChange={(e) => setSurvivorNotes(e.target.value)}
-                  className="w-full rounded-xl border border-border-color bg-[color:var(--surface-subtle)] p-2.5 text-xs text-text-primary outline-none focus:border-deep-teal resize-none"
+                  className="w-full rounded-xl border border-border-color bg-(--surface-subtle) p-2.5 text-xs text-text-primary outline-none focus:border-deep-teal resize-none"
                 />
               </div>
 
@@ -711,7 +711,7 @@ export default function FollowUpsPage() {
                   placeholder="e.g. Survivor had elevated distress during last hearing. Check emotional stabilization and family support."
                   value={privateNotes}
                   onChange={(e) => setPrivateNotes(e.target.value)}
-                  className="w-full rounded-xl border border-border-color bg-[color:var(--surface-subtle)] p-2.5 text-xs text-text-primary outline-none focus:border-deep-teal resize-none"
+                  className="w-full rounded-xl border border-border-color bg-(--surface-subtle) p-2.5 text-xs text-text-primary outline-none focus:border-deep-teal resize-none"
                 />
               </div>
 
@@ -738,7 +738,7 @@ export default function FollowUpsPage() {
       {/* Alternate Time Proposal Modal */}
       {reschedulingItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl border border-border-color bg-[color:var(--surface)] p-6 shadow-xl">
+          <div className="w-full max-w-md rounded-2xl border border-border-color bg-(--surface) p-6 shadow-xl">
             <h3 className="font-editorial text-xl font-bold text-text-primary">
               Propose Alternate Time
             </h3>
@@ -777,7 +777,7 @@ export default function FollowUpsPage() {
                   placeholder="e.g. I am available at 3:00 PM instead. Please let me know if this works."
                   value={altNote}
                   onChange={(e) => setAltNote(e.target.value)}
-                  className="w-full rounded-xl border border-border-color bg-[color:var(--surface-subtle)] p-2.5 text-xs text-text-primary outline-none focus:border-deep-teal resize-none"
+                  className="w-full rounded-xl border border-border-color bg-(--surface-subtle) p-2.5 text-xs text-text-primary outline-none focus:border-deep-teal resize-none"
                 />
               </div>
             </div>
@@ -801,7 +801,7 @@ export default function FollowUpsPage() {
       {/* Completion Modal */}
       {completingItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl border border-border-color bg-[color:var(--surface)] p-6 shadow-xl">
+          <div className="w-full max-w-md rounded-2xl border border-border-color bg-(--surface) p-6 shadow-xl">
             <h3 className="font-editorial text-xl font-bold text-text-primary">
               Log Completed Follow-up
             </h3>
@@ -818,7 +818,7 @@ export default function FollowUpsPage() {
                 placeholder="e.g. Session completed via phone. Survivor reported improved sleep and feeling supported before next hearing."
                 value={completionNotes}
                 onChange={(e) => setCompletionNotes(e.target.value)}
-                className="w-full rounded-xl border border-border-color bg-[color:var(--surface-subtle)] p-3 text-xs text-text-primary outline-none focus:border-deep-teal resize-none"
+                className="w-full rounded-xl border border-border-color bg-(--surface-subtle) p-3 text-xs text-text-primary outline-none focus:border-deep-teal resize-none"
               />
             </div>
 
