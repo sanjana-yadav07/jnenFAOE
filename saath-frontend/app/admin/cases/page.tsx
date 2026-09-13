@@ -120,7 +120,7 @@ export default function AdminCasesPage() {
       </div>
 
       {loading && (
-        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-border-color bg-(--surface) p-8 text-center shadow-sm">
+        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-border-color bg-surface p-8 text-center shadow-sm">
           <RefreshCw size={24} className="animate-spin text-deep-teal" />
           <p className="mt-3 text-sm font-medium text-text-secondary">Loading aggregated case telemetry...</p>
         </div>
@@ -130,7 +130,7 @@ export default function AdminCasesPage() {
         <>
           {/* Executive Summary Cards */}
           <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-4">
-            <div className="rounded-2xl border border-border-color bg-(--surface) p-4 shadow-sm">
+            <div className="rounded-2xl border border-border-color bg-surface p-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">Total Active Cases</span>
                 <Users size={16} className="text-deep-teal" />
@@ -139,7 +139,7 @@ export default function AdminCasesPage() {
               <p className="mt-1 text-[11px] text-text-secondary">Across all jurisdictions</p>
             </div>
 
-            <div className="rounded-2xl border border-pale-sage/60 bg-(--surface) p-4 shadow-sm">
+            <div className="rounded-2xl border border-pale-sage/60 bg-surface p-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[#16a34a]">Active Recovery</span>
                 <TrendingUp size={16} className="text-[#16a34a]" />
@@ -148,7 +148,7 @@ export default function AdminCasesPage() {
               <p className="mt-1 text-[11px] text-text-secondary">Sustained SVI improvement</p>
             </div>
 
-            <div className="rounded-2xl border border-border-color bg-(--surface) p-4 shadow-sm">
+            <div className="rounded-2xl border border-border-color bg-surface p-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">Equilibrium</span>
                 <Activity size={16} className="text-deep-teal" />
@@ -191,7 +191,7 @@ export default function AdminCasesPage() {
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-sm text-text-primary">{stageName}</span>
-                          <span className="rounded-full bg-(--surface) px-2 py-0.5 text-[10px] font-bold text-deep-teal border border-border-color/60">
+                          <span className="rounded-full bg-surface px-2 py-0.5 text-[10px] font-bold text-deep-teal border border-border-color/60">
                             {row.count} case{row.count === 1 ? "" : "s"}
                           </span>
                         </div>
@@ -239,7 +239,7 @@ export default function AdminCasesPage() {
                           ? "border-warm-peach/40 bg-warm-peach/10"
                           : isHigh
                           ? "border-amber/40 bg-amber/10"
-                          : "border-border-color/70 bg-(--surface)"
+                          : "border-border-color/70 bg-surface"
                       }`}
                     >
                       <p
@@ -300,7 +300,7 @@ export default function AdminCasesPage() {
           </div>
 
           {/* Privacy Enforcement Notice */}
-          <Card className="bg-(--surface) p-5">
+          <Card className="bg-surface p-5">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <CardTitle className="text-deep-teal flex items-center gap-1.5 text-xs">

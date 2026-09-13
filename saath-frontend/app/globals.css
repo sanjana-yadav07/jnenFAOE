@@ -69,13 +69,32 @@
   --color-warm-cream: var(--warm-cream);
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
   --color-border-color: var(--border-color);
+  --color-border-subtle: var(--border-subtle);
   --color-warm-peach: var(--warm-peach);
   --color-amber: var(--amber);
   --color-calm-blue: var(--calm-blue);
   --color-muted-plum: var(--muted-plum);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-raised: var(--surface-raised);
+  --color-primary-teal: var(--primary-teal);
+  --color-primary-teal-dark: var(--primary-teal-dark);
+  --color-primary-teal-light: var(--primary-teal-light);
+  --color-accent-gold: var(--accent-gold);
+  --color-error: var(--error);
+  --color-error-bg: var(--error-bg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-sidebar-background: var(--sidebar-background);
+  --color-input-background: var(--input-background);
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
 }
 

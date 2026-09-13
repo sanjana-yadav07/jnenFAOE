@@ -127,7 +127,7 @@ export default function AdminReportsPage() {
       </div>
 
       {loading && (
-        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-border-color bg-(--surface) p-8 text-center shadow-sm">
+        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-border-color bg-surface p-8 text-center shadow-sm">
           <RefreshCw size={24} className="animate-spin text-deep-teal" />
           <p className="mt-3 text-sm font-medium text-text-secondary">Generating live caseload audit and report metrics...</p>
         </div>
@@ -241,7 +241,7 @@ export default function AdminReportsPage() {
                 ).map((d) => {
                   const pct = totalCases ? Math.round((d.count / totalCases) * 100) : 0;
                   return (
-                    <div key={d.district} className="rounded-lg border border-border-color/50 bg-(--surface) p-3 text-center">
+                    <div key={d.district} className="rounded-lg border border-border-color/50 bg-surface p-3 text-center">
                       <p className="font-semibold text-sm text-text-primary">{d.district}</p>
                       <p className="mt-1 text-xl font-bold text-deep-teal">{d.count}</p>
                       <p className="text-[10px] text-text-secondary">{pct}% of caseload</p>
@@ -270,7 +270,7 @@ export default function AdminReportsPage() {
           </Card>
 
           {/* Compliance & Privacy Guarantee */}
-          <Card className="bg-(--surface) p-5">
+          <Card className="bg-surface p-5">
             <div className="flex items-center gap-2 text-deep-teal font-semibold text-xs mb-1">
               <ShieldCheck size={16} /> Strict Privacy &amp; Anonymization Guarantee
             </div>
