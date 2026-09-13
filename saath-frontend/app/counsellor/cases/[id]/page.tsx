@@ -689,6 +689,9 @@ export default function CounsellorCaseDetailPage() {
         </Card>
       )}
 
+      {/* ── Full Case File (Counsellor-Only) ── */}
+      <CounsellorFullCaseFile caseRecord={caseRecord} />
+
       {/* ── Case Context & Legal Aid Details ── */}
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="p-5">
@@ -1176,4 +1179,174 @@ export default function CounsellorCaseDetailPage() {
       )}
     </div>
   );
-}
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   COUNSELLOR-ONLY: Full Case File
+   This information is deliberately NOT shown to survivors to avoid
+   re-traumatisation. It is visible only on the counsellor's view.
+───────────────────────────────────────────────────────────────── */
+function CounsellorFullCaseFile({ caseRecord }: { caseRecord: CaseRecord }) {
+  const [open, setOpen] = useState(false);
+
+  const formatV = (v: string | number | boolean | null | undefined, fallback = "Not available") => {
+    if (v === null || v === undefined || v === "") return fallback;
+    if (typeof v === "boolean") return v ? "Yes" : "No";
+    return String(v);
+  };
+
+  const formatD = (v: string | null | undefined) => (v ? formatDate(v) : "Not available");
+
+  const location = [caseRecord.city, caseRecord.district, caseRecord.state].filter(Boolean).join(", ") || "Not available";
+
+  const groups: { title: string; rows: { label: string; value: string }[] }[] = [
+    {
+      title: "Case overview",
+      rows: [
+        { label: "Case category", value: formatV(caseRecord.caseCategory) },
+        { label: "Incident category", value: formatV(caseRecord.incidentCategory) },
+        { label: "Complaint summary", value: formatV(caseRecord.complaintSummary) },
+        { label: "Complainant type", value: formatV(caseRecord.complainantType) },
+        { label: "Age group", value: formatV(caseRecord.ageGroup) },
+        { label: "Gender", value: formatV(caseRecord.gender) },
+        { label: "Location", value: location },
+        { label: "Incident date", value: formatD(caseRecord.incidentDate) },
+        { label: "Registration date", value: formatD(caseRecord.registrationDate) },
+        { label: "Registration channel", value: formatV(caseRecord.registrationChannel) },
+        { label: "Preferred contact", value: formatV(caseRecord.preferredContactChannel) },
+        { label: "Preferred language", value: formatV(caseRecord.preferredLanguage) },
+      ],
+    },
+    {
+      title: "Investigation & FIR",
+      rows: [
+        { label: "FIR status", value: formatV(caseRecord.firStatus) },
+        { label: "FIR number", value: formatV(caseRecord.firNumber) },
+        { label: "FIR date", value: formatD(caseRecord.firDate) },
+        { label: "Police station", value: formatV(caseRecord.policeStation) },
+        { label: "Investigating officer ID", value: formatV(caseRecord.investigatingOfficerId) },
+        { label: "District nodal officer ID", value: formatV(caseRecord.districtNodalOfficerId) },
+        { label: "Investigation status", value: formatV(caseRecord.investigationStatus) },
+        { label: "Chargesheet status", value: formatV(caseRecord.chargesheetStatus) },
+        { label: "Days in current stage", value: formatV(caseRecord.daysInCurrentStage, "0") },
+        { label: "Stage started", value: formatD(caseRecord.stageStartedAt) },
+      ],
+    },
+    {
+      title: "Court & trial",
+      rows: [
+        { label: "Next hearing", value: formatD(caseRecord.nextHearingDate) },
+        { label: "Hearing count", value: formatV(caseRecord.hearingCount, "0") },
+        { label: "Adjournment count", value: formatV(caseRecord.adjournmentCount, "0") },
+        { label: "Accused arrest status", value: formatV(caseRecord.accusedArrestStatus) },
+      ],
+    },
+    {
+      title: "Risk & safety",
+      rows: [
+        { label: "Risk level (Triage tier)", value: formatV(caseRecord.riskLevel) },
+        { label: "Baseline SVI", value: formatV(caseRecord.baselineDistressScore, "Not assessed") },
+        { label: "Current SVI", value: formatV(caseRecord.currentDistressScore, "Not assessed") },
+        { label: "Predicted 7-day SVI", value: formatV(caseRecord.predicted7dScore, "Not assessed") },
+        { label: "Previous threat reported", value: formatV(caseRecord.previousThreatReported) },
+        { label: "Last threat reported", value: formatD(caseRecord.threatLastReported) },
+        { label: "Protection requested", value: formatV(caseRecord.protectionRequested) },
+        { label: "Protection status", value: formatV(caseRecord.protectionStatus) },
+        { label: "Relocation requested", value: formatV(caseRecord.relocationRequested) },
+        { label: "Relocation status", value: formatV(caseRecord.relocationStatus) },
+      ],
+    },
+    {
+      title: "Compensation & relief",
+      rows: [
+        { label: "Financial relief eligible", value: formatV(caseRecord.financialReliefEligible) },
+        { label: "Financial relief status", value: formatV(caseRecord.compensationStatus) },
+        { label: "Approved amount", value: formatV(caseRecord.compensationAmountApproved, "0") },
+        { label: "Disbursed amount", value: formatV(caseRecord.compensationAmountReceived, "0") },
+        { label: "Pending amount", value: formatV(caseRecord.pendingAmount, "0") },
+        { label: "Last payment date", value: formatD(caseRecord.lastPaymentDate) },
+      ],
+    },
+    {
+      title: "Support & rehabilitation",
+      rows: [
+        { label: "Assigned counsellor", value: caseRecord.assignedCounsellor?.name || formatV(caseRecord.counsellorAssigned, "Not assigned") },
+        { label: "Follow-up frequency", value: formatV(caseRecord.followupFrequency) },
+        { label: "Legal aid status", value: formatV(caseRecord.legalAidStatus) },
+        { label: "Rehabilitation status", value: formatV(caseRecord.rehabilitationStatus) },
+        { label: "Monitoring consent", value: formatV(caseRecord.monitoringConsent) },
+        { label: "Monitoring started", value: formatD(caseRecord.monitoringStarted) },
+        { label: "Baseline completed", value: formatV(caseRecord.baselineCompleted) },
+      ],
+    },
+  ];
+
+  return (
+    <div className="rounded-2xl border border-amber/40 bg-amber/5 overflow-hidden">
+      {/* Header / Toggle button */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left hover:bg-amber/10 transition-colors"
+      >
+        <span className="flex items-center gap-2.5">
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber/20 text-amber">
+            <FileText size={15} />
+          </span>
+          <span>
+            <span className="block text-sm font-bold text-text-primary">
+              View full case file — {caseRecord.survivorName}
+            </span>
+            <span className="block text-[11px] text-text-secondary mt-0.5">
+              Counsellor-only · Contains sensitive legal & risk details not shown to the survivor
+            </span>
+          </span>
+        </span>
+        <span className={`flex items-center gap-1.5 text-xs font-semibold text-amber transition-transform ${open ? "rotate-180" : ""}`}>
+          <ChevronRight size={16} className={`transition-transform ${open ? "rotate-90" : ""}`} />
+          {open ? "Collapse" : "Expand"}
+        </span>
+      </button>
+
+      {open && (
+        <div className="border-t border-amber/30 px-5 pb-6 pt-4 space-y-5 bg-white/60">
+          {/* Risk banner */}
+          {caseRecord.riskLevel && (
+            <div className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold ${
+              caseRecord.riskLevel === "CRITICAL" || caseRecord.riskLevel === "HIGH"
+                ? "bg-warm-peach/15 border border-warm-peach/40 text-warm-peach"
+                : caseRecord.riskLevel === "MODERATE"
+                ? "bg-amber/15 border border-amber/40 text-amber"
+                : "bg-pale-sage border border-deep-teal/20 text-deep-teal"
+            }`}>
+              <ShieldAlert size={16} />
+              Risk level: {caseRecord.riskLevel}
+              {(caseRecord.riskLevel === "CRITICAL" || caseRecord.riskLevel === "HIGH") && (
+                <span className="ml-auto text-[11px] font-medium opacity-80">This survivor may need prioritised attention</span>
+              )}
+            </div>
+          )}
+
+          {groups.map((group) => (
+            <div key={group.title}>
+              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-text-secondary">{group.title}</p>
+              <div className="rounded-xl border border-border-color/60 bg-white divide-y divide-border-color/40">
+                {group.rows.map(({ label, value }) => (
+                  <div key={label} className="flex justify-between gap-4 px-4 py-2.5">
+                    <span className="text-xs text-text-secondary shrink-0">{label}</span>
+                    <span className="text-xs font-medium text-text-primary text-right">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          <p className="text-[11px] text-text-secondary italic border-t border-border-color/50 pt-3">
+            ⚠ This information is confidential and intended only for authorised counsellors and staff. Do not share case-level details (especially risk level, FIR numbers, or complaint summaries) with the survivor directly without appropriate trauma-informed guidance.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
