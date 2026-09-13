@@ -395,7 +395,7 @@ export default function CounsellorCaseDetailPage() {
               <span className="font-mono text-xs text-text-secondary bg-(--surface-subtle) px-2.5 py-1 rounded-lg border border-border-color/60 font-semibold">
                 {caseRecord.docket}
               </span>
-              <span className="rounded-full bg-(--pale-sage) px-3 py-1 text-xs font-bold text-deep-teal border border-deep-teal/30">
+              <span className="rounded-full bg-pale-sage px-3 py-1 text-xs font-bold text-deep-teal border border-deep-teal/30">
                 {caseRecord.currentStage}
               </span>
               {caseRecord.riskLevel && (
@@ -458,7 +458,7 @@ export default function CounsellorCaseDetailPage() {
                   isCurrent
                     ? "bg-deep-teal text-white border-deep-teal shadow-sm font-bold"
                     : isCompleted
-                    ? "bg-(--pale-sage) text-deep-teal border-deep-teal/20 font-semibold"
+                    ? "bg-pale-sage text-deep-teal border-deep-teal/20 font-semibold"
                     : "bg-(--surface-subtle) text-text-secondary border-border-color/50"
                 }`}
               >

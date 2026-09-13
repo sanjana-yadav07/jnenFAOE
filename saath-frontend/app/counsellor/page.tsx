@@ -528,7 +528,7 @@ export default function CounsellorOverviewPage() {
                     <span className="font-mono text-xs text-text-secondary bg-(--surface-subtle) px-2 py-0.5 rounded-md border border-border-color/60">
                       {caseRecord.docket}
                     </span>
-                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-(--pale-sage) text-deep-teal border border-deep-teal/20">
+                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-pale-sage text-deep-teal border border-deep-teal/20">
                       Stage: {caseRecord.currentStage}
                     </span>
                     {caseRecord.riskLevel && (

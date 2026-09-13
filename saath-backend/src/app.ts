@@ -1,4 +1,5 @@
 import express from 'express';
+import type { AuthUser } from './types/domain.js';
 import cors from 'cors'; import helmet from 'helmet'; import rateLimit from 'express-rate-limit'; import multer from 'multer';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod'; import { randomUUID } from 'node:crypto';
