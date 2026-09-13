@@ -260,6 +260,212 @@ describe('SAATH API', () => {
       expect(input).not.toHaveProperty('voice_features');
     });
   });
+
+  describe('Longitudinal Distress & Recovery Trends (Priority 0)', () => {
+    it('returns insufficient evidence when fewer than 2 check-ins exist', async () => {
+      const token = await connect();
+      const res = await request(app).get('/api/v1/monitoring/trends').set('Authorization', `Bearer ${token}`);
+      expect(res.status).toBe(200);
+      expect(res.body.data.baselineComparison).toBe('insufficient evidence');
+      expect(res.body.data.distressTrend).toHaveLength(0);
+      expect(res.body.data.change).toBe(0);
+    });
+
+    it('accurately computes worsening trajectory when distress increases from 40 to 52 to 68', async () => {
+      const token = await connect();
+      const user = [...store.users.values()].find((u) => u.victimToken);
+      const userId = user?.id || 'docket-NHAA-RJ-2026-004821';
+
+      const now = Date.now();
+      const obs1 = {
+        id: 'obs-1',
+        createdAt: new Date(now - 86400000 * 2).toISOString(),
+        ml: { distressScore: 40, recoveryScore: 60, confidence: 0.85, contributingFactors: [] },
+      };
+      const obs2 = {
+        id: 'obs-2',
+        createdAt: new Date(now - 86400000 * 1).toISOString(),
+        ml: { distressScore: 52, recoveryScore: 48, confidence: 0.88, contributingFactors: [] },
+      };
+      const obs3 = {
+        id: 'obs-3',
+        createdAt: new Date(now).toISOString(),
+        ml: { distressScore: 68, recoveryScore: 32, confidence: 0.90, contributingFactors: [] },
+      };
+
+      store.records.set(`checkins:${userId}`, [obs1, obs2, obs3]);
+
+      const res = await request(app).get('/api/v1/monitoring/trends').set('Authorization', `Bearer ${token}`);
+      expect(res.status).toBe(200);
+      expect(res.body.data.distressTrend).toHaveLength(3);
+      expect(res.body.data.distressTrend[0].score).toBe(40);
+      expect(res.body.data.distressTrend[1].score).toBe(52);
+      expect(res.body.data.distressTrend[2].score).toBe(68);
+      expect(res.body.data.baselineComparison).toBe('worsening');
+      expect(res.body.data.change).toBe(28);
+      expect(res.body.data.confidence).toBeGreaterThanOrEqual(0.8);
+      expect(res.body.data.records).toHaveLength(3);
+    });
+
+    it('accurately computes improving trajectory when distress decreases by 15 points', async () => {
+      const token = await connect();
+      const user = [...store.users.values()].find((u) => u.victimToken);
+      const userId = user?.id || 'docket-NHAA-RJ-2026-004821';
+      const now = Date.now();
+
+      store.records.set(`checkins:${userId}`, [
+        { id: 'obs-1', createdAt: new Date(now - 86400000).toISOString(), ml: { distressScore: 70, recoveryScore: 30, confidence: 0.8 } },
+        { id: 'obs-2', createdAt: new Date(now).toISOString(), ml: { distressScore: 55, recoveryScore: 45, confidence: 0.85 } },
+      ]);
+
+      const res = await request(app).get('/api/v1/monitoring/trends').set('Authorization', `Bearer ${token}`);
+      expect(res.status).toBe(200);
+      expect(res.body.data.baselineComparison).toBe('improving');
+      expect(res.body.data.change).toBe(-15);
+    });
+  });
+
+  describe('Automated Monitoring Process-Due Scheduler (Priority 0)', () => {
+    it('identifies due/overdue cases and delivers appropriate reminder notifications with deduplication', async () => {
+      const adminLogin = await request(app).post('/api/v1/auth/staff-token').send({ role: 'NATIONAL_ADMIN', staffId: 'ADM-SCHED-01' });
+      const adminToken = adminLogin.body.data.accessToken;
+
+      const res = await request(app)
+        .post('/api/v1/monitoring/process-due')
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.data).toHaveProperty('processedCount');
+      expect(res.body.data).toHaveProperty('dueCasesCount');
+      expect(res.body.data).toHaveProperty('overdueCasesCount');
+      expect(res.body.data).toHaveProperty('remindersSent');
+      expect(Array.isArray(res.body.data.remindersSent)).toBe(true);
+
+      // Verify deduplication on subsequent immediate call within 24h
+      const res2 = await request(app)
+        .post('/api/v1/monitoring/process-due')
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res2.status).toBe(200);
+      expect(res2.body.data.remindersSentCount).toBe(0);
+    });
+  });
+
+  describe('Relocation & Protection Workflow (Priority 0)', () => {
+    it('allows requesting protection and transitioning through official status lifecycle', async () => {
+      const token = await connect();
+      const counsellorLogin = await request(app).post('/api/v1/auth/counsellor-login').send({
+        email: 'anjali@saath.com',
+        password: 'saath123',
+      });
+      const counsellorToken = counsellorLogin.body.data.accessToken;
+
+      const reqRes = await request(app)
+        .post(`/api/v1/cases/${docket}/protection-request`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          reason: 'Received persistent intimidation signals near home premises.',
+          priority: 'HIGH',
+          threatDetails: 'Suspicious persons following survivor from court.',
+        });
+
+      expect(reqRes.status).toBe(201);
+      expect(reqRes.body.data.status).toBe('REQUESTED');
+      expect(reqRes.body.data.type).toBe('PROTECTION');
+
+      const reviewRes = await request(app)
+        .post(`/api/v1/cases/${docket}/protection-status`)
+        .set('Authorization', `Bearer ${counsellorToken}`)
+        .send({
+          status: 'UNDER_REVIEW',
+          notes: 'Case escalated to district witness protection committee.',
+        });
+
+      expect(reviewRes.status).toBe(200);
+      expect(reviewRes.body.data.protectionStatus).toBe('UNDER_REVIEW');
+
+      const adminLogin = await request(app).post('/api/v1/auth/staff-token').send({ role: 'NATIONAL_ADMIN', staffId: 'ADM-PROT-01' });
+      const adminToken = adminLogin.body.data.accessToken;
+      const assignRes = await request(app)
+        .post(`/api/v1/cases/${docket}/protection-status`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          status: 'ASSIGNED',
+          assignedOfficial: 'Inspector R. S. Meena (District Protection Unit)',
+          officialContact: '+91-9829012345',
+          notes: 'Dedicated protection officer assigned for court transit.',
+        });
+
+      expect(assignRes.status).toBe(200);
+      expect(assignRes.body.data.protectionStatus).toBe('ASSIGNED');
+      expect(assignRes.body.data.protectionOfficerAssigned).toContain('Inspector R. S. Meena');
+
+      const timeRes = await request(app)
+        .get(`/api/v1/cases/${docket}/timeline`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(timeRes.status).toBe(200);
+      const timelineLabels = timeRes.body.data.map((e: any) => e.label);
+      expect(timelineLabels.some((l: string) => l.includes('Witness protection requested'))).toBe(true);
+      expect(timelineLabels.some((l: string) => l.includes('Protection status: ASSIGNED'))).toBe(true);
+    });
+
+    it('allows requesting safe relocation and updating status to APPROVED and IN_PROGRESS', async () => {
+      const token = await connect();
+      const adminLogin = await request(app).post('/api/v1/auth/staff-token').send({ role: 'NATIONAL_ADMIN', staffId: 'ADM-RELO-01' });
+      const adminToken = adminLogin.body.data.accessToken;
+
+      const reqRes = await request(app)
+        .post(`/api/v1/cases/${docket}/relocation-request`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          reason: 'Severe intimidation in current village; need temporary shelter.',
+          priority: 'URGENT',
+          targetDistrict: 'Jaipur',
+          targetState: 'Rajasthan',
+        });
+
+      expect(reqRes.status).toBe(201);
+      expect(reqRes.body.data.status).toBe('REQUESTED');
+
+      const approveRes = await request(app)
+        .post(`/api/v1/cases/${docket}/relocation-status`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          status: 'APPROVED',
+          notes: 'Safe shelter accommodation sanctioned under Victim Compensation & Protection Scheme.',
+          targetSafeLocation: 'Safe House Unit A, Jaipur',
+        });
+
+      expect(approveRes.status).toBe(200);
+      expect(approveRes.body.data.relocationStatus).toBe('APPROVED');
+    });
+  });
+
+  describe('Hindi / Hinglish Safety and Indicator Detection (Priority 1)', () => {
+    it('detects Hindi crisis phrases and flags immediate danger', () => {
+      expect(ml.detectCrisisLevel('मुझे जीने का मन नहीं कर रहा')).toBe('immediate_danger');
+      expect(ml.detectCrisisLevel('sab khatam karna chahta hoon')).toBe('immediate_danger');
+      expect(ml.detectCrisisLevel('khudkushi karna chahti hoon')).toBe('immediate_danger');
+      expect(ml.detectCrisisLevel('apne aap ko chot pahuchana chahti hoon')).toBe('self_harm');
+    });
+
+    it('extracts Hindi and Hinglish emotional indicator tags', async () => {
+      const { extractIndicatorTags } = await import('../src/services/indicator-tags.js');
+      const fearTags = extractIndicatorTags('mujhe bahut dar lag raha hai aur safe nahi feel ho raha');
+      expect(fearTags).toContain('fear');
+
+      const intimidationTags = extractIndicatorTags('usne mujhe dhamki di hai court na jaane ke liye');
+      expect(intimidationTags).toContain('intimidation_signal');
+
+      const isolationTags = extractIndicatorTags('main bilkul akela mehsoos kar raha hoon koi nahi hai');
+      expect(isolationTags).toContain('social_isolation');
+
+      const depressionTags = extractIndicatorTags('bahut pareshan hoon aur neend nahi aa rahi');
+      expect(depressionTags).toContain('depression');
+    });
+  });
 });
+
 
 

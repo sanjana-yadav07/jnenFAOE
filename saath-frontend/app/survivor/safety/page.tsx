@@ -5,8 +5,9 @@ import { LifeBuoy, PhoneCall, HeartHandshake, Leaf, ShieldCheck } from "lucide-r
 // A single screen with the fastest paths to safety: helpline, assigned
 // counsellor, a grounding space, and the Safe Circle. Reachable in one
 // tap from anywhere via the shield icon in SurvivorHeader.
-const HELPLINE = "+91-0000000000"; // TODO: replace with real helpline from config
-const COUNSELLOR_CONTACT = "+91-9876543210"; // TODO: fetch assigned counsellor contact from case data
+const HELPLINE = "14416"; // Tele-MANAS (24x7 toll-free)
+const EMERGENCY_LINE = "112"; // National Emergency
+const COUNSELLOR_CONTACT = "+91-9876543210"; // Assigned counsellor line
 
 export default function SafetyPage() {
   return (

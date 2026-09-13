@@ -1,8 +1,9 @@
 import { env } from '../config/env.js';
 import { z } from 'zod';
+import { extractIndicatorTags, type IndicatorTag } from './indicator-tags.js';
 
 export interface Explainability { factor:string; direction:'increased_distress'|'increased_recovery'; weight:number; }
-export interface MlResult { distressScore:number|null; recoveryScore:number|null; confidence:number; escalationProbability:number|null; modelName:string; modelVersion:string; pipelineVersion:string; signals:Record<string,unknown>; contributingFactors:Explainability[]; crisis:boolean; insufficientEvidence?:boolean; status?:'available'|'unavailable'; }
+export interface MlResult { distressScore:number|null; recoveryScore:number|null; confidence:number; escalationProbability:number|null; modelName:string; modelVersion:string; pipelineVersion:string; signals:Record<string,unknown>; contributingFactors:Explainability[]; crisis:boolean; insufficientEvidence?:boolean; status?:'available'|'unavailable'; indicators?:IndicatorTag[]; }
 
 const modelOutput = z.object({ distressScore:z.number().min(0).max(100), recoveryScore:z.number().min(0).max(100), confidence:z.number().min(0).max(1), escalationProbability:z.number().min(0).max(1), signals:z.record(z.unknown()).default({}), contributingFactors:z.array(z.object({factor:z.string(),direction:z.enum(['increased_distress','increased_recovery']),weight:z.number().min(0).max(1)})).default([]), crisis:z.boolean().default(false) });
 
@@ -13,8 +14,8 @@ const modelOutput = z.object({ distressScore:z.number().min(0).max(100), recover
 
 export type CrisisLevel = 'none' | 'self_harm' | 'immediate_danger';
 
-const immediateDangerPattern = /(kill(?:ing)? myself|end my life|take my own life|want to die|better off dead|don't want to (?:live|be alive)|do not want to (?:live|be alive)|can't stay safe|cannot stay safe|can't keep myself safe|going to hurt myself|plan(?:ning)? to (?:kill|hurt) myself|have (?:a gun|pills|a weapon) (?:ready|with me))/i;
-const selfHarmPattern = /(self[- ]?harm|hurt(?:ing)? myself|cut(?:ting)? myself|overdose|starv(?:e|ing) myself)/i;
+const immediateDangerPattern = /(kill(?:ing)? myself|end my life|take my own life|want to die|better off dead|don't want to (?:live|be alive)|do not want to (?:live|be alive)|can't stay safe|cannot stay safe|can't keep myself safe|going to hurt myself|plan(?:ning)? to (?:kill|hurt) myself|have (?:a gun|pills|a weapon) (?:ready|with me)|jeene ka mann nahi|sab khatam karna chaht(?:a|i)|mar jaana chaht(?:a|i)|khudkushi|aatmhatya|jaan de dung(?:a|i)|जीने का मन नहीं|सब खत्म करना चाहता|सब खत्म करना चाहती|मर जाना चाहता|मर जाना चाहती|खुदकुशी|आत्महत्या|जान दे दूंगा|जान दे दूंगी)/i;
+const selfHarmPattern = /(self[- ]?harm|hurt(?:ing)? myself|cut(?:ting)? myself|overdose|starv(?:e|ing) myself|apne aap ko chot|apne aap ko nuksan|खुद को चोट|खुद को नुकसान)/i;
 
 /** Rule-based, deterministic - no model hallucination risk. Check highest severity first. */
 export const detectCrisisLevel = (text: string): CrisisLevel => {
@@ -62,7 +63,8 @@ function unavailable(input:{text:string;language?:string}):MlResult {
     contributingFactors:crisis?[{factor:'explicit_safety_language',direction:'increased_distress',weight:1}]:[],
     crisis,
     insufficientEvidence:true,
-    status:'unavailable'
+    status:'unavailable',
+    indicators:extractIndicatorTags(input.text),
   };
 }
 
@@ -137,7 +139,8 @@ async function groqAnalyze(input:{text:string;language?:string}):Promise<MlResul
     const parsed=modelOutput.parse(JSON.parse(content));
     const level = detectCrisisLevel(input.text);
     const crisis = parsed.crisis || level !== 'none';
-    return {...parsed,crisis,signals:{...parsed.signals,crisisLevel:level},modelName:'groq',modelVersion:env.GROQ_MODEL,pipelineVersion:'groq-text-v1',status:'available'};
+    const indicators = extractIndicatorTags(input.text);
+    return {...parsed,crisis,signals:{...parsed.signals,crisisLevel:level},indicators,modelName:'groq',modelVersion:env.GROQ_MODEL,pipelineVersion:'groq-text-v1',status:'available'};
   } finally { clearTimeout(timeout); }
 }
 
@@ -187,9 +190,11 @@ const externalMlResult = z.object({
   escalationProbability: z.number().min(0).max(1).nullable(), confidence: z.number().min(0).max(1), signals: z.record(z.unknown()).default({}),
   contributingFactors: z.array(z.object({ factor: z.string(), direction: z.enum(['increased_distress', 'increased_recovery']), weight: z.number().min(0).max(1) })).default([]),
   modelName: z.string(), modelVersion: z.string(), pipelineVersion: z.string(), crisis: z.boolean(), insufficientEvidence: z.boolean().optional(), status: z.enum(['available', 'unavailable']).optional(),
+  indicators: z.array(z.enum(['trauma', 'fear', 'depression', 'intimidation_signal', 'social_isolation'])).optional(),
 });
 
 export async function analyzeText(input:{victimToken:string;text:string;language?:string}):Promise<MlResult>{
+  const localIndicators = extractIndicatorTags(input.text);
   if(env.ML_SERVICE_URL){
     try {
       const response=await fetch(`${env.ML_SERVICE_URL}/ml/analyze-text`,{method:'POST',headers:{'content-type':'application/json','x-api-key':env.ML_API_KEY??''},body:JSON.stringify({victim_token:input.victimToken,text:input.text,language:input.language??'en'})});
@@ -199,7 +204,11 @@ export async function analyzeText(input:{victimToken:string;text:string;language
         return unavailable(input);
       }
       const parsed=externalMlResult.parse(await response.json());
-      return {...parsed, insufficientEvidence:parsed.insufficientEvidence??parsed.status==='unavailable'};
+      return {
+        ...parsed,
+        insufficientEvidence:parsed.insufficientEvidence??parsed.status==='unavailable',
+        indicators: parsed.indicators ?? localIndicators,
+      };
     } catch(err){
       console.error('[ML] /ml/analyze-text request failed:',err instanceof Error?err.message:String(err));
       return unavailable(input);
@@ -262,9 +271,11 @@ export async function analyzeVoice(input: { victimToken: string; audio: Buffer; 
     !pythonResult.analysis.insufficientEvidence &&
     pythonResult.analysis.status !== 'unavailable'
   ) {
+    const transcript = pythonResult.transcript.trim();
+    const indicators = pythonResult.analysis.indicators ?? extractIndicatorTags(transcript);
     return {
-      transcript: pythonResult.transcript.trim(),
-      analysis: pythonResult.analysis,
+      transcript,
+      analysis: { ...pythonResult.analysis, indicators },
     };
   }
 

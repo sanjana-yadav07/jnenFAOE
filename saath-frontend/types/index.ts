@@ -23,8 +23,8 @@ export interface CaseRecord {
   compensationStatus: "Not applicable" | "Pending" | "Partial disbursement" | "Disbursed";
   compensationAmountApproved: number;
   compensationAmountReceived: number;
-  protectionStatus: "Not requested" | "Under review" | "Granted";
-  relocationStatus: "Not requested" | "Under review" | "Relocated";
+  protectionStatus: "Not requested" | "Under review" | "Granted" | "REQUESTED" | "UNDER_REVIEW" | "APPROVED" | "ASSIGNED" | "IN_PROGRESS" | "COMPLETED" | "REJECTED" | string;
+  relocationStatus: "Not requested" | "Under review" | "Relocated" | "REQUESTED" | "UNDER_REVIEW" | "APPROVED" | "ASSIGNED" | "IN_PROGRESS" | "COMPLETED" | "REJECTED" | string;
   legalAidStatus: string;
   rehabilitationStatus: string;
   counsellorAssigned: string;

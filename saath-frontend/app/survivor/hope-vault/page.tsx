@@ -118,7 +118,7 @@ export default function HopeVaultPage() {
     setSubmitting(true);
     setError("");
     try {
-      const newItem = await hopeVaultService.createItem({ type: modal.type, title, content });
+      const newItem = (await hopeVaultService.createItem({ type: modal.type, title, content })) as Record<string, any>;
       persist([...items, { created_at: new Date().toISOString(), ...newItem }]);
       setModal({ type: "", isOpen: false });
       setTitle("");
@@ -149,10 +149,9 @@ export default function HopeVaultPage() {
     setSubmitting(true);
     setError("");
     try {
-      let newItem;
       if (type === "photo" && file) {
-        newItem = await hopeVaultService.uploadPhoto(file, "Photo");
-        persist([...items, { created_at: new Date().toISOString(), ...newItem }]);
+        const uploaded = (await hopeVaultService.uploadPhoto(file, "Photo")) as Record<string, any>;
+        persist([...items, { created_at: new Date().toISOString(), ...uploaded }]);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to save. Please try again.");
@@ -197,10 +196,10 @@ export default function HopeVaultPage() {
     setSavingEdit(true);
     setEditError("");
     try {
-      const updated = await hopeVaultService.updateItem(detailItem.id, {
+      const updated = (await hopeVaultService.updateItem(detailItem.id, {
         title: editTitle.trim(),
         content: editContent.trim(),
-      });
+      })) as Record<string, any>;
       const merged = { ...detailItem, ...updated, title: editTitle.trim(), content: editContent.trim() };
       persist(items.map((i) => (i.id === detailItem.id ? merged : i)));
       setDetailItem(merged);

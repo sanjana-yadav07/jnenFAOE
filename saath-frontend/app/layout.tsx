@@ -4,12 +4,16 @@ import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { AccessibilityProvider } from "@/components/AccessibilityProvider";
 
 export const metadata: Metadata = {
-  title: "SAATH — Support After A Trauma, Healing",
+  title: "SAATH — You don't have to walk alone",
   description:
-    "SAATH connects your registered case with continuous, voluntary mental-health support. Demo/prototype build — synthetic data only.",
+    "Continuous, voluntary trauma-informed mental-health care and support for survivors. You don't have to walk alone.",
   manifest: "/manifest.json",
   icons: {
-    icon: "/icons/icon-192.png",
+    icon: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/saath-logo.png" },
+    ],
     apple: "/icons/apple-touch-icon.png",
   },
   appleWebApp: {
