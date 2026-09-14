@@ -38,7 +38,7 @@ export type SahayakInput = {
     counsellingStatus?: string;
     legalAidStatus?: string;
     protectionStatus?: string;
-    protectionOfficerAssigned?: boolean;
+    protectionOfficerAssigned?: boolean | string | null;
     financialReliefStatus?: string;
     financialReliefEligible?: boolean;
     approvedAmount?: number;

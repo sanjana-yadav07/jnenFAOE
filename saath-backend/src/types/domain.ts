@@ -49,8 +49,9 @@ export interface CaseRecord {
   previousThreatReported?: boolean;
   threatLastReported?: string | null;
   protectionRequested?: boolean;
-  protectionOfficerAssigned?: boolean;
+  protectionOfficerAssigned?: string | boolean | null;
   relocationRequested?: boolean;
+  courtName?: string | null;
   monitoringStarted?: string;
   baselineCompleted?: boolean;
   baselineDistressScore?: number;
@@ -76,7 +77,7 @@ export interface CaseRecord {
     actionType: string;
   }>;
 }
-export interface Counsellor {
+export interface CounsellorRecord {
   id: string;
   name: string;
   email: string;
@@ -91,7 +92,17 @@ export interface Counsellor {
   casesAssigned?: number;
   lastLogin?: string | null;
 }
-export interface TimelineEvent { id: string; caseId: string; date: string; type: 'case'|'support'|'wellbeing'; label: string; metadata?: Record<string, unknown>; }
+export type Counsellor = CounsellorRecord;
+
+export interface TimelineEvent {
+  id: string;
+  caseId: string;
+  victimToken?: string;
+  date: string;
+  type: 'case' | 'support' | 'wellbeing' | 'legal' | 'checkin' | 'alert' | 'followup' | 'protection' | 'relocation' | string;
+  label: string;
+  metadata?: Record<string, unknown>;
+}
 
 export type NotificationType =
   | 'case_connected'
